@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PINSA — Bodega Central</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#080d18; --surface:#0e1826; --surface2:#121f30; --surface3:#172438;
+    --border:#1a2a40; --border2:#1e3050; --text:#e8e4dc; --muted:#6a85a0; --muted2:#3a4f6a;
+    --navy:#1565C0; --navy-dim:rgba(21,101,192,0.12); --navy-bright:#1E88E5;
+    --orange-bc:#E65100; --orange-bc-dim:rgba(230,81,0,0.15);
+    --cream:#f0ebe0;
+    --green:#3db876; --green-dim:rgba(61,184,118,0.10);
+    --red:#e05252;   --red-dim:rgba(224,82,82,0.10);
+    --yellow:#f0b429; --yellow-dim:rgba(240,180,41,0.10);
+    --accent:#4FC3F7;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%,rgba(21,101,192,0.08) 0%,transparent 60%),
+      radial-gradient(ellipse 40% 30% at 10% 80%,rgba(79,195,247,0.04) 0%,transparent 50%);}
+  .topbar{background:rgba(8,13,24,0.97);border-bottom:1px solid var(--border);padding:10px 24px;
+    display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+  .topbar-left{display:flex;align-items:center;gap:14px;}
+  .role-badge{background:var(--orange-bc-dim);color:#FF7043;border:1px solid rgba(230,81,0,0.4);
+    font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;padding:3px 12px;border-radius:4px;}
+  .tb-title{font-size:14px;font-weight:600;color:var(--cream);}
+  .tb-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+  .tb-right{text-align:right;}
+  .tb-fecha{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);}
+  .tb-mes{font-size:11px;color:var(--muted2);margin-top:2px;font-family:'DM Mono',monospace;}
+  .rdot{display:inline-block;width:6px;height:6px;background:var(--green);border-radius:50%;margin-right:5px;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .main{padding:20px 24px;max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:16px;}
+  .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:16px;}
+  .spinner{width:36px;height:36px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
+  .loading-txt{font-size:13px;color:var(--muted);}
+  .sec-label{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:3px;color:var(--muted);
+    display:flex;align-items:center;gap:8px;margin-bottom:-4px;}
+  .sec-label::after{content:'';flex:1;height:1px;background:var(--border);}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+
+  /* BONO CARD */
+  .bono-card{background:linear-gradient(135deg,var(--surface) 0%,#091525 100%);border:1px solid var(--border2);
+    border-radius:14px;overflow:hidden;position:relative;}
+  .bono-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,var(--accent),var(--navy-bright),transparent);}
+  .bono-top{padding:20px 24px 16px;display:flex;align-items:flex-start;justify-content:space-between;border-bottom:1px solid var(--border);}
+  .bono-left h2{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--cream);}
+  .bono-left p{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:1px;}
+  .bono-amount{font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:1;text-align:right;}
+  .bono-amount-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;text-align:right;}
+  .verde{color:var(--green);} .amarillo{color:var(--yellow);} .rojo{color:var(--red);}
+  .bono-prog{padding:16px 24px;}
+  .bp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .bp-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);}
+  .bp-val{font-family:'DM Mono',monospace;font-size:13px;color:var(--cream);}
+  .prog-bg{background:var(--surface3);height:8px;border-radius:4px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:4px;}
+  .prog-fill.verde{background:linear-gradient(90deg,#2a9a5e,var(--green));}
+  .prog-fill.amarillo{background:linear-gradient(90deg,#c89010,var(--yellow));}
+  .prog-fill.rojo{background:linear-gradient(90deg,#b03a3a,var(--red));}
+  .prog-footer{display:flex;justify-content:space-between;margin-top:5px;font-size:10px;color:var(--muted);}
+  .criterios{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-top:1px solid var(--border);}
+  .crit{background:var(--surface2);padding:14px 18px;}
+  .crit-name{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+  .crit-val{font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;margin-bottom:4px;}
+  .crit-target{font-size:10px;color:var(--muted2);}
+  .dot{width:7px;height:7px;border-radius:50%;display:inline-block;}
+  .dot-green{background:var(--green);box-shadow:0 0 5px var(--green);}
+  .dot-yellow{background:var(--yellow);box-shadow:0 0 5px var(--yellow);}
+  .dot-red{background:var(--red);box-shadow:0 0 5px var(--red);}
+  .dot-gray{background:var(--muted2);}
+  .dot-blue{background:var(--accent);box-shadow:0 0 5px var(--accent);}
+
+  /* KPI 4 COL */
+  .v4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  .v-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 22px;position:relative;overflow:hidden;}
+  .v-accent-blue::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),transparent);opacity:0.6;}
+  .v-accent-navy::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--navy-bright),transparent);opacity:0.6;}
+  .v-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:8px;}
+  .v-big{font-family:'Bebas Neue',sans-serif;font-size:34px;line-height:1;color:var(--cream);}
+  .v-sub{font-size:12px;color:var(--muted);margin-top:6px;}
+  .v-pct{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;}
+
+  /* 2 COL */
+  .s2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+
+  /* TABLAS */
+  .tbl-wrap{padding:14px 20px;}
+  .tbl-h{display:grid;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);}
+  .tbl-r{display:grid;gap:8px;padding:9px 0;border-bottom:1px solid var(--border);align-items:center;}
+  .tbl-r:last-child{border-bottom:none;}
+  .tbl-sku{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);}
+  .tbl-d{font-size:12px;color:var(--text);}
+  .tbl-n{font-family:'DM Mono',monospace;font-size:12px;text-align:right;}
+  .tbl-est{font-family:'Bebas Neue',sans-serif;font-size:11px;padding:2px 8px;border-radius:3px;text-align:center;}
+
+  /* ESTADOS ENVIO */
+  .est-enviado{background:var(--navy-dim);color:var(--accent);border:1px solid rgba(79,195,247,0.25);}
+  .est-recibido{background:var(--green-dim);color:var(--green);border:1px solid rgba(61,184,118,0.25);}
+  .est-diferencia{background:var(--yellow-dim);color:var(--yellow);border:1px solid rgba(240,180,41,0.25);}
+  .est-critico{background:var(--red-dim);color:var(--red);border:1px solid rgba(224,82,82,0.25);}
+  .est-quiebre{background:var(--yellow-dim);color:var(--yellow);border:1px solid rgba(240,180,41,0.25);}
+  .est-ok{background:var(--green-dim);color:var(--green);border:1px solid rgba(61,184,118,0.25);}
+  .est-oc-pend{background:var(--navy-dim);color:var(--accent);border:1px solid rgba(79,195,247,0.25);}
+  .est-oc-env{background:var(--green-dim);color:var(--green);border:1px solid rgba(61,184,118,0.25);}
+
+  /* HEADER SECCION */
+  .sec-head{padding:14px 18px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .sec-nom{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1.5px;color:var(--cream);}
+  .sec-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+  .s-badge{font-family:'Bebas Neue',sans-serif;font-size:13px;padding:3px 10px;border-radius:4px;}
+  .b-verde{background:var(--green-dim);color:var(--green);border:1px solid rgba(61,184,118,0.25);}
+  .b-rojo{background:var(--red-dim);color:var(--red);border:1px solid rgba(224,82,82,0.25);}
+  .b-amarillo{background:var(--yellow-dim);color:var(--yellow);border:1px solid rgba(240,180,41,0.25);}
+  .b-gray{background:rgba(90,112,144,0.1);color:var(--muted);border:1px solid var(--border);}
+
+  /* STATS ROW */
+  .stats-row{display:grid;gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+  .st{background:var(--surface2);padding:16px 18px;}
+  .st-l{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:6px;}
+  .st-v{font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;}
+  .st-s{font-size:11px;color:var(--muted);margin-top:3px;}
+
+  /* ALERTAS */
+  .al-list{padding:12px 20px;display:flex;flex-direction:column;gap:8px;}
+  .al-item{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-radius:8px;}
+  .al-roja{background:var(--red-dim);border:1px solid rgba(224,82,82,0.2);}
+  .al-amarilla{background:var(--yellow-dim);border:1px solid rgba(240,180,41,0.2);}
+  .al-azul{background:var(--navy-dim);border:1px solid rgba(79,195,247,0.2);}
+  .al-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+  .al-txt{font-size:12px;line-height:1.4;color:var(--text);}
+  .al-det{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px;}
+  .no-alertas{padding:20px;text-align:center;font-size:13px;color:var(--green);}
+
+  /* VENTAS CONSOLIDADO */
+  .vc-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+  .vc-row:last-child{border-bottom:none;}
+  .vc-local{font-size:11px;color:var(--accent);width:80px;flex-shrink:0;font-family:'DM Mono',monospace;}
+  .vc-sec{font-size:12px;color:var(--text);flex:1;}
+  .vc-bw{width:120px;flex-shrink:0;}
+  .vc-bb{background:var(--surface3);height:5px;border-radius:3px;overflow:hidden;}
+  .vc-bf{height:100%;border-radius:3px;}
+  .vc-pc{font-family:'DM Mono',monospace;font-size:11px;width:46px;text-align:right;flex-shrink:0;}
+
+  @media(max-width:900px){
+    .main{padding:12px 14px;}
+    .v4{grid-template-columns:1fr 1fr;}
+    .criterios{grid-template-columns:1fr 1fr;}
+    .s2{grid-template-columns:1fr;}
+    .stats-row{grid-template-columns:1fr 1fr !important;}
+  }
+  @media(max-width:600px){
+    .v4{grid-template-columns:1fr 1fr;}
+    .criterios{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-left">
+    <!-- LOGO caricato dinamicamente dal Jefe de Local -->
+    <img id="pinsa-logo" style="height:34px;width:auto;display:none;" alt="PINSA">
+    <div class="role-badge">BODEGA CENTRAL</div>
+    <div>
+      <div class="tb-title">PINSA — Control Operacional</div>
+      <div class="tb-sub">Supply Chain · Logística · Abastecimiento</div>
+    </div>
+  </div>
+  <div style="text-align:right;">
+    <div class="tb-fecha" id="tb-fecha"><span class="rdot"></span>—</div>
+    <div class="tb-mes" id="tb-mes">—</div>
+  </div>
+</div>
+
+<div class="main" id="root">
+  <div class="loading"><div class="spinner"></div><div class="loading-txt">Cargando datos...</div></div>
+</div>
+
+<script>
+const PROXY = u => 'https://corsproxy.io/?url=' + encodeURIComponent(u);
+const MEN = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+const MES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+// ── IDs GOOGLE SHEETS ──────────────────────────────────────────────
+const ID_MAESTRO = '1FVSx9Wgq8GgTgGe-MK_ie_lVvpldLbty0UTvyyWUaA4';
+
+// Nombres de fogli en MAESTRO
+const SHEETS = {
+  PARAMETROS:         'PARAMETROS',
+  INVENTARIO_BC:      'Inventario_BC',
+  REPOSICION_BC:      'Reposicion_BC',
+  MOVIMIENTOS_BC:     'Movimientos_BC',
+  OC_LOG:             'OC_Log',
+  VENTAS_CONSOLIDADO: 'Ventas_Consolidado',
+};
+
+// ── FETCH SHEET ────────────────────────────────────────────────────
+async function fetchSheet(sheetId, sheetName) {
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+  const r = await fetch(PROXY(url));
+  const txt = await r.text();
+  const match = txt.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/);
+  if (!match) throw new Error(`Foglio "${sheetName}" non accessibile. Verifica che il MAESTRO sia pubblico (Condividi → Chiunque con il link → Visualizzatore).`);
+  const json = JSON.parse(match[1]);
+  if (!json.table) throw new Error(`Foglio "${sheetName}" vuoto o non trovato.`);
+  return json.table;
+}
+
+function rows(table) {
+  if (!table || !table.rows) return [];
+  return table.rows.map(r => r.c ? r.c.map(c => c ? (c.f !== undefined && c.f !== null ? c.f : c.v) : null) : []);
+}
+
+function rowsRaw(table) {
+  if (!table || !table.rows) return [];
+  return table.rows.map(r => r.c ? r.c.map(c => c ? c.v : null) : []);
+}
+
+// Estrae valore numerico robusto — gestisce numeri, "$162,000", "$1.000.000" ecc.
+function toNum(v) {
+  if (v == null || v === '') return 0;
+  if (typeof v === 'number') return v;
+  // Rimuove $, spazi, punti (sep migliaia cileno), sostituisce virgola con punto
+  const s = String(v).replace(/[$\s]/g,'').replace(/\./g,'').replace(/,/g,'');
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+
+function fmt$(v) {
+  if (v == null || v === '') return '$0';
+  const n = typeof v === 'string' ? parseFloat(v.replace(/[$,.]/g,'')) : v;
+  if (isNaN(n)) return '$0';
+  return '$' + Math.round(n).toLocaleString('es-CL');
+}
+
+function fmtPct(v) {
+  if (v == null) return '—';
+  const n = typeof v === 'number' ? v : parseFloat(v);
+  return (n * (n <= 1 ? 100 : 1)).toFixed(1) + '%';
+}
+
+function semaforo(val, alto, medio) {
+  // val <= alto → verde, <= medio → amarillo, else rojo
+  if (val <= alto) return 'verde';
+  if (val <= medio) return 'amarillo';
+  return 'rojo';
+}
+
+function semaforoAlto(val, alto, medio) {
+  // val >= alto → verde, >= medio → amarillo, else rojo
+  if (val >= alto) return 'verde';
+  if (val >= medio) return 'amarillo';
+  return 'rojo';
+}
+
+// ── FECHA ──────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const d = dias[now.getDay()];
+  const h = now.getHours().toString().padStart(2,'0');
+  const m = now.getMinutes().toString().padStart(2,'0');
+  const dd = now.getDate().toString().padStart(2,'0');
+  const mm = now.getMonth();
+  const yy = now.getFullYear();
+  document.getElementById('tb-fecha').innerHTML = `<span class="rdot"></span>${d} ${dd}/${mm+1<10?'0'+(mm+1):mm+1}/${yy} ${h}:${m}`;
+  document.getElementById('tb-mes').textContent = MES[mm] + ' ' + yy;
+}
+// ── LOGO: carica src dal Jefe de Local già pubblicato ─────────────
+fetch('https://albertoagostini-alt.github.io/PINSA-DASHBOARD-BARRACAFE/dashboard_jefe_local.html')
+  .then(r => r.text())
+  .then(html => {
+    // Il logo è nel tag: <img src="data:image/..." class="pinsa-logo">
+    const m = html.match(/src="(data:image\/[^"]{20,})"/);
+    if (m) {
+      const el = document.getElementById('pinsa-logo');
+      el.src = m[1];
+      el.style.display = '';
+    }
+  }).catch(() => {});
+
+updateClock();
+setInterval(updateClock, 30000);
+
+// ── MAIN ───────────────────────────────────────────────────────────
+async function main() {
+  try {
+    const [tParam, tInv, tRepo, tMov, tOC, tVC] = await Promise.all([
+      fetchSheet(ID_MAESTRO, SHEETS.PARAMETROS),
+      fetchSheet(ID_MAESTRO, SHEETS.INVENTARIO_BC),
+      fetchSheet(ID_MAESTRO, SHEETS.REPOSICION_BC),
+      fetchSheet(ID_MAESTRO, SHEETS.MOVIMIENTOS_BC),
+      fetchSheet(ID_MAESTRO, SHEETS.OC_LOG),
+      fetchSheet(ID_MAESTRO, SHEETS.VENTAS_CONSOLIDADO),
+    ]);
+
+    // ── PARAMETROS ─────────────────────────────────────────────────
+    const rParam = rowsRaw(tParam);
+    let P = {};
+    rParam.forEach(r => { if (r[0]) P[r[0]] = r[1]; });
+
+    const costoAlto   = parseFloat(P['Costo Máximo Alto (25%)']) || 0.25;
+    const costoMedio  = parseFloat(P['Costo Máximo Medio (30%)']) || 0.30;
+    const abasteAlto  = parseFloat(P['Abastecimiento alto 95%'])  || 0.95;
+    const abasteMedio = parseFloat(P['Abastecimiento medio 85%']) || 0.85;
+    const entregAlto  = parseFloat(P['Entregas sin dif alto 95%'])|| 0.95;
+    const entregMedio = parseFloat(P['Entregas sin dif medio 85%'])|| 0.85;
+    const precAlto    = parseFloat(P['Precision Inventario alto 95%'])  || 0.95;
+    const precMedio   = parseFloat(P['Precision Inventario bajo 85%']) || 0.85;
+    const bonoAlto    = parseFloat(String(P['Bono BC alto']||'').replace(/[$,.]/g,''))  || 60000;
+    const bonoBajo    = parseFloat(String(P['Bono BC bajo']||'').replace(/[$,.]/g,''))  || 40000;
+
+    // ── VENTAS CONSOLIDADO ─────────────────────────────────────────
+    const rVC = rowsRaw(tVC).slice(1).filter(r => r[0]);
+    const now = new Date();
+    const mesActual = MEN[now.getMonth()].charAt(0).toUpperCase() + MEN[now.getMonth()].slice(1) + '-' + now.getFullYear();
+
+    let totalBudget = 0, totalVentaReal = 0;
+    const vcMes = rVC.filter(r => r[0] && String(r[0]).includes(String(now.getFullYear())));
+    vcMes.forEach(r => {
+      const bud = toNum(r[3]);
+      const vta = toNum(r[4]);
+      totalBudget += bud;
+      totalVentaReal += vta;
+    });
+
+    // ── OC LOG ────────────────────────────────────────────────────
+    // TODO: Compras sin OC — actualmente solo suma OC_Log. Pendiente definir
+    //       cómo capturar compras directas sin OC para que el KPI Costo/Ventas
+    //       sea completo. Ver con Alberto la fuente de datos correcta.
+    //
+    // TODO: KPI Abastecimiento — actualmente calcula % SKU en estado OK en
+    //       Reposicion_BC. Validar con datos reales si esta lógica es correcta
+    //       o si debe calcularse desde entregas confirmadas vs pedidas.
+    const rOC = rowsRaw(tOC).slice(1).filter(r => r && r.length > 0 && r[4] != null);
+    // DEBUG — rimuovere dopo validazione
+    console.log('OC_Log righe trovate:', rOC.length);
+    console.log('OC_Log prima riga raw:', JSON.stringify(rOC[0]));
+    console.log('OC_Log r[4] raw:', rOC[0] ? rOC[0][4] : 'vuoto');
+    let totalCompras = 0, ocPendientes = 0, ocEnviadas = 0, ocTotal = rOC.length;
+    rOC.forEach(r => {
+      // A=Fecha, B=Nº OC, C=Proveedor, D=Nº Items, E=Total $, F=Link PDF, G=Estado
+      totalCompras += toNum(r[4]);
+      const estado = String(r[6]||'').toUpperCase();
+      if (estado.includes('EMIT')) ocPendientes++;
+      if (estado.includes('ENVI') || estado.includes('RECIB')) ocEnviadas++;
+    });
+
+    // ── KPI: COSTO/VENTAS ─────────────────────────────────────────
+    const kostoRatio = totalVentaReal > 0 ? totalCompras / totalVentaReal : 0;
+    const semCosto = semaforo(kostoRatio, costoAlto, costoMedio);
+
+    // ── INVENTARIO BC ─────────────────────────────────────────────
+    const rInv = rowsRaw(tInv).slice(1).filter(r => r[0]);
+    let valorInv = 0, stockCritico = 0, stockQuiebre = 0, totalSKU = rInv.length;
+    rInv.forEach(r => {
+      // Estructura Inventario_BC: SKU, Descripcion, Unidad, Stock_Actual, Stock_Minimo, Punto_Reposicion, Precio_Unit, Valor_Total, Estado
+      const estado = String(r[8]||'').toUpperCase();
+      const valor = toNum(r[7]);
+      if (valor > 0) valorInv += valor;
+      if (estado === 'CRITICO') stockCritico++;
+      if (estado === 'QUIEBRE') stockQuiebre++;
+    });
+
+    // ── REPOSICION BC ─────────────────────────────────────────────
+    const rRepo = rowsRaw(tRepo).slice(1).filter(r => r[0]);
+    const criticos = rRepo.filter(r => String(r[3]||'').toUpperCase() === 'CRITICO');
+
+    // ── MOVIMIENTOS BC — entregas a locales ───────────────────────
+    const rMov = rowsRaw(tMov).slice(1).filter(r => r[0]);
+    // Estructura: Fecha, Tipo, Destino, SKU, Descripcion, Cantidad, Unidad, Notas, Estado
+    const entregas = rMov.filter(r => String(r[1]||'').includes('Entrega'));
+    const entregasConDiff = entregas.filter(r => String(r[8]||'').toUpperCase().includes('DIFER'));
+    const entregasSinDiff = entregas.filter(r => !String(r[8]||'').toUpperCase().includes('DIFER'));
+    const tasaEntregas = entregas.length > 0 ? entregasSinDiff.length / entregas.length : 1;
+    const semEntregas = semaforoAlto(tasaEntregas, entregAlto, entregMedio);
+
+    // ── KPI ABASTECIMIENTO (desde Reposicion_BC) ──────────────────
+    // Tasa = SKU en estado OK / total SKU con estado
+    const skuConEstado = rRepo.filter(r => r[3]);
+    const skuOK = skuConEstado.filter(r => String(r[3]||'').toUpperCase() === 'OK');
+    const tasaAbaste = skuConEstado.length > 0 ? skuOK.length / skuConEstado.length : 1;
+    const semAbaste = semaforoAlto(tasaAbaste, abasteAlto, abasteMedio);
+
+    // ── KPI PRECISION INVENTARIO ──────────────────────────────────
+    // Proxy: % SKU sin estado QUIEBRE/CRITICO
+    const skuNormal = rInv.filter(r => {
+      const est = String(r[8]||'').toUpperCase();
+      return est !== 'QUIEBRE' && est !== 'CRITICO';
+    });
+    const tasaPrec = rInv.length > 0 ? skuNormal.length / rInv.length : 1;
+    const semPrec = semaforoAlto(tasaPrec, precAlto, precMedio);
+
+    // ── BONO FINAL ────────────────────────────────────────────────
+    const kpiOK = [semCosto==='verde', semAbaste==='verde', semEntregas==='verde', semPrec==='verde'].filter(Boolean).length;
+    const kpiWarn = [semCosto==='amarillo', semAbaste==='amarillo', semEntregas==='amarillo', semPrec==='amarillo'].filter(Boolean).length;
+    let bonoMonto = 0, semBono = 'rojo';
+    if (kpiOK === 4) { bonoMonto = bonoAlto; semBono = 'verde'; }
+    else if (kpiOK >= 3 || (kpiOK >= 2 && kpiWarn >= 1)) { bonoMonto = bonoBajo; semBono = 'amarillo'; }
+
+    // ── ALERTAS ───────────────────────────────────────────────────
+    const alertas = [];
+    if (stockQuiebre > 0) alertas.push({nivel:'roja', icon:'🚨', txt:`${stockQuiebre} SKU en QUIEBRE de stock`, det:'Requiere acción inmediata'});
+    if (stockCritico > 0) alertas.push({nivel:'amarilla', icon:'⚠️', txt:`${stockCritico} SKU en nivel CRÍTICO`, det:'Generar OC antes de agotar stock'});
+    if (entregasConDiff.length > 0) alertas.push({nivel:'amarilla', icon:'📦', txt:`${entregasConDiff.length} entregas con diferencia`, det:'Revisar en Movimientos_BC'});
+    if (ocPendientes > 3) alertas.push({nivel:'azul', icon:'📋', txt:`${ocPendientes} OC pendientes de confirmación`, det:'Revisar en OC_Log'});
+    if (tasaAbaste < abasteMedio) alertas.push({nivel:'roja', icon:'📉', txt:`Tasa de abastecimiento bajo umbral mínimo`, det: fmtPct(tasaAbaste) + ' — objetivo >' + fmtPct(abasteAlto)});
+
+    // ── ÚLTIMAS OC ────────────────────────────────────────────────
+    const ultimasOC = rOC.slice(-8).reverse();
+
+    // ── ÚLTIMAS ENTREGAS ──────────────────────────────────────────
+    const ultimasEntregas = entregas.slice(-8).reverse();
+
+    // ── RENDER ────────────────────────────────────────────────────
+    const progWidth = Math.min(100, Math.round(kostoRatio * 100 / costoMedio * 100));
+
+    document.getElementById('root').innerHTML = `
+
+    <!-- BONO MENSUAL BCentral -->
+    <div class="sec-label">BONO MENSUAL · RESPONSABLE BODEGA CENTRAL</div>
+    <div class="bono-card">
+      <div class="bono-top">
+        <div class="bono-left">
+          <h2>Bono Mensual BCentral</h2>
+          <p>${MES[now.getMonth()]} ${now.getFullYear()} · ${kpiOK} de 4 KPI en verde</p>
+        </div>
+        <div>
+          <div class="bono-amount ${semBono}">${fmt$(bonoMonto)}</div>
+          <div class="bono-amount-label">${semBono === 'verde' ? 'Bono completo' : semBono === 'amarillo' ? 'Bono parcial' : 'Sin bono'}</div>
+        </div>
+      </div>
+      <div class="bono-prog">
+        <div class="bp-top">
+          <span class="bp-label">KPI Principal · Costo Compras / Ventas Totales</span>
+          <span class="bp-val ${semCosto}">${fmtPct(kostoRatio)}</span>
+        </div>
+        <div class="prog-bg"><div class="prog-fill ${semCosto}" style="width:${Math.min(100,kostoRatio/costoMedio*100)}%"></div></div>
+        <div class="prog-footer">
+          <span>0%</span>
+          <span style="color:var(--green)">Verde &lt;${fmtPct(costoAlto)}</span>
+          <span style="color:var(--yellow)">Amarillo &lt;${fmtPct(costoMedio)}</span>
+          <span style="color:var(--red)">Rojo &gt;${fmtPct(costoMedio)}</span>
+        </div>
+      </div>
+      <div class="criterios">
+        <div class="crit">
+          <div class="crit-name"><span class="dot dot-${semCosto}"></span>Costo / Ventas</div>
+          <div class="crit-val ${semCosto}">${fmtPct(kostoRatio)}</div>
+          <div class="crit-target">Objetivo &lt;${fmtPct(costoAlto)}</div>
+        </div>
+        <div class="crit">
+          <div class="crit-name"><span class="dot dot-${semAbaste}"></span>Abastecimiento</div>
+          <div class="crit-val ${semAbaste}">${fmtPct(tasaAbaste)}</div>
+          <div class="crit-target">Objetivo &gt;${fmtPct(abasteAlto)}</div>
+        </div>
+        <div class="crit">
+          <div class="crit-name"><span class="dot dot-${semEntregas}"></span>Entregas s/Dif</div>
+          <div class="crit-val ${semEntregas}">${fmtPct(tasaEntregas)}</div>
+          <div class="crit-target">Objetivo &gt;${fmtPct(entregAlto)}</div>
+        </div>
+        <div class="crit">
+          <div class="crit-name"><span class="dot dot-${semPrec}"></span>Precisión Inv.</div>
+          <div class="crit-val ${semPrec}">${fmtPct(tasaPrec)}</div>
+          <div class="crit-target">Objetivo &gt;${fmtPct(precAlto)}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI RESUMEN -->
+    <div class="sec-label">RESUMEN OPERACIONAL · MES EN CURSO</div>
+    <div class="v4">
+      <div class="v-card v-accent-blue">
+        <div class="v-label">Valor Inventario BC</div>
+        <div class="v-big">${fmt$(valorInv)}</div>
+        <div class="v-sub">${totalSKU} SKU activos</div>
+      </div>
+      <div class="v-card v-accent-blue">
+        <div class="v-label">Ventas Consolidadas</div>
+        <div class="v-big">${fmt$(totalVentaReal)}</div>
+        <div class="v-sub">Budget: ${fmt$(totalBudget)}</div>
+      </div>
+      <div class="v-card v-accent-navy">
+        <div class="v-label">Compras del Mes</div>
+        <div class="v-big">${fmt$(totalCompras)}</div>
+        <div class="v-sub">${ocTotal} OC emitidas</div>
+      </div>
+      <div class="v-card v-accent-navy">
+        <div class="v-label">Stock Crítico / Quiebre</div>
+        <div class="v-big ${stockQuiebre > 0 ? 'rojo' : stockCritico > 0 ? 'amarillo' : 'verde'}">${stockCritico + stockQuiebre}</div>
+        <div class="v-sub">${stockQuiebre} quiebre · ${stockCritico} crítico</div>
+      </div>
+    </div>
+
+    <!-- INVENTARIO CRITICO + OC LOG -->
+    <div class="sec-label">STOCK CRÍTICO · ÓRDENES DE COMPRA</div>
+    <div class="s2">
+      <!-- SKU CRITICOS -->
+      <div class="card">
+        <div class="sec-head">
+          <div>
+            <div class="sec-nom">Stock Crítico</div>
+            <div class="sec-sub">SKU bajo mínimo o en quiebre</div>
+          </div>
+          <div class="s-badge ${criticos.length > 0 ? 'b-rojo' : 'b-verde'}">${criticos.length} SKU</div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-h" style="grid-template-columns:1fr 80px 70px 80px;">
+            <span>Descripción</span><span style="text-align:right">Stock</span><span style="text-align:center">Estado</span><span style="text-align:right">Mínimo</span>
+          </div>
+          ${criticos.length === 0
+            ? `<div class="no-alertas">✓ Sin SKU en estado crítico</div>`
+            : criticos.slice(0,10).map(r => `
+              <div class="tbl-r" style="grid-template-columns:1fr 80px 70px 80px;">
+                <span class="tbl-d">${r[2]||r[0]||'—'}</span>
+                <span class="tbl-n">${r[4]!=null?r[4]:'—'}</span>
+                <span style="text-align:center"><span class="tbl-est est-critico">CRÍTICO</span></span>
+                <span class="tbl-n">${r[5]!=null?r[5]:'—'}</span>
+              </div>`).join('')
+          }
+        </div>
+      </div>
+
+      <!-- OC LOG -->
+      <div class="card">
+        <div class="sec-head">
+          <div>
+            <div class="sec-nom">Últimas OC</div>
+            <div class="sec-sub">Órdenes de compra emitidas</div>
+          </div>
+          <div class="s-badge b-gray">${ocTotal} total</div>
+        </div>
+        <div class="stats-row" style="grid-template-columns:repeat(3,1fr);">
+          <div class="st"><div class="st-l">Total Compras</div><div class="st-v" style="color:var(--accent)">${fmt$(totalCompras)}</div></div>
+          <div class="st"><div class="st-l">Pendientes</div><div class="st-v" style="color:var(--yellow)">${ocPendientes}</div></div>
+          <div class="st"><div class="st-l">Enviadas</div><div class="st-v" style="color:var(--green)">${ocEnviadas}</div></div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-h" style="grid-template-columns:80px 1fr 90px 80px;">
+            <span>Fecha</span><span>Proveedor</span><span style="text-align:right">Total</span><span style="text-align:center">Estado</span>
+          </div>
+          ${ultimasOC.length === 0
+            ? `<div class="no-alertas">Sin OC registradas</div>`
+            : ultimasOC.slice(0,7).map(r => {
+                const estado = String(r[6]||'').toUpperCase();
+                const cls = estado.includes('RECIB')||estado.includes('ENVI') ? 'est-oc-env' : 'est-oc-pend';
+                const label = estado.includes('RECIB') ? 'RECIBIDA' : estado.includes('ENVI') ? 'ENVIADA' : 'EMITIDA';
+                return `<div class="tbl-r" style="grid-template-columns:80px 1fr 90px 80px;">
+                  <span class="tbl-sku">${r[0]||'—'}</span>
+                  <span class="tbl-d">${r[2]||'—'}</span>
+                  <span class="tbl-n">${fmt$(r[4])}</span>
+                  <span style="text-align:center"><span class="tbl-est ${cls}">${label}</span></span>
+                </div>`;
+              }).join('')
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTREGAS + VENTAS CONSOLIDADO -->
+    <div class="sec-label">ENTREGAS A LOCALES · VENTAS CONSOLIDADAS</div>
+    <div class="s2">
+      <!-- ENTREGAS -->
+      <div class="card">
+        <div class="sec-head">
+          <div>
+            <div class="sec-nom">Entregas a Locales</div>
+            <div class="sec-sub">Movimientos tipo Entrega Secc</div>
+          </div>
+          <div class="s-badge ${semEntregas==='verde'?'b-verde':semEntregas==='amarillo'?'b-amarillo':'b-rojo'}">${fmtPct(tasaEntregas)} sin dif</div>
+        </div>
+        <div class="stats-row" style="grid-template-columns:repeat(3,1fr);">
+          <div class="st"><div class="st-l">Total Entregas</div><div class="st-v" style="color:var(--accent)">${entregas.length}</div></div>
+          <div class="st"><div class="st-l">Sin Diferencia</div><div class="st-v" style="color:var(--green)">${entregasSinDiff.length}</div></div>
+          <div class="st"><div class="st-l">Con Diferencia</div><div class="st-v" style="color:${entregasConDiff.length>0?'var(--yellow)':'var(--green)'}">${entregasConDiff.length}</div></div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-h" style="grid-template-columns:70px 1fr 80px 80px;">
+            <span>Fecha</span><span>Descripción</span><span style="text-align:center">Destino</span><span style="text-align:center">Estado</span>
+          </div>
+          ${ultimasEntregas.length === 0
+            ? `<div class="no-alertas">Sin entregas registradas</div>`
+            : ultimasEntregas.slice(0,7).map(r => {
+                const est = String(r[8]||'OK').toUpperCase();
+                const cls = est.includes('DIFER') ? 'est-diferencia' : 'est-recibido';
+                const label = est.includes('DIFER') ? 'DIFERENCIA' : 'OK';
+                return `<div class="tbl-r" style="grid-template-columns:70px 1fr 80px 80px;">
+                  <span class="tbl-sku">${r[0]||'—'}</span>
+                  <span class="tbl-d">${r[4]||r[3]||'—'}</span>
+                  <span style="text-align:center;font-size:11px;color:var(--accent)">${r[2]||'—'}</span>
+                  <span style="text-align:center"><span class="tbl-est ${cls}">${label}</span></span>
+                </div>`;
+              }).join('')
+          }
+        </div>
+      </div>
+
+      <!-- VENTAS CONSOLIDADO -->
+      <div class="card">
+        <div class="sec-head">
+          <div>
+            <div class="sec-nom">Ventas Consolidadas</div>
+            <div class="sec-sub">Todos los locales · ${MES[now.getMonth()]} ${now.getFullYear()}</div>
+          </div>
+          <div class="s-badge b-gray">${vcMes.length} secciones</div>
+        </div>
+        <div class="tbl-wrap">
+          ${vcMes.length === 0
+            ? `<div class="no-alertas">Sin datos de ventas este mes</div>`
+            : vcMes.map(r => {
+                const bud = toNum(r[3]);
+                const vta = toNum(r[4]);
+                const pct = bud > 0 ? vta / bud : 0;
+                const color = pct >= 0.9 ? 'var(--green)' : pct >= 0.7 ? 'var(--yellow)' : 'var(--red)';
+                return `<div class="vc-row">
+                  <span class="vc-local">${r[1]||'—'}</span>
+                  <span class="vc-sec">${r[2]||'—'}</span>
+                  <span class="vc-bw"><div class="vc-bb"><div class="vc-bf" style="width:${Math.min(100,pct*100).toFixed(0)}%;background:${color}"></div></div></span>
+                  <span class="vc-pc" style="color:${color}">${(pct*100).toFixed(0)}%</span>
+                </div>`;
+              }).join('')
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- ALERTAS -->
+    <div class="sec-label">ALERTAS ACTIVAS</div>
+    <div class="card">
+      <div class="al-list">
+        ${alertas.length === 0
+          ? `<div class="no-alertas">✓ Sin alertas activas — operación normal</div>`
+          : alertas.map(a => `
+            <div class="al-item al-${a.nivel}">
+              <span class="al-icon">${a.icon}</span>
+              <div><div class="al-txt">${a.txt}</div><div class="al-det">${a.det}</div></div>
+            </div>`).join('')
+        }
+      </div>
+    </div>
+
+    `;
+
+  } catch (e) {
+    document.getElementById('root').innerHTML = `
+      <div class="loading">
+        <div style="font-size:24px">⚠️</div>
+        <div class="loading-txt" style="color:var(--red)">Error cargando datos: ${e.message}</div>
+        <div class="loading-txt">Verifica que el MAESTRO sea público (compartir → cualquiera con el enlace)</div>
+      </div>`;
+    console.error(e);
+  }
+}
+
+main();
+// Refresco automático cada 5 minutos
+setInterval(main, 5 * 60 * 1000);
+</script>
+</body>
+</html>
