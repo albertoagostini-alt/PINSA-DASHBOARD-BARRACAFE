@@ -203,13 +203,22 @@ const SHEETS = {
 // ── FETCH SHEET ────────────────────────────────────────────────────
 async function fetchSheet(sheetId, sheetName) {
   const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
-  const r = await fetch(PROXY(url));
-  const txt = await r.text();
-  const match = txt.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/);
-  if (!match) throw new Error(`Foglio "${sheetName}" non accessibile. Verifica che il MAESTRO sia pubblico (Condividi → Chiunque con il link → Visualizzatore).`);
-  const json = JSON.parse(match[1]);
-  if (!json.table) throw new Error(`Foglio "${sheetName}" vuoto o non trovato.`);
-  return json.table;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+  try {
+    const r = await fetch(PROXY(url), {signal: controller.signal});
+    clearTimeout(timeout);
+    const txt = await r.text();
+    const match = txt.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/);
+    if (!match) throw new Error(`"${sheetName}" no accesible`);
+    const json = JSON.parse(match[1]);
+    if (!json.table) throw new Error(`"${sheetName}" vacío`);
+    return json.table;
+  } catch(e) {
+    clearTimeout(timeout);
+    console.warn(`Error cargando ${sheetName}:`, e.message);
+    return {rows:[], cols:[]};
+  }
 }
 
 function rows(table) {
@@ -612,13 +621,4 @@ async function main() {
           : alertas.map(a => `
             <div class="al-item al-${a.nivel}">
               <span class="al-icon">${a.icon}</span>
-              <div><div class="al-txt">${a.txt}</div><div class="al-det">${a.det}</div></div>
-            </div>`).join('')
-        }
-      </div>
-    </div>
-
-    `;
-
-  } catch (e) {
-    document.getElementById('root').innerHTML = `
+              <div><div class="al-
