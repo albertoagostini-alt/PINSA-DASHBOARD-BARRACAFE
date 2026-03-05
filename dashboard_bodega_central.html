@@ -316,18 +316,14 @@ setInterval(updateClock, 30000);
 // ── MAIN ───────────────────────────────────────────────────────────
 async function main() {
   try {
-    document.querySelector('.loading-txt').textContent = 'Cargando PARAMETROS...';
-    const tParam = await fetchSheet(ID_MAESTRO, SHEETS.PARAMETROS);
-    document.querySelector('.loading-txt').textContent = 'Cargando Inventario...';
-    const tInv = await fetchSheet(ID_MAESTRO, SHEETS.INVENTARIO_BC);
-    document.querySelector('.loading-txt').textContent = 'Cargando Reposicion...';
-    const tRepo = await fetchSheet(ID_MAESTRO, SHEETS.REPOSICION_BC);
-    document.querySelector('.loading-txt').textContent = 'Cargando Movimientos...';
-    const tMov = await fetchSheet(ID_MAESTRO, SHEETS.MOVIMIENTOS_BC);
-    document.querySelector('.loading-txt').textContent = 'Cargando OC_Log...';
-    const tOC = await fetchSheet(ID_MAESTRO, SHEETS.OC_LOG);
-    document.querySelector('.loading-txt').textContent = 'Cargando Ventas...';
-    const tVC = await fetchSheet(ID_MAESTRO, SHEETS.VENTAS_CONSOLIDADO);
+    const [tParam, tInv, tRepo, tOC] = await Promise.all([
+      fetchSheet(ID_MAESTRO, SHEETS.PARAMETROS),
+      fetchSheet(ID_MAESTRO, SHEETS.INVENTARIO_BC),
+      fetchSheet(ID_MAESTRO, SHEETS.REPOSICION_BC),
+      fetchSheet(ID_MAESTRO, SHEETS.OC_LOG),
+    ]);
+    const tMov = {rows:[], cols:[]};
+    const tVC  = {rows:[], cols:[]};
 
     // ── PARAMETROS ─────────────────────────────────────────────────
     const rParam = rowsRaw(tParam);
@@ -614,4 +610,45 @@ async function main() {
                 <span class="tbl-sku">${r[0]||'—'}</span>
                 <span class="tbl-d">${r[4]||r[3]||'—'}</span>
                 <span style="font-size:11px;color:var(--accent)">${r[2]||'—'}</span>
-                <spa
+                <span class="tbl-n">${r[5]!=null?r[5]:'—'} ${r[6]||''}</span>
+                <span style="text-align:center"><span class="tbl-est ${cls}">${label}</span></span>
+              </div>`;
+            }).join('')
+        }
+      </div>
+    </div>
+
+    <!-- ALERTAS -->
+    <div class="sec-label">ALERTAS ACTIVAS</div>
+    <div class="card">
+      <div class="al-list">
+        ${alertas.length === 0
+          ? `<div class="no-alertas">✓ Sin alertas activas — operación normal</div>`
+          : alertas.map(a => `
+            <div class="al-item al-${a.nivel}">
+              <span class="al-icon">${a.icon}</span>
+              <div><div class="al-txt">${a.txt}</div><div class="al-det">${a.det}</div></div>
+            </div>`).join('')
+        }
+      </div>
+    </div>
+
+    `;
+
+  } catch (e) {
+    document.getElementById('root').innerHTML = `
+      <div class="loading">
+        <div style="font-size:24px">⚠️</div>
+        <div class="loading-txt" style="color:var(--red)">Error cargando datos: ${e.message}</div>
+        <div class="loading-txt">Verifica que el MAESTRO sea público (compartir → cualquiera con el enlace)</div>
+      </div>`;
+    console.error(e);
+  }
+}
+
+main();
+// Refresco automático cada 5 minutos
+setInterval(main, 5 * 60 * 1000);
+</script>
+</body>
+</html>
