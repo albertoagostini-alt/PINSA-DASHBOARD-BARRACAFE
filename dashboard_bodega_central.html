@@ -331,21 +331,12 @@ async function main() {
     });
 
     // ── OC LOG ────────────────────────────────────────────────────
-    // TODO: Compras sin OC — actualmente solo suma OC_Log. Pendiente definir
-    //       cómo capturar compras directas sin OC para que el KPI Costo/Ventas
-    //       sea completo. Ver con Alberto la fuente de datos correcta.
-    //
-    // TODO: KPI Abastecimiento — actualmente calcula % SKU en estado OK en
-    //       Reposicion_BC. Validar con datos reales si esta lógica es correcta
-    //       o si debe calcularse desde entregas confirmadas vs pedidas.
-    const rOC = rowsRaw(tOC).slice(1).filter(r => r && r.length > 0 && r[4] != null);
-    // DEBUG — rimuovere dopo validazione
-    console.log('OC_Log righe trovate:', rOC.length);
-    console.log('OC_Log prima riga raw:', JSON.stringify(rOC[0]));
-    console.log('OC_Log r[4] raw:', rOC[0] ? rOC[0][4] : 'vuoto');
+    // TODO: Compras sin OC — actualmente solo suma OC_Log.
+    // TODO: Validar KPI Abastecimiento con datos reales.
+    // A=Fecha(data), B=Nº OC, C=Proveedor, D=Nº Items, E=Total $, F=Link PDF, G=Estado
+    const rOC = rowsRaw(tOC).slice(1).filter(r => r && r.length >= 5 && r[1] != null);
     let totalCompras = 0, ocPendientes = 0, ocEnviadas = 0, ocTotal = rOC.length;
     rOC.forEach(r => {
-      // A=Fecha, B=Nº OC, C=Proveedor, D=Nº Items, E=Total $, F=Link PDF, G=Estado
       totalCompras += toNum(r[4]);
       const estado = String(r[6]||'').toUpperCase();
       if (estado.includes('EMIT')) ocPendientes++;
@@ -357,41 +348,43 @@ async function main() {
     const semCosto = semaforo(kostoRatio, costoAlto, costoMedio);
 
     // ── INVENTARIO BC ─────────────────────────────────────────────
+    // Cols: A=SKU, B=Descripcion, C=Seccion, D=Descripcion UPC,
+    //       E=Inv UPC, F=Inv UO, G=Costo UTM, H=Valor Inv $,
+    //       I=Stock Min UPC, J=Stock Max UPC, K=Estado, L=Inv UTM
     const rInv = rowsRaw(tInv).slice(1).filter(r => r[0]);
     let valorInv = 0, stockCritico = 0, stockQuiebre = 0, totalSKU = rInv.length;
     rInv.forEach(r => {
-      // Estructura Inventario_BC: SKU, Descripcion, Unidad, Stock_Actual, Stock_Minimo, Punto_Reposicion, Precio_Unit, Valor_Total, Estado
-      const estado = String(r[8]||'').toUpperCase();
-      const valor = toNum(r[7]);
+      const estado = String(r[10]||'').toUpperCase(); // col K = indice 10
+      const valor = toNum(r[7]);                       // col H = indice 7
       if (valor > 0) valorInv += valor;
       if (estado === 'CRITICO') stockCritico++;
       if (estado === 'QUIEBRE') stockQuiebre++;
     });
 
     // ── REPOSICION BC ─────────────────────────────────────────────
+    // Cols: A=SKU, B=Desc SKU, C=Desc UPC, D=Proveedores,
+    //       E=Inv UPC, F=Stock Min, G=Stock Max, H=Estado
     const rRepo = rowsRaw(tRepo).slice(1).filter(r => r[0]);
-    const criticos = rRepo.filter(r => String(r[3]||'').toUpperCase() === 'CRITICO');
+    const criticos = rRepo.filter(r => String(r[7]||'').toUpperCase() === 'CRITICO'); // col H = indice 7
 
     // ── MOVIMIENTOS BC — entregas a locales ───────────────────────
     const rMov = rowsRaw(tMov).slice(1).filter(r => r[0]);
-    // Estructura: Fecha, Tipo, Destino, SKU, Descripcion, Cantidad, Unidad, Notas, Estado
     const entregas = rMov.filter(r => String(r[1]||'').includes('Entrega'));
     const entregasConDiff = entregas.filter(r => String(r[8]||'').toUpperCase().includes('DIFER'));
     const entregasSinDiff = entregas.filter(r => !String(r[8]||'').toUpperCase().includes('DIFER'));
     const tasaEntregas = entregas.length > 0 ? entregasSinDiff.length / entregas.length : 1;
     const semEntregas = semaforoAlto(tasaEntregas, entregAlto, entregMedio);
 
-    // ── KPI ABASTECIMIENTO (desde Reposicion_BC) ──────────────────
-    // Tasa = SKU en estado OK / total SKU con estado
-    const skuConEstado = rRepo.filter(r => r[3]);
-    const skuOK = skuConEstado.filter(r => String(r[3]||'').toUpperCase() === 'OK');
+    // ── KPI ABASTECIMIENTO (desde Reposicion_BC col H=Estado) ─────
+    const skuConEstado = rRepo.filter(r => r[7]);
+    const skuOK = skuConEstado.filter(r => String(r[7]||'').toUpperCase() === 'OK');
     const tasaAbaste = skuConEstado.length > 0 ? skuOK.length / skuConEstado.length : 1;
     const semAbaste = semaforoAlto(tasaAbaste, abasteAlto, abasteMedio);
 
     // ── KPI PRECISION INVENTARIO ──────────────────────────────────
-    // Proxy: % SKU sin estado QUIEBRE/CRITICO
+    // % SKU sin estado QUIEBRE/CRITICO (col K indice 10)
     const skuNormal = rInv.filter(r => {
-      const est = String(r[8]||'').toUpperCase();
+      const est = String(r[10]||'').toUpperCase();
       return est !== 'QUIEBRE' && est !== 'CRITICO';
     });
     const tasaPrec = rInv.length > 0 ? skuNormal.length / rInv.length : 1;
@@ -482,19 +475,19 @@ async function main() {
         <div class="v-sub">${totalSKU} SKU activos</div>
       </div>
       <div class="v-card v-accent-blue">
-        <div class="v-label">Ventas Consolidadas</div>
-        <div class="v-big">${fmt$(totalVentaReal)}</div>
-        <div class="v-sub">Budget: ${fmt$(totalBudget)}</div>
+        <div class="v-label">SKU Crítico / Quiebre</div>
+        <div class="v-big ${stockQuiebre > 0 ? 'rojo' : stockCritico > 0 ? 'amarillo' : 'verde'}">${stockCritico + stockQuiebre}</div>
+        <div class="v-sub">${stockQuiebre} quiebre · ${stockCritico} crítico</div>
       </div>
       <div class="v-card v-accent-navy">
-        <div class="v-label">Compras del Mes</div>
+        <div class="v-label">Compras del Mes (OC)</div>
         <div class="v-big">${fmt$(totalCompras)}</div>
         <div class="v-sub">${ocTotal} OC emitidas</div>
       </div>
       <div class="v-card v-accent-navy">
-        <div class="v-label">Stock Crítico / Quiebre</div>
-        <div class="v-big ${stockQuiebre > 0 ? 'rojo' : stockCritico > 0 ? 'amarillo' : 'verde'}">${stockCritico + stockQuiebre}</div>
-        <div class="v-sub">${stockQuiebre} quiebre · ${stockCritico} crítico</div>
+        <div class="v-label">Costo / Ventas</div>
+        <div class="v-big ${semCosto}">${fmtPct(kostoRatio)}</div>
+        <div class="v-sub">Objetivo &lt;${fmtPct(costoAlto)}</div>
       </div>
     </div>
 
@@ -518,7 +511,7 @@ async function main() {
             ? `<div class="no-alertas">✓ Sin SKU en estado crítico</div>`
             : criticos.slice(0,10).map(r => `
               <div class="tbl-r" style="grid-template-columns:1fr 80px 70px 80px;">
-                <span class="tbl-d">${r[2]||r[0]||'—'}</span>
+                <span class="tbl-d">${r[1]||r[0]||'—'}</span>
                 <span class="tbl-n">${r[4]!=null?r[4]:'—'}</span>
                 <span style="text-align:center"><span class="tbl-est est-critico">CRÍTICO</span></span>
                 <span class="tbl-n">${r[5]!=null?r[5]:'—'}</span>
@@ -563,70 +556,40 @@ async function main() {
       </div>
     </div>
 
-    <!-- ENTREGAS + VENTAS CONSOLIDADO -->
-    <div class="sec-label">ENTREGAS A LOCALES · VENTAS CONSOLIDADAS</div>
-    <div class="s2">
-      <!-- ENTREGAS -->
-      <div class="card">
-        <div class="sec-head">
-          <div>
-            <div class="sec-nom">Entregas a Locales</div>
-            <div class="sec-sub">Movimientos tipo Entrega Secc</div>
-          </div>
-          <div class="s-badge ${semEntregas==='verde'?'b-verde':semEntregas==='amarillo'?'b-amarillo':'b-rojo'}">${fmtPct(tasaEntregas)} sin dif</div>
+    <!-- ENTREGAS A LOCALES -->
+    <div class="sec-label">ENTREGAS A LOCALES</div>
+    <div class="card">
+      <div class="sec-head">
+        <div>
+          <div class="sec-nom">Entregas a Locales</div>
+          <div class="sec-sub">Movimientos tipo Entrega desde Bodega Central</div>
         </div>
-        <div class="stats-row" style="grid-template-columns:repeat(3,1fr);">
-          <div class="st"><div class="st-l">Total Entregas</div><div class="st-v" style="color:var(--accent)">${entregas.length}</div></div>
-          <div class="st"><div class="st-l">Sin Diferencia</div><div class="st-v" style="color:var(--green)">${entregasSinDiff.length}</div></div>
-          <div class="st"><div class="st-l">Con Diferencia</div><div class="st-v" style="color:${entregasConDiff.length>0?'var(--yellow)':'var(--green)'}">${entregasConDiff.length}</div></div>
-        </div>
-        <div class="tbl-wrap">
-          <div class="tbl-h" style="grid-template-columns:70px 1fr 80px 80px;">
-            <span>Fecha</span><span>Descripción</span><span style="text-align:center">Destino</span><span style="text-align:center">Estado</span>
-          </div>
-          ${ultimasEntregas.length === 0
-            ? `<div class="no-alertas">Sin entregas registradas</div>`
-            : ultimasEntregas.slice(0,7).map(r => {
-                const est = String(r[8]||'OK').toUpperCase();
-                const cls = est.includes('DIFER') ? 'est-diferencia' : 'est-recibido';
-                const label = est.includes('DIFER') ? 'DIFERENCIA' : 'OK';
-                return `<div class="tbl-r" style="grid-template-columns:70px 1fr 80px 80px;">
-                  <span class="tbl-sku">${r[0]||'—'}</span>
-                  <span class="tbl-d">${r[4]||r[3]||'—'}</span>
-                  <span style="text-align:center;font-size:11px;color:var(--accent)">${r[2]||'—'}</span>
-                  <span style="text-align:center"><span class="tbl-est ${cls}">${label}</span></span>
-                </div>`;
-              }).join('')
-          }
-        </div>
+        <div class="s-badge ${semEntregas==='verde'?'b-verde':semEntregas==='amarillo'?'b-amarillo':'b-rojo'}">${fmtPct(tasaEntregas)} sin dif</div>
       </div>
-
-      <!-- VENTAS CONSOLIDADO -->
-      <div class="card">
-        <div class="sec-head">
-          <div>
-            <div class="sec-nom">Ventas Consolidadas</div>
-            <div class="sec-sub">Todos los locales · ${MES[now.getMonth()]} ${now.getFullYear()}</div>
-          </div>
-          <div class="s-badge b-gray">${vcMes.length} secciones</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr);">
+        <div class="st"><div class="st-l">Total Entregas</div><div class="st-v" style="color:var(--accent)">${entregas.length}</div></div>
+        <div class="st"><div class="st-l">Sin Diferencia</div><div class="st-v" style="color:var(--green)">${entregasSinDiff.length}</div></div>
+        <div class="st"><div class="st-l">Con Diferencia</div><div class="st-v" style="color:${entregasConDiff.length>0?'var(--yellow)':'var(--green)'}">${entregasConDiff.length}</div></div>
+      </div>
+      <div class="tbl-wrap">
+        <div class="tbl-h" style="grid-template-columns:90px 1fr 1fr 80px 90px;">
+          <span>Fecha</span><span>Descripción</span><span>Destino</span><span style="text-align:right">Cantidad</span><span style="text-align:center">Estado</span>
         </div>
-        <div class="tbl-wrap">
-          ${vcMes.length === 0
-            ? `<div class="no-alertas">Sin datos de ventas este mes</div>`
-            : vcMes.map(r => {
-                const bud = toNum(r[3]);
-                const vta = toNum(r[4]);
-                const pct = bud > 0 ? vta / bud : 0;
-                const color = pct >= 0.9 ? 'var(--green)' : pct >= 0.7 ? 'var(--yellow)' : 'var(--red)';
-                return `<div class="vc-row">
-                  <span class="vc-local">${r[1]||'—'}</span>
-                  <span class="vc-sec">${r[2]||'—'}</span>
-                  <span class="vc-bw"><div class="vc-bb"><div class="vc-bf" style="width:${Math.min(100,pct*100).toFixed(0)}%;background:${color}"></div></div></span>
-                  <span class="vc-pc" style="color:${color}">${(pct*100).toFixed(0)}%</span>
-                </div>`;
-              }).join('')
-          }
-        </div>
+        ${ultimasEntregas.length === 0
+          ? `<div class="no-alertas">Sin entregas registradas</div>`
+          : ultimasEntregas.slice(0,8).map(r => {
+              const est = String(r[8]||'OK').toUpperCase();
+              const cls = est.includes('DIFER') ? 'est-diferencia' : 'est-recibido';
+              const label = est.includes('DIFER') ? 'DIFERENCIA' : 'OK';
+              return `<div class="tbl-r" style="grid-template-columns:90px 1fr 1fr 80px 90px;">
+                <span class="tbl-sku">${r[0]||'—'}</span>
+                <span class="tbl-d">${r[4]||r[3]||'—'}</span>
+                <span style="font-size:11px;color:var(--accent)">${r[2]||'—'}</span>
+                <span class="tbl-n">${r[5]!=null?r[5]:'—'} ${r[6]||''}</span>
+                <span style="text-align:center"><span class="tbl-est ${cls}">${label}</span></span>
+              </div>`;
+            }).join('')
+        }
       </div>
     </div>
 
