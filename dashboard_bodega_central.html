@@ -326,14 +326,14 @@ setInterval(updateClock, 30000);
 // ── MAIN ───────────────────────────────────────────────────────────
 async function main() {
   try {
-    const [tParam, tInv, tRepo, tOC, tMov] = await Promise.all([
+    const [tParam, tInv, tRepo, tOC, tMov, tVC] = await Promise.all([
       fetchSheet(ID_MAESTRO, SHEETS.PARAMETROS),
       fetchSheet(ID_MAESTRO, SHEETS.INVENTARIO_BC),
       fetchSheet(ID_MAESTRO, SHEETS.REPOSICION_BC),
       fetchSheet(ID_MAESTRO, SHEETS.OC_LOG),
       fetchSheet(ID_MAESTRO, SHEETS.MOVIMIENTOS_BC),
+      fetchSheet(ID_MAESTRO, SHEETS.VENTAS_CONSOLIDADO),
     ]);
-    const tVC  = {rows:[], cols:[]};
 
     // ── PARAMETROS ─────────────────────────────────────────────────
     const rParam = rowsRaw(tParam);
