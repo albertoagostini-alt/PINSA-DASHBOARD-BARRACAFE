@@ -396,23 +396,26 @@ async function main() {
     // Cols: A=SKU, B=Descripcion, C=Seccion, D=Descripcion UPC,
     //       E=Inv UPC, F=Inv UO, G=Costo UTM, H=Valor Inv $,
     //       I=Stock Min UPC, J=Stock Max UPC, K=Estado, L=Inv UTM
-    // gviz: para columnas con formato $, c.v puede ser null → usamos c.f
-    const tInvRaw = tInv && tInv.rows ? tInv.rows.map(r => r.c ? r.c.map(c => ({
-      v: c ? c.v : null,
-      f: c ? c.f : null
-    })) : []) : [];
-    const rInv = tInvRaw.slice(1).filter(r => r[0] && (r[0].v !== null && r[0].v !== undefined ? r[0].v : r[0].f));
+    // Estrategia: leer TODAS las filas de gviz directamente desde tInv.rows
+    // Para cada celda: preferir c.v si es número, sino c.f (formato texto)
+    const getCellVal = c => {
+      if (!c) return null;
+      if (c.v !== null && c.v !== undefined) return c.v;
+      if (c.f !== null && c.f !== undefined) return c.f;
+      return null;
+    };
+    const allInvRows = tInv && tInv.rows ? tInv.rows : [];
+    // Log primeras 4 filas raw para diagnóstico
+    allInvRows.slice(0,4).forEach((r,i) => {
+      if (r.c) console.log('RAW row', i, 'SKU:', getCellVal(r.c[0]), 'Valor$:', getCellVal(r.c[7]), 'Estado:', getCellVal(r.c[10]));
+    });
+    const rInv = allInvRows.slice(1).filter(r => r.c && getCellVal(r.c[0]) !== null);
     let valorInv = 0, stockCritico = 0, stockQuiebre = 0, totalSKU = rInv.length;
-    rInv.forEach((r, i) => {
-      // col K (indice 10) = Estado — usar f o v
-      const estadoRaw = r[10] ? (r[10].v !== null && r[10].v !== undefined ? r[10].v : (r[10].f || '')) : '';
-      const estado = String(estadoRaw).toUpperCase().trim();
-      // col H (indice 7) = Valor Inv $ — gviz puede dar v=null y f="$162,000"
-      const valorCell = r[7] ? r[7] : null;
-      const valorRaw = valorCell ? (valorCell.v !== null && valorCell.v !== undefined ? valorCell.v : valorCell.f) : 0;
+    rInv.forEach(r => {
+      const estado = String(getCellVal(r.c[10]) || '').toUpperCase().trim();
+      const valorRaw = getCellVal(r.c[7]);
       const valor = toNum(valorRaw);
       valorInv += valor;
-      if (i < 3) console.log('INV debug row', i, '| estado:', estado, '| valorRaw:', valorRaw, '| valor:', valor);
       const esCritico = estado.includes('CRITICO') || estado.includes('CRTICO');
       const esQuiebre = estado.includes('QUIEBRE');
       if (esCritico) stockCritico++;
