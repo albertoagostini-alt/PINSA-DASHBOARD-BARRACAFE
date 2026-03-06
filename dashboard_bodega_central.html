@@ -206,29 +206,21 @@ const SHEETS = {
 // ── FETCH SHEET ────────────────────────────────────────────────────
 async function fetchSheet(sheetId, sheetName) {
   const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
-  // Prova prima diretto (senza proxy), poi con proxy come fallback
-  const urls = [
-    url,
-    `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-  ];
-  for (const u of urls) {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 6000);
-    try {
-      const r = await fetch(u, {signal: controller.signal});
-      clearTimeout(timeout);
-      const txt = await r.text();
-      const match = txt.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/);
-      if (!match) continue;
-      const json = JSON.parse(match[1]);
-      if (!json.table) continue;
-      return json.table;
-    } catch(e) {
-      clearTimeout(timeout);
-    }
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+  try {
+    const r = await fetch(url, {signal: controller.signal});
+    clearTimeout(timeout);
+    const txt = await r.text();
+    const match = txt.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/);
+    if (!match) return {rows:[], cols:[]};
+    const json = JSON.parse(match[1]);
+    return json.table || {rows:[], cols:[]};
+  } catch(e) {
+    clearTimeout(timeout);
+    console.warn(`${sheetName}:`, e.message);
+    return {rows:[], cols:[]};
   }
-  return {rows:[], cols:[]};
 }
 
 function rows(table) {
