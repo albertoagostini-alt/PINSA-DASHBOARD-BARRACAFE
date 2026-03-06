@@ -206,11 +206,17 @@ const SHEETS = {
 // ── FETCH SHEET ────────────────────────────────────────────────────
 async function fetchSheet(sheetId, sheetName) {
   const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
-  for (const proxyFn of PROXIES) {
+  // Prova prima diretto (senza proxy), poi con proxy come fallback
+  const urls = [
+    url,
+    `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  ];
+  for (const u of urls) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 7000);
+    const timeout = setTimeout(() => controller.abort(), 6000);
     try {
-      const r = await fetch(proxyFn(url), {signal: controller.signal});
+      const r = await fetch(u, {signal: controller.signal});
       clearTimeout(timeout);
       const txt = await r.text();
       const match = txt.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/);
@@ -220,10 +226,8 @@ async function fetchSheet(sheetId, sheetName) {
       return json.table;
     } catch(e) {
       clearTimeout(timeout);
-      console.warn(`Proxy fallito per ${sheetName}:`, e.message);
     }
   }
-  console.warn(`${sheetName} non caricato`);
   return {rows:[], cols:[]};
 }
 
@@ -316,14 +320,13 @@ setInterval(updateClock, 30000);
 // ── MAIN ───────────────────────────────────────────────────────────
 async function main() {
   try {
-    const tParam = await fetchSheet(ID_MAESTRO, SHEETS.PARAMETROS);
-    document.querySelector('.loading-txt').textContent = 'Inventario...';
-    const tInv   = await fetchSheet(ID_MAESTRO, SHEETS.INVENTARIO_BC);
-    document.querySelector('.loading-txt').textContent = 'Reposicion...';
-    const tRepo  = await fetchSheet(ID_MAESTRO, SHEETS.REPOSICION_BC);
-    document.querySelector('.loading-txt').textContent = 'OC Log...';
-    const tOC    = await fetchSheet(ID_MAESTRO, SHEETS.OC_LOG);
-    const tMov = {rows:[], cols:[]};
+    const [tParam, tInv, tRepo, tOC, tMov] = await Promise.all([
+      fetchSheet(ID_MAESTRO, SHEETS.PARAMETROS),
+      fetchSheet(ID_MAESTRO, SHEETS.INVENTARIO_BC),
+      fetchSheet(ID_MAESTRO, SHEETS.REPOSICION_BC),
+      fetchSheet(ID_MAESTRO, SHEETS.OC_LOG),
+      fetchSheet(ID_MAESTRO, SHEETS.MOVIMIENTOS_BC),
+    ]);
     const tVC  = {rows:[], cols:[]};
 
     // ── PARAMETROS ─────────────────────────────────────────────────
@@ -396,13 +399,19 @@ async function main() {
     const rRepo = rowsRaw(tRepo).slice(1).filter(r => r[0]);
     const criticos = rRepo.filter(r => String(r[7]||'').toUpperCase() === 'CRITICO'); // col H = indice 7
 
-    // ── MOVIMIENTOS BC — entregas a locales ───────────────────────
-    const rMov = rowsRaw(tMov).slice(1).filter(r => r[0]);
-    const entregas = rMov.filter(r => String(r[1]||'').includes('Entrega'));
-    const entregasConDiff = entregas.filter(r => String(r[8]||'').toUpperCase().includes('DIFER'));
-    const entregasSinDiff = entregas.filter(r => !String(r[8]||'').toUpperCase().includes('DIFER'));
+    // ── MOVIMIENTOS BC — solo Entrega BLocal ─────────────────────
+    // Cols: A=Fecha, B=ID Mov, C=Tipo, D=Local Destino, E=ID Entrega,
+    //       F=SKU, G=Descripcion, H=Q UPC, I=Q UTM, J=Q UO,
+    //       K=Q UTM Entregada, L=Q UTM_Neta, M=Estado Confirmacion,
+    //       N=Q UO Confirmada, O=Delta, P=Costo UTM, Q=Costo Total
+    const rMov = rowsRaw(tMov).filter(r => r && String(r[2]||'').includes('Entrega BLocal'));
+    const entregasSinDiff = rMov.filter(r => String(r[12]||'').toUpperCase() === 'RECIBIDO');
+    const entregasConDiff = rMov.filter(r => String(r[12]||'').toUpperCase() === 'DIFERENCIA');
+    const entregasPend    = rMov.filter(r => String(r[12]||'').toUpperCase().includes('PEND') || String(r[12]||'').toUpperCase() === 'ENVIADO');
+    const entregas = rMov;
     const tasaEntregas = entregas.length > 0 ? entregasSinDiff.length / entregas.length : 1;
     const semEntregas = semaforoAlto(tasaEntregas, entregAlto, entregMedio);
+    const ultimasEntregas = [...rMov].reverse().slice(0,8);
 
     // ── KPI ABASTECIMIENTO (desde Reposicion_BC col H=Estado) ─────
     const skuConEstado = rRepo.filter(r => r[7]);
@@ -597,27 +606,30 @@ async function main() {
         </div>
         <div class="s-badge ${semEntregas==='verde'?'b-verde':semEntregas==='amarillo'?'b-amarillo':'b-rojo'}">${fmtPct(tasaEntregas)} sin dif</div>
       </div>
-      <div class="stats-row" style="grid-template-columns:repeat(3,1fr);">
+      <div class="stats-row" style="grid-template-columns:repeat(4,1fr);">
         <div class="st"><div class="st-l">Total Entregas</div><div class="st-v" style="color:var(--accent)">${entregas.length}</div></div>
-        <div class="st"><div class="st-l">Sin Diferencia</div><div class="st-v" style="color:var(--green)">${entregasSinDiff.length}</div></div>
+        <div class="st"><div class="st-l">Recibidas</div><div class="st-v" style="color:var(--green)">${entregasSinDiff.length}</div></div>
         <div class="st"><div class="st-l">Con Diferencia</div><div class="st-v" style="color:${entregasConDiff.length>0?'var(--yellow)':'var(--green)'}">${entregasConDiff.length}</div></div>
+        <div class="st"><div class="st-l">Pendientes</div><div class="st-v" style="color:${entregasPend.length>0?'var(--yellow)':'var(--green)'}">${entregasPend.length}</div></div>
       </div>
       <div class="tbl-wrap">
-        <div class="tbl-h" style="grid-template-columns:90px 1fr 1fr 80px 90px;">
-          <span>Fecha</span><span>Descripción</span><span>Destino</span><span style="text-align:right">Cantidad</span><span style="text-align:center">Estado</span>
+        <div class="tbl-h" style="grid-template-columns:90px 1fr 100px 80px 100px;">
+          <span>Fecha</span><span>Descripción</span><span>Destino</span><span style="text-align:right">Q</span><span style="text-align:center">Estado</span>
         </div>
         ${ultimasEntregas.length === 0
           ? `<div class="no-alertas">Sin entregas registradas</div>`
-          : ultimasEntregas.slice(0,8).map(r => {
-              const est = String(r[8]||'OK').toUpperCase();
-              const cls = est.includes('DIFER') ? 'est-diferencia' : 'est-recibido';
-              const label = est.includes('DIFER') ? 'DIFERENCIA' : 'OK';
-              return `<div class="tbl-r" style="grid-template-columns:90px 1fr 1fr 80px 90px;">
-                <span class="tbl-sku">${r[0]||'—'}</span>
-                <span class="tbl-d">${r[4]||r[3]||'—'}</span>
-                <span style="font-size:11px;color:var(--accent)">${r[2]||'—'}</span>
-                <span class="tbl-n">${r[5]!=null?r[5]:'—'} ${r[6]||''}</span>
-                <span style="text-align:center"><span class="tbl-est ${cls}">${label}</span></span>
+          : ultimasEntregas.map(r => {
+              const est = String(r[12]||'PENDIENTE').toUpperCase();
+              const cls = est === 'RECIBIDO' ? 'est-recibido' : est === 'DIFERENCIA' ? 'est-diferencia' : 'est-oc-pend';
+              let fecha = String(r[0]||'—');
+              const dm = fecha.match(/Date\((\d+),(\d+),(\d+)/);
+              if (dm) fecha = `${String(dm[3]).padStart(2,'0')}/${String(parseInt(dm[2])+1).padStart(2,'0')}/${dm[1]}`;
+              return `<div class="tbl-r" style="grid-template-columns:90px 1fr 100px 80px 100px;">
+                <span class="tbl-sku">${fecha}</span>
+                <span class="tbl-d">${r[6]||'—'}</span>
+                <span style="font-size:11px;color:var(--accent)">${r[3]||'—'}</span>
+                <span class="tbl-n">${r[9]!=null?r[9]:'—'}</span>
+                <span style="text-align:center"><span class="tbl-est ${cls}">${est||'PENDIENTE'}</span></span>
               </div>`;
             }).join('')
         }
