@@ -359,12 +359,9 @@ async function main() {
     // TODO: Compras sin OC — actualmente solo suma OC_Log.
     // TODO: Validar KPI Abastecimiento con datos reales.
     // A=Fecha(data), B=Nº OC, C=Proveedor, D=Nº Items, E=Total $, F=Link PDF, G=Estado
-    // OC_Log: gviz restituisce 1 sola riga (header) — leggo senza slice
-    // e filtro per colonna B (Nº OC) non nulla
     const rOCAll = rowsRaw(tOC);
-    console.log('OC tutte le righe:', rOCAll.length, JSON.stringify(rOCAll[0]), JSON.stringify(rOCAll[1]));
     const rOC = rOCAll.filter(r => r && r[1] && String(r[1]).includes('OC-'));
-    console.log('OC filtrate per OC-:', rOC.length);
+    let totalCompras = 0, ocPendientes = 0, ocEnviadas = 0, ocTotal = rOC.length;
     let totalCompras = 0, ocPendientes = 0, ocEnviadas = 0, ocTotal = rOC.length;
     rOC.forEach(r => {
       // A=Fecha, B=Nº OC, C=Proveedor, D=Nº Items, E=Total $, F=Link PDF, G=Estado
@@ -575,8 +572,12 @@ async function main() {
                 const estado = String(r[6]||'').toUpperCase();
                 const cls = estado.includes('RECIB')||estado.includes('ENVI') ? 'est-oc-env' : 'est-oc-pend';
                 const label = estado.includes('RECIB') ? 'RECIBIDA' : estado.includes('ENVI') ? 'ENVIADA' : 'EMITIDA';
+                // Fix fecha: gviz restituisce Date(yyyy,m,d,h,min,s)
+                let fecha = String(r[0]||'—');
+                const dm = fecha.match(/Date\((\d+),(\d+),(\d+)/);
+                if (dm) fecha = `${String(dm[3]).padStart(2,'0')}/${String(parseInt(dm[2])+1).padStart(2,'0')}/${dm[1]}`;
                 return `<div class="tbl-r" style="grid-template-columns:80px 1fr 90px 80px;">
-                  <span class="tbl-sku">${r[0]||'—'}</span>
+                  <span class="tbl-sku">${fecha}</span>
                   <span class="tbl-d">${r[2]||'—'}</span>
                   <span class="tbl-n">${fmt$(r[4])}</span>
                   <span style="text-align:center"><span class="tbl-est ${cls}">${label}</span></span>
@@ -586,8 +587,6 @@ async function main() {
         </div>
       </div>
     </div>
-
-    <!-- ENTREGAS A LOCALES -->
     <div class="sec-label">ENTREGAS A LOCALES</div>
     <div class="card">
       <div class="sec-head">
