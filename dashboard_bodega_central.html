@@ -358,7 +358,6 @@ async function main() {
     const rOCAll = rowsRaw(tOC);
     const rOC = rOCAll.filter(r => r && r[1] && String(r[1]).includes('OC-'));
     let totalCompras = 0, ocPendientes = 0, ocEnviadas = 0, ocTotal = rOC.length;
-    let totalCompras = 0, ocPendientes = 0, ocEnviadas = 0, ocTotal = rOC.length;
     rOC.forEach(r => {
       // A=Fecha, B=Nº OC, C=Proveedor, D=Nº Items, E=Total $, F=Link PDF, G=Estado
       totalCompras += toNum(r[4]);
