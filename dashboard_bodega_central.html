@@ -422,7 +422,10 @@ async function main() {
     if (tasaAbaste < abasteMedio) alertas.push({nivel:'roja', icon:'📉', txt:`Tasa de abastecimiento bajo umbral mínimo`, det: fmtPct(tasaAbaste) + ' — objetivo >' + fmtPct(abasteAlto)});
 
     // ── ÚLTIMAS OC ────────────────────────────────────────────────
-    const ultimasOC = rOC.slice(-8).reverse();
+    // Ordenar OC: EMITIDAS primero (pendientes), luego RECIBIDAS por fecha desc
+    const ocEmitidas  = rOC.filter(r => (r[6]||'').toUpperCase() === 'EMITIDA').reverse();
+    const ocRecibidas = rOC.filter(r => (r[6]||'').toUpperCase() === 'RECIBIDA').reverse();
+    const ultimasOC   = [...ocEmitidas, ...ocRecibidas].slice(0, 8);
 
     // ── ÚLTIMAS ENTREGAS ──────────────────────────────────────────
     const ultimasEntregas = entregas.slice(-8).reverse();
