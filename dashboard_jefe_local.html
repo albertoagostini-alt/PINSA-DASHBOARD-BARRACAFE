@@ -384,7 +384,7 @@ async function load(){
       : repQuiebre.length - repTop.length);
     const repTotalUrgente=repCritico.length+repQuiebre.length;
 
-    render({secs,gMap,mLoc,fcLoc,mOK,cOK,vOK,bono,bPct,bCol,
+    render({secs,gMap,mLoc,fcLoc,mOK,cOK,vOK,bono,bPct,bCol,kpiSubtxt,
       totV,totB,pctV,ritmo,neces,dR,dA,dM,vSec,bSec,
       totBod,negs,topBod,bodAll,al,lastWk,now,
       repTop,repExtra,repTotalUrgente,repCritico});
@@ -405,7 +405,7 @@ function wkDots(hist){
 }
 
 function render(d){
-  const{secs,gMap,mLoc,fcLoc,mOK,cOK,vOK,bono,bPct,bCol,
+  const{secs,gMap,mLoc,fcLoc,mOK,cOK,vOK,bono,bPct,bCol,kpiSubtxt,
     totV,totB,pctV,ritmo,neces,dR,dA,dM,vSec,bSec,
     totBod,negs,topBod,bodAll,al,lastWk,now,
     repTop,repExtra,repTotalUrgente,repCritico}=d;
