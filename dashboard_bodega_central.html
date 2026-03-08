@@ -414,9 +414,7 @@ const CSV_URLS = {
 };
 
 function parseCSV(txt) {
-  const lines = txt.split(/
-?
-/);
+  const lines = txt.split(/\r?\n/);
   return lines.map(l => {
     const cols = []; let cur = '', inQ = false;
     for (let i = 0; i < l.length; i++) {
