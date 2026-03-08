@@ -62,7 +62,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(15,15,15,0.97);backdrop
 .vc{background:var(--card);border:1px solid var(--b);border-radius:10px;padding:16px 18px}
 .vc.atc{border-top:2px solid var(--tc)}.vc.ared{border-top:2px solid var(--red)}.vc.agr{border-top:2px solid var(--green)}
 .vl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:8px}
-.vb{font-family:'Inter',sans-serif;font-size:36px;font-weight:300;line-height:1;color:var(--t1);margin-bottom:4px;letter-spacing:-2px}
+.vb{font-family:'Inter',sans-serif;font-size:28px;font-weight:300;line-height:1;color:var(--t1);margin-bottom:4px;letter-spacing:-2px}
 .vb.verde{color:var(--green)}.vb.amarillo{color:var(--yellow)}.vb.rojo{color:var(--red)}
 .vs{font-size:11px;color:var(--t3)}
 .s2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -328,7 +328,8 @@ function main(){
     h+='<div class="v4">';
     h+='<div class="vc atc"><div class="vl">Valor Inventario BC</div><div class="vb">'+fmt$(valInv)+'</div><div class="vs">'+rI.length+' SKU activos</div></div>';
     h+='<div class="vc ared"><div class="vl">SKU Crítico / Quiebre</div><div class="vb '+(skuQuie>0?'rojo':skuCrit>0?'amarillo':'verde')+'">'+(skuCrit+skuQuie)+'</div><div class="vs">'+skuQuie+' quiebre · '+skuCrit+' crítico</div></div>';
-    h+='<div class="vc atc"><div class="vl">Compras del Mes (OC)</div><div class="vb">'+fmt$(totComp)+'</div><div class="vs">'+rOC.length+' OC emitidas</div></div>';
+    var totEntMon=0;rMov.forEach(function(r){totEntMon+=toNum(r[16]);});
+    h+='<div class="vc atc"><div class="vl">Entregas del Mes $</div><div class="vb">'+fmt$(totEntMon)+'</div><div class="vs">'+rMov.length+' entregas · '+rOC.length+' OC</div></div>';
     h+='<div class="vc agr"><div class="vl">Entregas del Mes</div><div class="vb '+sEnt+'">'+rMov.length+'</div><div class="vs">'+conDif.length+' con diferencia · '+pends.length+' pendientes</div></div>';
     h+='</div>';
 
