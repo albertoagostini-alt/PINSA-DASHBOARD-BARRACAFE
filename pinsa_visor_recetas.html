@@ -1126,6 +1126,10 @@ function calcDesc() {
   document.getElementById('dc-breakeven').textContent  = pct > 0
     ? `Con ${pct}% descuento el precio baja de $${pv.toLocaleString('es-CL')} a $${Math.round(pvDesc).toLocaleString('es-CL')} CLP.`
     : 'Mueve el slider para simular el impacto del descuento.';
+}
+
+// ══════════════════════════════════════════════
+// RENDER RECETA
 // ══════════════════════════════════════════════
 function renderRecipe(r) {
   document.getElementById('emptyState').style.display = 'none';
