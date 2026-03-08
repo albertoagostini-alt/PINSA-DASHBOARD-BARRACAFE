@@ -185,10 +185,38 @@ header{
 .badge.fmt{background:rgba(255,255,255,0.07);color:var(--t2);border:1px solid var(--b2)}
 .badge.pend{background:rgba(200,137,58,0.15);color:var(--yellow);border:1px solid rgba(200,137,58,0.3)}
 .hero-foto{background:var(--p3);border-left:1px solid var(--b2);position:relative;overflow:hidden;height:220px}
-.hero-foto img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.hero-foto img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;cursor:zoom-in;transition:transform 0.3s ease}
+.hero-foto img:hover{transform:scale(1.03)}
 .hero-foto-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
 .hero-foto-ph-icon{font-size:32px;opacity:0.12}
 .hero-foto-ph-txt{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)}
+
+/* ── LIGHTBOX FOTO ── */
+#fotoLightbox{
+  display:none;position:fixed;inset:0;z-index:950;
+  background:rgba(0,0,0,0.92);
+  align-items:center;justify-content:center;flex-direction:column;gap:16px;
+  cursor:zoom-out;
+  animation:lbFadeIn 0.2s ease;
+}
+#fotoLightbox.open{display:flex}
+@keyframes lbFadeIn{from{opacity:0}to{opacity:1}}
+#fotoLightbox img{
+  max-width:90vw;max-height:82vh;
+  object-fit:contain;border-radius:6px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.8);
+  cursor:default;
+}
+#fotoLightbox .lb-nombre{
+  font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;
+  color:rgba(255,255,255,0.7);letter-spacing:2px;text-align:center;
+}
+#fotoLightbox .lb-close{
+  position:fixed;top:18px;right:22px;
+  background:none;border:none;color:rgba(255,255,255,0.5);
+  font-size:26px;cursor:pointer;line-height:1;transition:color 0.2s;
+}
+#fotoLightbox .lb-close:hover{color:white}
 .hero-video{
   position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
   display:flex;align-items:center;gap:5px;white-space:nowrap;
@@ -591,6 +619,13 @@ header{
   </div>
 </div>
 
+<!-- FOTO LIGHTBOX -->
+<div id="fotoLightbox" onclick="closeFoto()">
+  <button class="lb-close" onclick="closeFoto()">×</button>
+  <img id="lbImg" src="" alt="">
+  <div class="lb-nombre" id="lbNombre"></div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════
 // CONFIG
@@ -883,46 +918,84 @@ async function loadData() {
     }
   } catch(e) { console.warn('MASTER fetch error:', e); }
   if (!RECIPES.length) RECIPES = PLACEHOLDER_RECIPES;
+
+  // DETALLE — carica ingredienti e fa join su ID_Receta
+  try {
+    const detalle = await fetchCSV(GID.DETALLE);
+    if (detalle.length) {
+      // Log delle colonne per debug
+      console.log('DETALLE cols:', Object.keys(detalle[0]));
+      detalle.forEach(d => {
+        // Cerca colonna ID_Receta (con varianti possibili)
+        const rid = (d['ID_Receta'] || d['id_receta'] || d['IDReceta'] || '').trim();
+        if (!rid) return;
+        const recipe = RECIPES.find(r => r.id === rid);
+        if (!recipe) return;
+        // Mappa ingrediente con varianti di nome colonna
+        const ing = {
+          n:    (d['Ingrediente'] || d['Nombre'] || d['Nombre_Ing'] || d['Insumo'] || d['nombre'] || '').trim(),
+          qty:  Number(d['Cantidad'] || d['Qty'] || d['Q'] || d['cantidad'] || 0),
+          um:   (d['UM'] || d['Unidad'] || d['unidad'] || d['um'] || '').trim(),
+          costo: Number(d['Costo_unitario'] || d['Costo Unitario'] || d['CostoU'] || d['costo'] || 0) || null,
+          nota: (d['Nota'] || d['Notas'] || d['nota'] || '').trim(),
+        };
+        if (ing.n) recipe.ingredientes.push(ing);
+      });
+    }
+  } catch(e) { console.warn('DETALLE fetch error:', e); }
+}
+
+function cleanNum(v) {
+  if (!v) return 0;
+  return Number(String(v).replace(/[$\s]/g,'').replace(/\./g,'').replace(',','.')) || 0;
 }
 
 function mapMasterRow(r) {
-  // Nomi colonna esatti dal CSV RECETAS_MASTER (con spazi e maiuscole originali)
-  const difStr   = (r['Dificultad'] || '').toLowerCase();
-  const difNum   = difStr === 'alta' ? 3 : difStr === 'media' ? 2 : 1;
-  const rendPct  = parseFloat(r['Rendimiento'] || 1);
-  const rend     = rendPct > 1 ? rendPct / 100 : rendPct;
-  const qLote    = Number(r['Q lote std'] || 0);
-  const costoLote= Number(r['Costo lote'] || 0) || null;
-  const costoU   = costoLote && qLote && rend ? costoLote / (qLote * rend) : (Number(r['Costo unitario'] || 0) || null);
-  const visRaw   = r['Visible para'] || 'OP,JL,CC,JA,JO,AD';
-  const tCoccion = Number(r['Tiempo Coccion'] || r['Tiempo Cocción'] || 0);
+  // Colonne CSV RECETAS_MASTER aggiornato:
+  // ID_Receta | Nombre | Tipo Receta | Seccion | Familia | Categoria | Estado | Formato |
+  // Unidad salida | Q lote std | Rendimiento | Costo Lote | Costo Unitario |
+  // Precio de Venta Unitario | Tiempo Prep min | Tiempo Coccion | Dificultad |
+  // URL_Foto | URL_Video | Procedimiento | Perfect_Serve | Notas | Visible para
+
+  const difStr    = (r['Dificultad'] || '').toLowerCase();
+  const difNum    = difStr === 'alta' ? 3 : difStr === 'media' ? 2 : 1;
+  const rendPct   = parseFloat(r['Rendimiento'] || 1);
+  const rend      = rendPct > 1 ? rendPct / 100 : rendPct;
+  const qLote     = cleanNum(r['Q lote std']);
+  const costoLote = cleanNum(r['Costo Lote']) || null;
+  const costoU    = cleanNum(r['Costo Unitario']) || null ||
+                    (costoLote && qLote && rend ? costoLote / (qLote * rend) : null);
+  const precioV   = cleanNum(r['Precio de Venta Unitario']) || null;
+  const visRaw    = r['Visible para'] || 'OP,JL,CC,JA,JO,AD';
+  const tPrep     = cleanNum(r['Tiempo Prep min']);
+  const tCoccion  = cleanNum(r['Tiempo Coccion'] || r['Tiempo Cocción']);
 
   return {
-    id:           r['ID_Receta']  || '',
-    nombre:       r['Nombre']     || '',
-    familia:      (r['Familia']   || '').toUpperCase(),
-    cat:          (r['Categoria'] || '').toUpperCase(),
-    tipo:         (r['Tipo Receta'] || '').toUpperCase(),
-    seccion:      r['Seccion']    || '',
-    estado:       (r['Estado']    || 'ACTIVA').toUpperCase(),
-    formato:      r['Formato']    || '',
-    t_prep:       Number(r['Tiempo Prep min'] || 0),
-    t_coccion:    tCoccion,
-    temp:         null,
-    dificultad:   difNum,
-    rendimiento:  rend,
-    url:          r['URL_Foto']   || null,
-    url_video:    r['URL_Video']  || null,
-    q_lote:       qLote || 1,
-    unidad:       r['Unidad salida'] || 'unidad',
-    precio_venta: Number(r['Precio de Venta Unitario'] || 0) || null,
-    costo_u:      costoU,
-    costo_lote:   costoLote,
-    visible_para: visRaw.replace(/\s/g,''),
+    id:              r['ID_Receta']    || '',
+    nombre:          r['Nombre']       || '',
+    familia:         (r['Familia']     || '').toUpperCase(),
+    cat:             (r['Categoria']   || '').toUpperCase(),
+    tipo:            (r['Tipo Receta'] || '').toUpperCase(),
+    seccion:         r['Seccion']      || '',
+    estado:          (r['Estado']      || 'ACTIVA').toUpperCase(),
+    formato:         r['Formato']      || '',
+    t_prep:          tPrep,
+    t_coccion:       tCoccion,
+    temp:            null,
+    dificultad:      difNum,
+    rendimiento:     rend,
+    url:             r['URL_Foto']     || null,
+    url_video:       r['URL_Video']    || null,
+    q_lote:          qLote || 1,
+    unidad:          r['Unidad salida'] || 'unidad',
+    precio_venta:    precioV,
+    costo_u:         costoU,
+    costo_lote:      costoLote,
+    visible_para:    visRaw.replace(/\s/g, ''),
     notas_generales: (r['Notas'] || '').trim(),
-    ingredientes: [],
-    proc:         parseProcedimiento(r['Procedimiento'] || ''),
-    perfect_serve: (r['Perfect_Serve'] || '').trim() || null,
+    ingredientes:    [],
+    proc:            parseProcedimiento(r['Procedimiento'] || ''),
+    perfect_serve:   (r['Perfect_Serve'] || '').trim() || null,
   };
 }
 
@@ -1153,6 +1226,24 @@ function closeVideo() {
 }
 
 // ══════════════════════════════════════════════
+// FOTO LIGHTBOX
+// ══════════════════════════════════════════════
+function openFoto(url, nombre) {
+  const lb = document.getElementById('fotoLightbox');
+  document.getElementById('lbImg').src = url;
+  document.getElementById('lbNombre').textContent = nombre;
+  lb.classList.add('open');
+  // ESC per chiudere
+  document.addEventListener('keydown', _lbKey);
+}
+function closeFoto() {
+  document.getElementById('fotoLightbox').classList.remove('open');
+  document.getElementById('lbImg').src = '';
+  document.removeEventListener('keydown', _lbKey);
+}
+function _lbKey(e) { if (e.key === 'Escape') closeFoto(); }
+
+// ══════════════════════════════════════════════
 // SIMULADOR
 // ══════════════════════════════════════════════
 let simIngCounter = 0;
@@ -1332,7 +1423,9 @@ function renderRecipe(r) {
       </div>
       <div class="hero-foto">
         ${r.url
-          ? `<img src="${r.url}" alt="${r.nombre}" onerror="this.parentElement.innerHTML='<div class=hero-foto-ph><div class=hero-foto-ph-icon>📷</div><div class=hero-foto-ph-txt>Foto pendiente</div></div>'">`
+          ? `<img src="${r.url}" alt="${r.nombre}"
+               onclick="openFoto('${r.url.replace(/'/g,"\\'")}','${r.nombre.replace(/'/g,"\\'")}')"
+               onerror="this.style.cursor='default';this.parentElement.innerHTML='<div class=hero-foto-ph><div class=hero-foto-ph-icon>📷</div><div class=hero-foto-ph-txt>Foto pendiente</div></div>'">`
           : `<div class="hero-foto-ph"><div class="hero-foto-ph-icon">📷</div><div class="hero-foto-ph-txt">Foto pendiente</div></div>`}
         ${r.url_video ? `<a class="hero-video" onclick="openVideo('${r.url_video}','${r.nombre}')" style="cursor:pointer">▶ Ver video</a>` : ''}
       </div>
