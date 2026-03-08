@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -133,9 +132,7 @@ var CSV={
 };
 
 function parseCSV(txt){
-  return txt.split(/
-?
-/).map(function(l){
+  return txt.split(/\r?\n/).map(function(l){
     var cols=[],cur='',inQ=false;
     for(var i=0;i<l.length;i++){
       if(l[i]==='"'){inQ=!inQ;}
