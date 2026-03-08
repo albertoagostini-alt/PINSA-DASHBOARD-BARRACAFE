@@ -664,8 +664,29 @@ const PLACEHOLDER_CARGOS = [
 ];
 
 // ============================================================
-// INIT
+// URL NORMALIZERS
 // ============================================================
+function normalizePhoto(val) {
+  if (!val) return '';
+  // Già URL completo
+  if (val.startsWith('http')) return val;
+  // Solo ID Drive → trasforma in uc?id=
+  if (val.length > 10 && !val.includes('/')) {
+    return `https://drive.google.com/uc?id=${val}`;
+  }
+  // URL Drive classico → estrai ID
+  const m = val.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return `https://drive.google.com/uc?id=${m[1]}`;
+  return val;
+}
+
+function normalizeVideo(val) {
+  if (!val) return '';
+  // Pulisci ?feature=share e altri parametri non necessari
+  return val.split('?')[0].trim();
+}
+
+
 window.addEventListener('load', async () => {
   animateBar(20);
   await loadData();
@@ -730,8 +751,8 @@ async function loadData() {
         tiempo_prep:    parseInt(r['Tiempo Prep min']||r['Tiempo_prep_min']) || null,
         dificultad:     (r['Dificultad']||'').trim(),
         visible_para:   (r['Visible para']||r['Visible_para']||'OP,JL,CC,JA,JO,AD').trim(),
-        url_foto:       (r['URL_Foto']||'').trim(),
-        url_video:      (r['URL_Video']||'').trim(),
+        url_foto:       normalizePhoto((r['URL_Foto']||'').trim()),
+        url_video:      normalizeVideo((r['URL_Video']||'').trim()),
         procedimiento:  (r['Procedimiento']||'').trim(),
         perfect_serve:  (r['Perfect_Serve']||'').trim(),
         ingredientes:   ings,
