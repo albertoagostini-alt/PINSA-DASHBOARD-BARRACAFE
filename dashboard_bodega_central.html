@@ -6,7 +6,7 @@
 <title>PINSA · Bodega Central</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--tc:#C4622D;--tc-dim:rgba(196,98,45,0.12);--tc-glow:rgba(196,98,45,0.28);--bg:#0F0F0F;--card:#1A1A1A;--card2:#202020;--b:rgba(255,255,255,0.07);--b2:rgba(255,255,255,0.12);--t1:#C8C2BC;--t2:#7A7570;--t3:#4A4542;--green:#5A9E7A;--gbg:rgba(90,158,122,0.10);--yellow:#C8893A;--ybg:rgba(200,137,58,0.10);--red:#B85450;--rbg:rgba(184,84,80,0.10);--blue:#4A90D9}
+:root{--tc:#C4622D;--tc-dim:rgba(196,98,45,0.12);--tc-glow:rgba(196,98,45,0.28);--bg:#0F0F0F;--card:#1A1A1A;--card2:#202020;--b:rgba(255,255,255,0.07);--b2:rgba(255,255,255,0.12);--t1:#C8C2BC;--t2:#7A7570;--t3:#4A4542;--green:#5A9E7A;--gbg:rgba(90,158,122,0.10);--yellow:#C8893A;--ybg:rgba(200,137,58,0.10);--red:#B85450;--rbg:rgba(184,84,80,0.10);--blue:#4A90D9;--blue-bg:rgba(74,144,217,0.10)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;-webkit-font-smoothing:antialiased}
 #lo{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
@@ -89,7 +89,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(15,15,15,0.97);backdrop
 .nd{padding:16px;text-align:center;font-size:12px;color:var(--t3)}
 .al{padding:8px 0}
 .ai{display:flex;align-items:flex-start;gap:12px;padding:10px 16px;border-bottom:1px solid var(--b)}
-.ai:last-child{border-bottom:none}.aicon{font-size:18px;flex-shrink:0;margin-top:1px}
+.ai:last-child{border-bottom:none}.aicon{font-size:18px;flex-shrink:0;margin-top:1px}.aicon-badge{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;flex-shrink:0;font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:.5px}.ab-roja{background:var(--rbg);color:var(--red);border:1px solid rgba(184,84,80,.3)}.ab-aamar{background:var(--ybg);color:var(--yellow);border:1px solid rgba(200,137,58,.3)}.ab-aazul{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(74,144,217,.3)}.ab-aroja{background:var(--rbg);color:var(--red);border:1px solid rgba(184,84,80,.3)}
 .atxt{font-size:13px;font-weight:500;color:var(--t1)}.adet{font-size:11px;color:var(--t3);margin-top:2px}
 .aroja{border-left:3px solid var(--red)}.aamar{border-left:3px solid var(--yellow)}.aazul{border-left:3px solid var(--blue)}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
@@ -184,6 +184,8 @@ function fmtDate(raw){
   var s=String(raw||'—');
   var m=s.match(/Date\((\d+),(\d+),(\d+)/);
   if(m)return String(m[3]).padStart(2,'0')+'/'+String(parseInt(m[2])+1).padStart(2,'0')+'/'+m[1];
+  var d=s.split(' ')[0];var p=d.split('/');
+  if(p.length===3)return p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0')+'/'+p[2];
   return s;
 }
 
@@ -290,11 +292,11 @@ function main(){
 
     // ALERTAS
     var alerts=[];
-    if(skuQuie>0)alerts.push({n:'roja',i:'🚨',t:skuQuie+' SKU en QUIEBRE de stock',d:'Requiere acción inmediata'});
-    if(skuCrit>0)alerts.push({n:'aamar',i:'⚠️',t:skuCrit+' SKU en nivel CRÍTICO',d:'Generar OC antes de agotar stock'});
-    if(conDif.length>0)alerts.push({n:'aamar',i:'📦',t:conDif.length+' entregas con diferencia',d:'Revisar en Movimientos_BC'});
-    if(ocPend>0)alerts.push({n:'aazul',i:'📋',t:ocPend+' OC en espera de recepción',d:'Marcar como Recibida desde menú BCentral'});
-    if(tAba<aMed)alerts.push({n:'aroja',i:'📉',t:'Tasa de abastecimiento bajo umbral mínimo',d:fmtP(tAba)+' — objetivo >'+fmtP(aHi)});
+    if(skuQuie>0)alerts.push({n:'roja',i:'ERR',t:skuQuie+' SKU en QUIEBRE de stock',d:'Requiere acción inmediata'});
+    if(skuCrit>0)alerts.push({n:'aamar',i:'WRN',t:skuCrit+' SKU en nivel CRÍTICO',d:'Generar OC antes de agotar stock'});
+    if(conDif.length>0)alerts.push({n:'aamar',i:'PKG',t:conDif.length+' entregas con diferencia',d:'Revisar en Movimientos_BC'});
+    if(ocPend>0)alerts.push({n:'aazul',i:'OC',t:ocPend+' OC en espera de recepción',d:'Marcar como Recibida desde menú BCentral'});
+    if(tAba<aMed)alerts.push({n:'aroja',i:'KPI',t:'Tasa de abastecimiento bajo umbral mínimo',d:fmtP(tAba)+' — objetivo >'+fmtP(aHi)});
 
     // ULTIMAS OC + ENTREGAS
     var ocEm=rOC.filter(function(r){return(r[6]||'').toUpperCase()==='EMITIDA';}).reverse();
@@ -369,7 +371,7 @@ function main(){
     h+='<div class="sl"><span class="slt">Alertas Activas</span></div>';
     h+='<div class="card"><div class="al">';
     if(alerts.length===0){h+='<div class="nd">✓ Sin alertas activas — operación normal</div>';}
-    else{alerts.forEach(function(a){h+='<div class="ai a'+a.n+'"><span class="aicon">'+a.i+'</span><div><div class="atxt">'+a.t+'</div><div class="adet">'+a.d+'</div></div></div>';});}
+    else{alerts.forEach(function(a){h+='<div class="ai a'+a.n+'"><span class="aicon-badge ab-'+a.n+'">'+a.i+'</span><div><div class="atxt">'+a.t+'</div><div class="adet">'+a.d+'</div></div></div>';});}
     h+='</div></div><div style="height:40px"></div>';
 
     document.getElementById('root').innerHTML=h;
