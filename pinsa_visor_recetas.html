@@ -18,133 +18,72 @@
 html,body{height:100%;overflow:hidden}
 body{font-family:'DM Sans',sans-serif;background:var(--p0);color:var(--t1);-webkit-font-smoothing:antialiased}
 
-/* ── LOADING ── */
-#loadingOverlay{
-  position:fixed;inset:0;z-index:900;background:var(--p0);
-  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;
-}
+/* LOADING */
+#loadingOverlay{position:fixed;inset:0;z-index:900;background:var(--p0);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px}
 .ld-logo{font-size:13px;font-weight:400;letter-spacing:6px;text-transform:uppercase;color:var(--t2)}
 .ld-logo b{color:var(--tc)}
 .ld-track{width:120px;height:1px;background:var(--b2)}
 .ld-bar{height:1px;background:var(--tc);width:0%;transition:width 0.4s ease}
 
-/* ── LOGIN ── */
-#loginScreen{
-  position:fixed;inset:0;z-index:800;background:var(--p0);
-  display:none;align-items:center;justify-content:center;
-}
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;z-index:800;background:var(--p0);display:none;align-items:center;justify-content:center}
 .lw{width:360px;padding:44px 40px;background:var(--p1);border:1px solid var(--b2);border-radius:12px}
 .lw-logo{margin-bottom:28px}
 .lw-brand{font-size:11px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--t2);margin-bottom:4px}
 .lw-brand b{color:var(--tc)}
 .lw-sub{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--t3)}
 .lw-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:6px}
-.lw-input,.lw-select{
-  width:100%;padding:10px 12px;border:1px solid var(--b1);border-radius:6px;
-  font-family:'DM Sans',sans-serif;font-size:13px;color:var(--t1);
-  background:var(--p2);outline:none;margin-bottom:14px;transition:border-color 0.2s;
-  appearance:none;
-}
+.lw-input,.lw-select{width:100%;padding:10px 12px;border:1px solid var(--b1);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--t1);background:var(--p2);outline:none;margin-bottom:14px;transition:border-color 0.2s;appearance:none}
 .lw-input:focus,.lw-select:focus{border-color:var(--tc)}
-.lw-btn{
-  width:100%;padding:11px;background:var(--tc);color:white;border:none;
-  border-radius:6px;font-family:'DM Sans',sans-serif;font-size:12px;
-  font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;
-  margin-top:4px;transition:opacity 0.2s;
-}
+.lw-btn{width:100%;padding:11px;background:var(--tc);color:white;border:none;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:4px;transition:opacity 0.2s}
 .lw-btn:hover{opacity:0.85}
 .lw-err{font-size:11px;color:var(--red);margin-top:10px;display:none}
 
-/* ── APP ── */
+/* APP */
 #app{display:none;height:100%}
 
-/* ── HEADER ── */
-header{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  height:50px;background:var(--p1);border-bottom:1px solid var(--b2);
-  display:grid;grid-template-columns:1fr auto 1fr;
-  align-items:center;padding:0 18px;
-}
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:var(--p1);border-bottom:1px solid var(--b2);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 18px}
 .h-left{display:flex;align-items:center;gap:10px;justify-content:flex-start}
 .h-right{display:flex;align-items:center;gap:8px;justify-content:flex-end}
 .h-logo{display:flex;align-items:center}
-.h-badge{
-  padding:3px 10px;border-radius:4px;
-  font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
-  background:var(--tc-dim);color:var(--tc);border:1px solid var(--tc-border);
-}
+.h-badge{padding:3px 10px;border-radius:4px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;background:var(--tc-dim);color:var(--tc);border:1px solid var(--tc-border)}
 .h-nav{display:flex;gap:0}
-.h-nav-btn{
-  padding:6px 14px;border-radius:4px;
-  font-size:11px;font-weight:400;letter-spacing:0.3px;
-  background:transparent;border:none;color:var(--t3);cursor:pointer;
-  font-family:'DM Sans',sans-serif;transition:color 0.15s;
-}
+.h-nav-btn{padding:6px 14px;border-radius:4px;font-size:11px;font-weight:400;letter-spacing:0.3px;background:transparent;border:none;color:var(--t3);cursor:pointer;font-family:'DM Sans',sans-serif;transition:color 0.15s}
 .h-nav-btn.on{color:var(--tc);font-weight:600}
 .h-nav-btn:hover:not(.on){color:var(--t2)}
 .h-sep{width:1px;height:18px;background:var(--b2);margin:0 4px}
 .h-clock{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3)}
-.h-user{
-  display:flex;align-items:center;gap:8px;
-  padding:4px 10px;background:var(--p2);border:1px solid var(--b1);border-radius:6px;
-}
+.h-user{display:flex;align-items:center;gap:8px;padding:4px 10px;background:var(--p2);border:1px solid var(--b1);border-radius:6px}
 .h-user-name{font-size:11px;color:var(--t1);font-weight:500}
 .h-user-cargo{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--tc)}
-.h-logout{
-  padding:4px 10px;background:transparent;border:1px solid var(--b1);border-radius:4px;
-  color:var(--t3);font-size:10px;letter-spacing:1px;text-transform:uppercase;
-  cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;
-}
+.h-logout{padding:4px 10px;background:transparent;border:1px solid var(--b1);border-radius:4px;color:var(--t3);font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
 .h-logout:hover{border-color:var(--red);color:var(--red)}
 .h-live{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--t3);letter-spacing:1px;text-transform:uppercase}
 .live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
 
-/* ── SHELL ── */
-.shell{
-  display:flex;height:calc(100vh - 50px);margin-top:50px;
-}
+/* SHELL */
+.shell{display:flex;height:calc(100vh - 50px);margin-top:50px}
 
-/* ── SECTION PANELS ── */
+/* SECTION PANELS */
 .sec-panel{display:none;width:100%;height:100%}
 .sec-panel.on{display:flex}
 
-/* ── SIDEBAR ── */
-.sidebar{
-  width:280px;flex-shrink:0;
-  background:var(--p1);border-right:1px solid var(--b2);
-  display:flex;flex-direction:column;
-}
+/* SIDEBAR */
+.sidebar{width:280px;flex-shrink:0;background:var(--p1);border-right:1px solid var(--b2);display:flex;flex-direction:column}
 .sb-top{padding:12px 12px 10px;border-bottom:1px solid var(--b1)}
 .sb-search{position:relative;margin-bottom:9px}
-.sb-search input{
-  width:100%;padding:8px 12px 8px 32px;
-  background:var(--p3);border:1px solid var(--b1);border-radius:6px;
-  color:var(--t1);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;
-  transition:border-color 0.2s;
-}
+.sb-search input{width:100%;padding:8px 12px 8px 32px;background:var(--p3);border:1px solid var(--b1);border-radius:6px;color:var(--t1);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;transition:border-color 0.2s}
 .sb-search input:focus{border-color:var(--tc)}
 .sb-search input::placeholder{color:var(--t3)}
 .sb-search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px}
 .sb-chips{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:1px}
 .sb-chips::-webkit-scrollbar{display:none}
-.chip{
-  flex-shrink:0;padding:4px 11px;border-radius:20px;
-  font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
-  background:var(--p3);border:1px solid var(--b1);color:var(--t3);
-  cursor:pointer;transition:all 0.15s;white-space:nowrap;
-}
+.chip{flex-shrink:0;padding:4px 11px;border-radius:20px;font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;background:var(--p3);border:1px solid var(--b1);color:var(--t3);cursor:pointer;transition:all 0.15s;white-space:nowrap}
 .chip.on{background:var(--tc-dim);border-color:var(--tc-border);color:var(--tc)}
 .sb-familia-wrap{margin-top:8px}
-.sb-familia-select{
-  width:100%;padding:7px 10px;
-  background:var(--p3);border:1px solid var(--b2);border-radius:6px;
-  color:var(--t1);font-family:'DM Sans',sans-serif;font-size:11px;
-  outline:none;cursor:pointer;appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234A4540'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 10px center;
-  transition:border-color 0.2s;
-}
+.sb-familia-select{width:100%;padding:7px 10px;background:var(--p3);border:1px solid var(--b2);border-radius:6px;color:var(--t1);font-family:'DM Sans',sans-serif;font-size:11px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234A4540'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;transition:border-color 0.2s}
 .sb-familia-select:focus{border-color:var(--tc)}
 .sb-list{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--p4) transparent}
 .sb-list::-webkit-scrollbar{width:3px}
@@ -160,18 +99,20 @@ header{
 .sdot{width:6px;height:6px;border-radius:50%;background:var(--t3)}
 .sdot.ok{background:var(--green)}
 .sdot.pend{background:var(--yellow)}
+.sdot.sim{background:var(--blue)}
+.sdot.arch{background:var(--p5)}
 
-/* ── DETAIL ── */
+/* DETAIL */
 .detail{flex:1;background:var(--p2);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--p4) transparent}
 .detail::-webkit-scrollbar{width:4px}
 .detail::-webkit-scrollbar-thumb{background:var(--p4);border-radius:2px}
 
-/* ── EMPTY STATE ── */
+/* EMPTY */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px}
 .empty-icon{font-size:48px;opacity:0.10}
 .empty-txt{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--t3)}
 
-/* ── HERO ── */
+/* HERO */
 .hero{display:grid;grid-template-columns:1fr 220px;border-bottom:1px solid var(--b2)}
 .hero-info{padding:24px 28px 22px;display:flex;flex-direction:column;justify-content:center;min-height:220px}
 .hero-bc{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:6px}
@@ -179,63 +120,38 @@ header{
 .hero-tipo{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--tc);font-weight:600;margin-bottom:5px}
 .hero-name{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;line-height:1.05;color:var(--t1);margin-bottom:14px}
 .hero-name em{color:var(--tc);font-style:italic}
-.hero-badges{display:flex;gap:6px;flex-wrap:wrap}
+.hero-badges{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .badge{padding:3px 9px;border-radius:4px;font-size:8px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase}
 .badge.ok{background:rgba(90,158,122,0.2);color:var(--green);border:1px solid rgba(90,158,122,0.3)}
 .badge.tipo{background:var(--tc-dim);color:var(--tc);border:1px solid var(--tc-border)}
 .badge.fmt{background:rgba(255,255,255,0.07);color:var(--t2);border:1px solid var(--b2)}
 .badge.pend{background:rgba(200,137,58,0.15);color:var(--yellow);border:1px solid rgba(200,137,58,0.3)}
+.badge.sim{background:rgba(74,144,217,0.15);color:var(--blue);border:1px solid rgba(74,144,217,0.3)}
+.badge.arch{background:rgba(255,255,255,0.04);color:var(--t3);border:1px solid var(--b1)}
 .hero-foto{background:var(--p3);border-left:1px solid var(--b2);position:relative;overflow:hidden;height:220px}
 .hero-foto img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;cursor:zoom-in;transition:transform 0.3s ease}
 .hero-foto img:hover{transform:scale(1.03)}
 .hero-foto-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
 .hero-foto-ph-icon{font-size:32px;opacity:0.12}
 .hero-foto-ph-txt{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)}
+.hero-actions{display:flex;gap:6px;margin-top:10px}
+.btn-edit{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:5px;background:var(--tc-dim);border:1px solid var(--tc-border);color:var(--tc);font-size:10px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px}
+.btn-edit:hover{background:rgba(196,98,45,0.2)}
+.btn-del{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:5px;background:rgba(184,84,80,0.1);border:1px solid rgba(184,84,80,0.25);color:var(--red);font-size:10px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px}
+.btn-del:hover{background:rgba(184,84,80,0.2)}
 
-/* ── LIGHTBOX FOTO ── */
-#fotoLightbox{
-  display:none;position:fixed;inset:0;z-index:950;
-  background:rgba(0,0,0,0.92);
-  align-items:center;justify-content:center;flex-direction:column;gap:16px;
-  cursor:zoom-out;
-  animation:lbFadeIn 0.2s ease;
-}
+/* LIGHTBOX */
+#fotoLightbox{display:none;position:fixed;inset:0;z-index:950;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;flex-direction:column;gap:16px;cursor:zoom-out;animation:lbFadeIn 0.2s ease}
 #fotoLightbox.open{display:flex}
 @keyframes lbFadeIn{from{opacity:0}to{opacity:1}}
-#fotoLightbox img{
-  max-width:90vw;max-height:82vh;
-  object-fit:contain;border-radius:6px;
-  box-shadow:0 20px 60px rgba(0,0,0,0.8);
-  cursor:default;
-}
-#fotoLightbox .lb-nombre{
-  font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;
-  color:rgba(255,255,255,0.7);letter-spacing:2px;text-align:center;
-}
-#fotoLightbox .lb-close{
-  position:fixed;top:18px;right:22px;
-  background:none;border:none;color:rgba(255,255,255,0.5);
-  font-size:26px;cursor:pointer;line-height:1;transition:color 0.2s;
-}
+#fotoLightbox img{max-width:90vw;max-height:82vh;object-fit:contain;border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,0.8);cursor:default}
+#fotoLightbox .lb-nombre{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:rgba(255,255,255,0.7);letter-spacing:2px;text-align:center}
+#fotoLightbox .lb-close{position:fixed;top:18px;right:22px;background:none;border:none;color:rgba(255,255,255,0.5);font-size:26px;cursor:pointer;line-height:1;transition:color 0.2s}
 #fotoLightbox .lb-close:hover{color:white}
-.hero-video{
-  position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
-  display:flex;align-items:center;gap:5px;white-space:nowrap;
-  padding:6px 13px;border-radius:5px;
-  background:rgba(0,0,0,0.65);border:1px solid rgba(255,255,255,0.1);
-  backdrop-filter:blur(8px);color:var(--t1);font-size:10px;cursor:pointer;
-  transition:background 0.2s;text-decoration:none;
-}
-.hero-video:hover{background:rgba(196,98,45,0.75);border-color:var(--tc)}
-.hero-video-btn{
-  display:inline-flex;align-items:center;gap:5px;padding:5px 12px;
-  border-radius:5px;background:rgba(196,98,45,0.15);border:1px solid rgba(196,98,45,0.5);
-  color:var(--tc);font-size:10px;font-family:'DM Sans',sans-serif;letter-spacing:0.5px;
-  cursor:pointer;transition:all 0.2s;
-}
+.hero-video-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:5px;background:rgba(196,98,45,0.15);border:1px solid rgba(196,98,45,0.5);color:var(--tc);font-size:10px;font-family:'DM Sans',sans-serif;letter-spacing:0.5px;cursor:pointer;transition:all 0.2s}
 .hero-video-btn:hover{background:rgba(196,98,45,0.35);border-color:var(--tc)}
 
-/* ── BARRA TEMPI ── */
+/* BARRA TEMPI */
 .t-bar{display:flex;align-items:center;gap:8px;padding:12px 28px;background:var(--p3);border-bottom:1px solid var(--b2)}
 .t-step{display:flex;align-items:center;gap:8px;padding:7px 14px;background:var(--p4);border-radius:7px}
 .t-icon{font-size:15px;line-height:1}
@@ -254,7 +170,7 @@ header{
 .t-total .t-val{color:var(--tc)}
 .t-total .t-lbl{color:rgba(196,98,45,0.6)}
 
-/* ── COSTOS ── */
+/* COSTOS */
 .section{padding:18px 28px;border-bottom:1px solid var(--b1)}
 .sec-hdr{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .sec-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--tc);font-weight:500;letter-spacing:1px}
@@ -271,25 +187,19 @@ header{
 .semaforo.amarillo{color:var(--yellow)}
 .semaforo.rojo{color:var(--red)}
 
-/* ── TAB SYSTEM ── */
+/* TABS */
 .dtabs{display:flex;padding:0 28px;background:var(--p3);border-bottom:1px solid var(--b2);position:sticky;top:0;z-index:10}
-.dtab{
-  padding:13px 20px;background:none;border:none;
-  font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;
-  letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);
-  cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;
-}
+.dtab{padding:13px 20px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s}
 .dtab:hover{color:var(--t2)}
 .dtab.on{color:var(--tc);border-bottom-color:var(--tc)}
 .tab-panel{display:none;padding:20px 28px}
 .tab-panel.on{display:block}
 
-/* ── INGREDIENTES ── */
+/* INGREDIENTES */
 .ing-list{display:flex;flex-direction:column;gap:1px}
 .ing-row{display:grid;grid-template-columns:1fr 90px 80px;align-items:center;gap:8px;padding:9px 12px;border-radius:6px;transition:background 0.12s}
 .ing-row:hover{background:var(--p3)}
 .ing-row.ing-sub{padding-left:24px;opacity:0.75}
-.ing-row.ing-sub .ing-name{font-size:12px;color:var(--t2)}
 .ing-name{font-size:13px;color:var(--t1)}
 .ing-qty-wrap{display:flex;align-items:baseline;gap:4px;justify-content:flex-end}
 .ing-qty{font-family:'DM Mono',monospace;font-size:13px;color:var(--t1);text-align:right;white-space:nowrap}
@@ -299,7 +209,7 @@ header{
 .ing-total-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)}
 .ing-total-val{font-family:'DM Mono',monospace;font-size:14px;color:var(--tc);font-weight:500}
 
-/* ── PROCEDIMIENTO ── */
+/* PROCEDIMIENTO */
 .proc-steps{display:flex;flex-direction:column;gap:10px}
 .proc-step{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;background:var(--p3);border-radius:8px;transition:background 0.12s}
 .proc-step:hover{background:var(--p4)}
@@ -307,13 +217,13 @@ header{
 .proc-step-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--tc);font-weight:600;margin-bottom:5px}
 .proc-step-txt{font-size:14px;color:var(--t1);line-height:1.65}
 
-/* ── PERFECT SERVE ── */
+/* PERFECT SERVE */
 .ps-box{padding:18px 20px;background:var(--p3);border-radius:10px;border:1px solid var(--tc-border);position:relative;overflow:hidden}
 .ps-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--tc),transparent)}
 .ps-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--tc);font-weight:600;margin-bottom:8px}
 .ps-txt{font-size:14px;color:var(--t1);line-height:1.7}
 
-/* ── NOTAS ── */
+/* NOTAS */
 .nota-gen{padding:14px 16px;background:rgba(200,137,58,0.06);border-radius:8px;border-left:2px solid rgba(200,137,58,0.3);margin-bottom:16px}
 .nota-gen-lbl{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--yellow);font-weight:600;margin-bottom:5px}
 .nota-gen-txt{font-size:13px;color:var(--t2);line-height:1.6}
@@ -323,11 +233,8 @@ header{
 .nota-sust-ing{font-size:11px;font-weight:600;color:var(--tc);margin-bottom:3px}
 .nota-sust-txt{font-size:13px;color:var(--t2);line-height:1.5}
 
-/* ── VIDEO MODAL ── */
-#videoModal{
-  position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.88);
-  display:none;align-items:center;justify-content:center;
-}
+/* VIDEO MODAL */
+#videoModal{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.88);display:none;align-items:center;justify-content:center}
 #videoModal.open{display:flex}
 .modal-inner{width:540px;background:var(--p3);border:1px solid var(--b2);border-radius:10px;overflow:hidden}
 .modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--b1)}
@@ -337,44 +244,82 @@ header{
 .video-wrap{position:relative;padding-bottom:56.25%;height:0}
 .video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
 
-/* ── SIMULADOR / DESCUENTOS — scroll container ── */
+/* ─── SIMULADOR / DESCUENTOS ─── */
 .sim-scroll{flex:1;overflow-y:auto;padding:28px 32px;background:var(--p2);scrollbar-width:thin;scrollbar-color:var(--p4) transparent}
 .sim-scroll::-webkit-scrollbar{width:4px}
 .sim-scroll::-webkit-scrollbar-thumb{background:var(--p4);border-radius:2px}
 .page-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:var(--t1);margin-bottom:4px}
 .page-title em{color:var(--tc);font-style:italic}
-.page-sub{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:28px}
-.sim-grid{display:grid;grid-template-columns:1fr 320px;gap:20px}
+.page-sub{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:22px}
+
+/* Tabs de sección Simulador */
+.sim-tabs{display:flex;gap:0;margin-bottom:20px;background:var(--p3);border-radius:8px;padding:4px;width:fit-content}
+.sim-tab{padding:6px 16px;border-radius:5px;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;border:none;background:transparent;color:var(--t3);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.sim-tab.on{background:var(--p4);color:var(--tc)}
+
+.sim-grid{display:grid;grid-template-columns:1fr 300px;gap:20px}
 .desc-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.sim-panel{background:var(--p3);border:1px solid var(--b2);border-radius:8px;padding:18px}
-.sim-panel-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--b1)}
+.sim-panel{background:var(--p3);border:1px solid var(--b2);border-radius:8px;padding:18px;margin-bottom:14px}
+.sim-panel:last-child{margin-bottom:0}
+.sim-panel-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:8px}
+.sim-panel-title span{flex:1}
 .sim-field{margin-bottom:12px}
 .sim-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:5px}
-.sim-input{
-  width:100%;padding:8px 10px;background:var(--p4);border:1px solid var(--b1);
-  border-radius:5px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--t1);
-  outline:none;transition:border-color 0.2s;appearance:none;
-}
+.sim-input{width:100%;padding:8px 10px;background:var(--p4);border:1px solid var(--b1);border-radius:5px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--t1);outline:none;transition:border-color 0.2s;appearance:none}
 .sim-input:focus{border-color:var(--tc)}
-.sim-row{display:grid;grid-template-columns:1fr 90px 70px 90px 28px;gap:6px;margin-bottom:6px;align-items:center}
-.sim-add-btn{
-  width:100%;padding:8px;background:transparent;border:1px dashed var(--b2);
-  border-radius:5px;color:var(--t3);font-family:'DM Sans',sans-serif;font-size:10px;
-  letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:6px;transition:all 0.2s;
-}
+
+/* Autocomplete */
+.sim-autocomplete-wrap{position:relative}
+.sim-autocomplete-list{position:absolute;top:100%;left:0;right:0;z-index:50;background:var(--p3);border:1px solid var(--b2);border-radius:6px;margin-top:2px;max-height:160px;overflow-y:auto;display:none}
+.sim-autocomplete-list.open{display:block}
+.sim-autocomplete-item{padding:8px 10px;font-size:12px;color:var(--t1);cursor:pointer;transition:background 0.1s;border-bottom:1px solid var(--b1)}
+.sim-autocomplete-item:last-child{border-bottom:none}
+.sim-autocomplete-item:hover,.sim-autocomplete-item.sel{background:var(--p4);color:var(--tc)}
+
+/* Ingredientes row (5 col) */
+.ing-hdr-row{display:grid;grid-template-columns:1fr 80px 60px 80px 28px;gap:6px;margin-bottom:8px}
+.ing-hdr-row span{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)}
+.sim-row{display:grid;grid-template-columns:1fr 80px 60px 80px 28px;gap:6px;margin-bottom:6px;align-items:center}
+.sim-add-btn{width:100%;padding:8px;background:transparent;border:1px dashed var(--b2);border-radius:5px;color:var(--t3);font-family:'DM Sans',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:6px;transition:all 0.2s}
 .sim-add-btn:hover{border-color:var(--tc);color:var(--tc)}
 .sim-del{background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px;line-height:1;transition:color 0.15s}
 .sim-del:hover{color:var(--red)}
+
+/* Pasos procedimiento */
+.proc-add-row{display:flex;gap:6px;margin-bottom:6px}
+.proc-add-row .sim-input{flex:1}
+
+/* Resultado */
 .sim-result-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b1)}
 .sim-result-row:last-child{border-bottom:none}
 .sim-result-lbl{font-size:11px;color:var(--t2)}
 .sim-result-val{font-family:'DM Mono',monospace;font-size:12px;color:var(--t1)}
-.sim-save-btn{
-  width:100%;padding:10px;background:var(--tc);color:white;border:none;
-  border-radius:5px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;
-  letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:12px;transition:opacity 0.2s;
-}
+
+/* Botones acción */
+.sim-save-btn{width:100%;padding:10px;background:var(--tc);color:white;border:none;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:10px;transition:opacity 0.2s}
 .sim-save-btn:hover{opacity:0.85}
+.sim-save-btn.secondary{background:transparent;border:1px solid var(--b2);color:var(--t2)}
+.sim-save-btn.secondary:hover{border-color:var(--tc);color:var(--tc);opacity:1}
+.sim-estado-select{width:100%;padding:8px 10px;background:var(--p4);border:1px solid var(--b1);border-radius:5px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--t1);outline:none;appearance:none;margin-bottom:8px}
+
+/* Lista Mis Recetas */
+.mis-rec-list{display:flex;flex-direction:column;gap:6px}
+.mis-rec-item{padding:10px 12px;background:var(--p3);border:1px solid var(--b2);border-radius:7px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all 0.15s}
+.mis-rec-item:hover{border-color:var(--tc-border)}
+.mis-rec-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.mis-rec-dot.SIMULACION{background:var(--blue)}
+.mis-rec-dot.PENDIENTE{background:var(--yellow)}
+.mis-rec-dot.ACTIVA_SIN_DATA{background:rgba(200,137,58,0.5)}
+.mis-rec-dot.ACTIVA{background:var(--green)}
+.mis-rec-dot.ARCHIVADA{background:var(--p5)}
+.mis-rec-name{font-size:12px;color:var(--t1);flex:1}
+.mis-rec-estado{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--t3)}
+.mis-rec-actions{display:flex;gap:4px}
+.mis-rec-btn{padding:3px 8px;border-radius:4px;font-size:9px;font-family:'DM Sans',sans-serif;cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--t3);transition:all 0.15s;letter-spacing:0.5px}
+.mis-rec-btn:hover{border-color:var(--tc);color:var(--tc)}
+.mis-rec-btn.danger:hover{border-color:var(--red);color:var(--red)}
+
+/* Descuentos */
 .compare-card{padding:14px 16px;background:var(--p4);border:1px solid var(--b2);border-radius:8px}
 .compare-card.despues{border-top:2px solid var(--tc)}
 .compare-lbl{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:8px}
@@ -383,6 +328,25 @@ header{
 .desc-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .slider-wrap{padding:4px 0}
 .slider{width:100%;accent-color:var(--tc)}
+
+/* Toast */
+#toast{position:fixed;bottom:24px;right:24px;z-index:999;padding:12px 18px;background:var(--p3);border:1px solid var(--b2);border-radius:8px;font-size:12px;color:var(--t1);display:none;animation:toastIn 0.25s ease}
+#toast.ok{border-left:3px solid var(--green)}
+#toast.err{border-left:3px solid var(--red)}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Confirm modal */
+#confirmModal{display:none;position:fixed;inset:0;z-index:960;background:rgba(0,0,0,0.7);align-items:center;justify-content:center}
+#confirmModal.open{display:flex}
+.confirm-box{width:360px;background:var(--p2);border:1px solid var(--b2);border-radius:10px;padding:28px}
+.confirm-title{font-size:14px;font-weight:600;color:var(--t1);margin-bottom:8px}
+.confirm-msg{font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:20px}
+.confirm-actions{display:flex;gap:8px;justify-content:flex-end}
+.confirm-btn{padding:8px 16px;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:opacity 0.2s}
+.confirm-btn.cancel{background:transparent;border:1px solid var(--b2);color:var(--t2)}
+.confirm-btn.cancel:hover{border-color:var(--t1);color:var(--t1)}
+.confirm-btn.danger{background:var(--red);border:none;color:white}
+.confirm-btn.danger:hover{opacity:0.85}
 </style>
 </head>
 <body>
@@ -420,7 +384,7 @@ header{
       <div class="h-logo" id="hLogo">
         <span style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:4px;color:var(--tc)">PINSA.</span>
       </div>
-      <div class="h-badge">Visor Recetas</div>
+      <div class="h-badge">Visor Recetas V7</div>
     </div>
     <nav class="h-nav">
       <button class="h-nav-btn on" id="btn-recetas" onclick="setSection('recetas',this)">Recetas</button>
@@ -445,7 +409,6 @@ header{
 
     <!-- ══ SECCIÓN RECETAS ══ -->
     <div class="sec-panel on" id="panel-recetas">
-      <!-- Sidebar -->
       <div class="sidebar">
         <div class="sb-top">
           <div class="sb-search">
@@ -467,7 +430,6 @@ header{
           <div class="empty"><div class="empty-icon">🍕</div><div class="empty-txt">Cargando...</div></div>
         </div>
       </div>
-      <!-- Detail -->
       <div class="detail" id="detailPanel">
         <div class="empty" id="emptyState">
           <div class="empty-icon">🍕</div>
@@ -481,78 +443,223 @@ header{
     <div class="sec-panel" id="panel-simulador">
       <div class="sim-scroll">
         <div class="page-title">Simulador de <em>Receta</em></div>
-        <div class="page-sub">Construye una receta nueva y calcula su costo en tiempo real</div>
-        <div class="sim-grid">
-          <div>
-            <div class="sim-panel">
-              <div class="sim-panel-title">Datos de la receta</div>
-              <div class="sim-field">
-                <div class="sim-lbl">Nombre</div>
-                <input class="sim-input" id="simNombre" placeholder="Nombre del producto">
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="page-sub" id="simSubtitle">Nueva receta — datos en tiempo real</div>
+
+        <!-- Tabs: Nueva / Mis Recetas -->
+        <div class="sim-tabs">
+          <button class="sim-tab on" onclick="simShowTab('nueva',this)">+ Nueva receta</button>
+          <button class="sim-tab" id="btn-mis-recetas" onclick="simShowTab('mis',this)">Mis recetas</button>
+        </div>
+
+        <!-- Panel: Mis Recetas -->
+        <div id="sim-panel-mis" style="display:none">
+          <div class="sim-panel">
+            <div class="sim-panel-title"><span>Mis Recetas</span>
+              <select class="sim-input" style="width:auto;font-size:10px;padding:4px 8px" id="misEstadoFilter" onchange="renderMisRecetas()">
+                <option value="">Todos los estados</option>
+                <option value="SIMULACION">Simulación</option>
+                <option value="PENDIENTE">Pendiente</option>
+                <option value="ACTIVA_SIN_DATA">Activa sin data</option>
+                <option value="ACTIVA">Activa</option>
+                <option value="ARCHIVADA">Archivada</option>
+              </select>
+            </div>
+            <div id="misRecetasList" class="mis-rec-list"></div>
+          </div>
+        </div>
+
+        <!-- Panel: Nueva / Editar -->
+        <div id="sim-panel-nueva">
+          <div class="sim-grid">
+            <!-- Columna izquierda: form -->
+            <div>
+              <!-- BLOQUE 1: Identidad -->
+              <div class="sim-panel">
+                <div class="sim-panel-title"><span>01 · Identidad</span></div>
                 <div class="sim-field">
-                  <div class="sim-lbl">Familia</div>
-                  <select class="sim-input" id="simFamilia"></select>
+                  <div class="sim-lbl">Nombre *</div>
+                  <input class="sim-input" id="simNombre" placeholder="Nombre del producto">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div class="sim-field">
+                    <div class="sim-lbl">Tipo de Receta *</div>
+                    <select class="sim-input" id="simTipo" onchange="onTipoChange()">
+                      <option value="SIMPLE">SIMPLE (ingredientes base)</option>
+                      <option value="PREPARACION">PREPARACION (CC produce)</option>
+                      <option value="ENSAMBLE" selected>ENSAMBLE (en local)</option>
+                      <option value="OFERTA">OFERTA (composito)</option>
+                    </select>
+                  </div>
+                  <div class="sim-field">
+                    <div class="sim-lbl">Sección</div>
+                    <select class="sim-input" id="simSeccion">
+                      <option value="Cocina Central">Cocina Central</option>
+                      <option value="Barra Cafe">Barra Cafe</option>
+                      <option value="Barra Jugos">Barra Jugos</option>
+                      <option value="Barra Helados">Barra Helados</option>
+                      <option value="Barra Alimentos">Barra Alimentos</option>
+                      <option value="Pasteleria">Pasteleria</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div class="sim-field">
+                    <div class="sim-lbl">Familia</div>
+                    <select class="sim-input" id="simFamilia"></select>
+                  </div>
+                  <div class="sim-field">
+                    <div class="sim-lbl">Categoría</div>
+                    <select class="sim-input" id="simCategoria">
+                      <option value="LIQUIDOS">LIQUIDOS</option>
+                      <option value="SOLIDOS">SOLIDOS</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div class="sim-field">
+                    <div class="sim-lbl">Formato</div>
+                    <input class="sim-input" id="simFormato" placeholder="9OZ, 12OZ, 250gr...">
+                  </div>
+                  <div class="sim-field">
+                    <div class="sim-lbl">Unidad de salida</div>
+                    <input class="sim-input" id="simUnidad" placeholder="ml, g, Unidad...">
+                  </div>
                 </div>
                 <div class="sim-field">
-                  <div class="sim-lbl">Formato</div>
-                  <select class="sim-input" id="simFormato">
-                    <option value="9OZ">9OZ</option>
-                    <option value="12OZ" selected>12OZ</option>
-                    <option value="16OZ">16OZ</option>
-                    <option value="LOTE">LOTE</option>
+                  <div class="sim-lbl">Visible para</div>
+                  <select class="sim-input" id="simVisible">
+                    <option value="OP">OP — Solo Operadores</option>
+                    <option value="OP,JL">OP + Jefe Local</option>
+                    <option value="JL,CC,JA,JO,AD">JL, CC, JA, JO, AD (sin OP)</option>
+                    <option value="OP,JL,CC,JA,JO,AD" selected>Todos</option>
+                    <option value="CC,JO,AD">Solo CC, JO, AD</option>
                   </select>
                 </div>
               </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+
+              <!-- BLOQUE 2: Producción -->
+              <div class="sim-panel">
+                <div class="sim-panel-title"><span>02 · Producción</span></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+                  <div class="sim-field">
+                    <div class="sim-lbl">Q lote std</div>
+                    <input class="sim-input" type="number" id="simQLote" placeholder="1" min="0" step="any" oninput="calcSim()">
+                  </div>
+                  <div class="sim-field">
+                    <div class="sim-lbl">Rendimiento %</div>
+                    <input class="sim-input" type="number" id="simRend" value="95" min="1" max="100" oninput="calcSim()">
+                  </div>
+                  <div class="sim-field">
+                    <div class="sim-lbl">Dificultad</div>
+                    <select class="sim-input" id="simDificultad">
+                      <option value="Baja" selected>Baja</option>
+                      <option value="Media">Media</option>
+                      <option value="Alta">Alta</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div class="sim-field">
+                    <div class="sim-lbl">Tiempo Prep (min)</div>
+                    <input class="sim-input" type="number" id="simTPrep" placeholder="10" min="0">
+                  </div>
+                  <div class="sim-field">
+                    <div class="sim-lbl">Tiempo Cocción (min)</div>
+                    <input class="sim-input" type="number" id="simTCoccion" placeholder="0" min="0">
+                  </div>
+                </div>
+              </div>
+
+              <!-- BLOQUE 3: Comercial -->
+              <div class="sim-panel">
+                <div class="sim-panel-title"><span>03 · Comercial</span></div>
                 <div class="sim-field">
-                  <div class="sim-lbl">Rendimiento %</div>
-                  <input class="sim-input" id="simRend" type="number" value="95" min="1" max="100" oninput="calcSim()">
+                  <div class="sim-lbl">Precio de venta (CLP) *</div>
+                  <input class="sim-input" type="number" id="simPrecio" placeholder="0" oninput="calcSim()">
                 </div>
                 <div class="sim-field">
-                  <div class="sim-lbl">Precio venta</div>
-                  <input class="sim-input" id="simPrecio" type="number" placeholder="0" oninput="calcSim()">
+                  <div class="sim-lbl">URL Foto (ImgBB)</div>
+                  <input class="sim-input" id="simUrlFoto" placeholder="https://i.ibb.co/...">
                 </div>
                 <div class="sim-field">
-                  <div class="sim-lbl">Tiempo (min)</div>
-                  <input class="sim-input" id="simTiempo" type="number" placeholder="10">
+                  <div class="sim-lbl">URL Video (YouTube)</div>
+                  <input class="sim-input" id="simUrlVideo" placeholder="https://youtube.com/shorts/...">
+                </div>
+              </div>
+
+              <!-- BLOQUE 4: Ingredientes -->
+              <div class="sim-panel" id="sim-bloque-ingredientes">
+                <div class="sim-panel-title"><span>04 · Ingredientes</span></div>
+                <div class="ing-hdr-row">
+                  <span>Ingrediente</span><span>Cantidad</span><span>UM</span><span>$/unidad</span><span></span>
+                </div>
+                <div id="simIngList"></div>
+                <button class="sim-add-btn" onclick="addSimIng()">+ Agregar ingrediente</button>
+              </div>
+
+              <!-- BLOQUE 4b: Sub-recetas (solo OFERTA) -->
+              <div class="sim-panel" id="sim-bloque-subrecetas" style="display:none">
+                <div class="sim-panel-title"><span>04 · Sub-recetas (OFERTA)</span></div>
+                <div id="simSubRecList"></div>
+                <button class="sim-add-btn" onclick="addSubRec()">+ Agregar sub-receta</button>
+              </div>
+
+              <!-- BLOQUE 5: Procedimiento -->
+              <div class="sim-panel">
+                <div class="sim-panel-title"><span>05 · Procedimiento</span></div>
+                <div id="simProcList"></div>
+                <button class="sim-add-btn" onclick="addProcStep()">+ Agregar paso</button>
+              </div>
+
+              <!-- BLOQUE 6: Extras -->
+              <div class="sim-panel">
+                <div class="sim-panel-title"><span>06 · Extras</span></div>
+                <div class="sim-field">
+                  <div class="sim-lbl">Perfect Serve</div>
+                  <input class="sim-input" id="simPerfectServe" placeholder="Instrucciones de servicio...">
+                </div>
+                <div class="sim-field">
+                  <div class="sim-lbl">Notas</div>
+                  <textarea class="sim-input" id="simNotas" rows="3" placeholder="Notas internas, sustituciones..." style="resize:vertical;min-height:64px"></textarea>
                 </div>
               </div>
             </div>
-            <div class="sim-panel" style="margin-top:14px">
-              <div class="sim-panel-title">Ingredientes</div>
-              <div style="display:grid;grid-template-columns:1fr 90px 70px 90px 28px;gap:6px;margin-bottom:8px">
-                <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">Ingrediente</div>
-                <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">Cantidad</div>
-                <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">UM</div>
-                <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">$/unidad</div>
-                <div></div>
-              </div>
-              <div id="simIngList"></div>
-              <button class="sim-add-btn" onclick="addSimIng()">+ Agregar ingrediente</button>
-            </div>
-          </div>
-          <div>
-            <div class="sim-panel">
-              <div class="sim-panel-title">Resultado</div>
-              <div id="simResult">
-                <div class="sim-result-row"><span class="sim-result-lbl">Costo ingredientes</span><span class="sim-result-val" id="sr-costo">$0</span></div>
-                <div class="sim-result-row"><span class="sim-result-lbl">Q entrada total</span><span class="sim-result-val" id="sr-qent">0</span></div>
-                <div class="sim-result-row"><span class="sim-result-lbl">Q salida estimada</span><span class="sim-result-val" id="sr-qsal">0</span></div>
-                <div class="sim-result-row" style="border-top:1px solid var(--b2);margin-top:6px;padding-top:6px">
-                  <span class="sim-result-lbl">Costo unitario</span><span class="sim-result-val" id="sr-cu">—</span>
+
+            <!-- Columna derecha: Resultado + Estado + Guardar -->
+            <div>
+              <div class="sim-panel" style="position:sticky;top:20px">
+                <div class="sim-panel-title"><span>Resultado</span></div>
+                <div id="simResult">
+                  <div class="sim-result-row"><span class="sim-result-lbl">Costo ingredientes</span><span class="sim-result-val" id="sr-costo">$0</span></div>
+                  <div class="sim-result-row"><span class="sim-result-lbl">Q entrada total</span><span class="sim-result-val" id="sr-qent">0</span></div>
+                  <div class="sim-result-row"><span class="sim-result-lbl">Q salida estimada</span><span class="sim-result-val" id="sr-qsal">0</span></div>
+                  <div class="sim-result-row" style="border-top:1px solid var(--b2);margin-top:6px;padding-top:6px">
+                    <span class="sim-result-lbl">Costo unitario</span><span class="sim-result-val" id="sr-cu">—</span>
+                  </div>
+                  <div class="sim-result-row"><span class="sim-result-lbl">Precio venta</span><span class="sim-result-val" id="sr-pv">—</span></div>
+                  <div class="sim-result-row"><span class="sim-result-lbl">Margen $</span><span class="sim-result-val" id="sr-mg" style="color:var(--green)">—</span></div>
+                  <div class="sim-result-row"><span class="sim-result-lbl">Food Cost %</span><span class="sim-result-val" id="sr-fc">—</span></div>
+                  <div class="sim-result-row" style="border-top:1px solid var(--b2);margin-top:6px;padding-top:6px">
+                    <span class="sim-result-lbl">Precio mínimo (FC 30%)</span><span class="sim-result-val" id="sr-pmin">—</span>
+                  </div>
+                  <div class="sim-result-row"><span class="sim-result-lbl">Precio objetivo (FC 25%)</span><span class="sim-result-val" id="sr-pobj">—</span></div>
                 </div>
-                <div class="sim-result-row"><span class="sim-result-lbl">Precio venta</span><span class="sim-result-val" id="sr-pv">—</span></div>
-                <div class="sim-result-row"><span class="sim-result-lbl">Margen $</span><span class="sim-result-val" id="sr-mg" style="color:var(--green)">—</span></div>
-                <div class="sim-result-row"><span class="sim-result-lbl">Food Cost %</span><span class="sim-result-val" id="sr-fc">—</span></div>
-                <div class="sim-result-row" style="border-top:1px solid var(--b2);margin-top:6px;padding-top:6px">
-                  <span class="sim-result-lbl">Precio mínimo (FC 30%)</span><span class="sim-result-val" id="sr-pmin">—</span>
+                <div id="sr-semaforo" style="margin-top:10px"></div>
+                <div style="margin-top:16px;border-top:1px solid var(--b1);padding-top:14px">
+                  <div class="sim-lbl" style="margin-bottom:6px">Estado al guardar</div>
+                  <select class="sim-estado-select" id="simEstado">
+                    <option value="SIMULACION">SIMULACION</option>
+                    <option value="PENDIENTE">PENDIENTE</option>
+                    <option value="ACTIVA_SIN_DATA">ACTIVA_SIN_DATA</option>
+                    <option value="ACTIVA">ACTIVA</option>
+                    <option value="ARCHIVADA">ARCHIVADA</option>
+                  </select>
+                  <div id="simEstadoHint" style="font-size:10px;color:var(--t3);margin-bottom:10px;line-height:1.5"></div>
+                  <button class="sim-save-btn" id="simSaveBtn" onclick="saveSim()">Guardar receta</button>
+                  <button class="sim-save-btn secondary" id="simCancelBtn" onclick="cancelEdit()" style="display:none;margin-top:6px">Cancelar edición</button>
                 </div>
-                <div class="sim-result-row"><span class="sim-result-lbl">Precio objetivo (FC 25%)</span><span class="sim-result-val" id="sr-pobj">—</span></div>
+                <div id="simEditId" data-id="" style="display:none"></div>
               </div>
-              <div id="sr-semaforo" style="margin-top:10px"></div>
-              <button class="sim-save-btn" onclick="saveSim()">Guardar como SIMULACION</button>
             </div>
           </div>
         </div>
@@ -567,7 +674,7 @@ header{
         <div class="desc-grid">
           <div>
             <div class="sim-panel">
-              <div class="sim-panel-title">Receta</div>
+              <div class="sim-panel-title"><span>Receta</span></div>
               <div class="sim-field">
                 <div class="sim-lbl">Selecciona receta</div>
                 <select class="sim-input" id="descSelect" onchange="calcDesc()"></select>
@@ -583,7 +690,7 @@ header{
           </div>
           <div>
             <div class="sim-panel">
-              <div class="sim-panel-title">Comparativa</div>
+              <div class="sim-panel-title"><span>Comparativa</span></div>
               <div class="desc-compare">
                 <div class="compare-card antes">
                   <div class="compare-lbl">Sin descuento</div>
@@ -630,6 +737,21 @@ header{
   <div class="lb-nombre" id="lbNombre"></div>
 </div>
 
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- CONFIRM MODAL -->
+<div id="confirmModal">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirmTitle">Confirmar acción</div>
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="confirm-actions">
+      <button class="confirm-btn cancel" onclick="closeConfirm()">Cancelar</button>
+      <button class="confirm-btn danger" id="confirmOk" onclick="">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════
 // CONFIG
@@ -640,17 +762,29 @@ const GID = {
   MASTER:     '1643758434',
   DETALLE:    '1714485150',
 };
+// ⚠ Inserire la URL del WebApp deployato (Apps Script)
+const WEBAPP_URL = 'TU_WEBAPP_URL_AQUI';
+
+// ══════════════════════════════════════════════
+// INSUMOS (218 SKU activos da PARAMETROS)
+// ══════════════════════════════════════════════
+const INSUMOS_LIST = ['Acaí Mix','Aceite de Maravilla','Aceite de oliva EV','Aceto balsámico','Acido citrico','Agua con Gas','Agua de Coco Natural 520 ml','Agua sin Gas','Ajo','Albahaca','Alcohol','Almendras Laminadas','Almendras enteras','Almidón de Maíz','Almidón de Papa','Alulosa','Alusa Foil','Alusa Plást','Arandano','Arroz integral','Arándanos IQF','Atomizador Blanco','Atun congelado','Avena integral','Azúcar de coco','Bandeja Craft Chica (Bastoncino)','Bandeja Craft Grande (Focacciotto)','Barra Proteina','Bastoncino 250gr','Bebida de coco','Bedida de almendras','Betarraga','Bicarbonato','Bolsa de Basura 50x70cm','Bolsa de basuta transparente 90x120cm','Bolsa de vacio 15x24cm','Bolsa de vacio 20x30cm','Bolsa de vacio 30x40cm','Bolsas chicas kraft','Bolsas grandes kraft c/ manilla','Bolsas medianas kraft','Bombilla','Cacao Nibs','Cacao Valrhona','Cacao bruno 100% / cafe','Cafe blend','Cafe descafeinado (pods)','Cafiza','Café blend (molido)','Caja Pizza','Cebolla morada','Champinones','Chocolate 70%','Chocolate Blanco','Cilantro','Cloro','Coca Cola Zero Lata 350cc','Coco laminado','Coco rayado','Cofias','Colageno','Comino','Cous cous','Cranberry','Creatina','Crema de Leche','Crema vegetal','Cuchara','Cuchillo','Curcuma','Desengrasante','Eneldo','Escobillon con mango','Espinaca','Esponja clasica','Estabilizante G Xantana','Flores comestibles','Focacciotto 200 gr','Frambuesa IQF','Frutilla','Fungi mix (Sobre 180 gr.)','Galleta de Chooclate','Galleta de Matcha','Garbanzos','Granola Pinsa','Guante domestico amarillo M','Guante nitrilo talla L','Guante nitrilo talla M','Harina','Harina arroz','Harina de Avena','Harina sarraceno','Hielo Cubo','Hielo Frappe','Huevo','Jabon de manos','Jamon de pavo','Jengibre fresco','Jengibre polvo','Lavaloza','Leche Descremada S/ Lactosa','Leche Entera S/ Lactosa','Leche de Avena','Leche en polvo','Lechuga escarola','Levadura','Limon','Limpiavidrios','Maltodextrina','Mango en trozos IQF','Mani sin sal','Mantenedor de pisos','Mantequilla','Mantequilla de mani','Manzana verde','Maqui en polvo','Margarina Vegetal','Mascarpone en polvo','Matcha Ceremonial','Mayonesa vegana','Menta','Miel de palma 260 cc','Mizuna','Mostaza','Naranja','Nueces en cuarto','Pala','Palta','Pano celulosa','Pano microfirbra amarillo','Pano microfirbra negro','Pano microfirbra verde','Papel Ceresinado Pinsa','Papel de manos (pack 2 un.)','Papel higienico jumbo (6 un.)','Paprika','Pepino','Pera','Pimienta negra molida','Pina','Pinsa 230gr','Pistachos pelados','Platano','Pollo','Pollo Apanado','Pollo Marinado','Polvos hornear','Pomodoro pelati','Potes ensalada c/ tapa','Prosciutto crudo','Queso Mozzarella','Queso Ricotta','Queso camembert','Quinoa Mix','Rabanitos','Receta Base Arroz','Receta Base Couscous Pesto','Receta Base Quinoa','Receta Brisket','Receta Chia Pudding Mango','Receta Chia Pudding Matcha','Receta Hummus','Receta Mechada','Receta Pesto','Receta Pollo','Receta Prosciutto','Receta Salsa Pomodoro','Receta Salsa Tzatziki','Receta Tartar Atun','Repollo blanco','Repollo morado','Revolvedores','Rucula','Sal','Sal sachet','Salmon fresco','Salsa Cilantro','Salsa Mostaza','Salsa Pimienta','Salsa de soya','Semilla de zapallo','Semillas de Calabaza','Semillas de Linaza','Semillas de chia','Semillas de maravilla','Servilletas (paq.)','Sesamo blanco','Sesamo negro','Sobrecostilla','Stevia sachet','Syrup de Arandanos','Syrup de Betarraga','Syrup de Durazno','Syrup de Frambuesa','Syrup de Frutilla','Syrup de Mango','Syrup de Pina','Syrup de Vainilla','Tapa Domo 12oz','Tapa Domo 12oz (s/ hoyo)','Tapa Domo 16oz','Tapas cafe 12oz','Tapas cafe 8oz','Tenedor','Tomate cherry','Trapero con ojal','V-Pro Chocolate','V-Pro Vainilla','Vasos 12oz Transparente','Vasos 12oz cafe','Vasos 16oz Transparente','Vasos 8oz. Cafe','Vasos 9oz (Açaí)','Vasos Espresso','Vinagre de manzana','Virutilla parrillera','Yogurt Natural','Zanahoria'];
 
 // ══════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════
 let currentUser = null;
-let CARGOS      = [];   // [{codigo, cargo}]
-let USUARIOS    = [];   // [{nombre, cargo, codigo, local, email, pwd}]
+let CARGOS      = [];
+let USUARIOS    = [];
 let RECIPES     = [];
 let current     = null;
 let filterL1    = 'todas';
 let filterL2    = 'todas';
+let simIngCounter = 0;
+let simIngredients = [];
+let simProcCounter = 0;
+let simProcSteps = [];
+let simEditMode = false;
 
 // ══════════════════════════════════════════════
 // LOGO
@@ -662,7 +796,6 @@ function injectLogo(id) {
   if (LOGO_B64) {
     el.innerHTML = `<img src="${LOGO_B64}" style="height:26px;display:block">`;
   }
-  // si no hay logo, el texto PINSA. en CSS ya está
 }
 
 // ══════════════════════════════════════════════
@@ -686,14 +819,9 @@ function tick() {
 // ══════════════════════════════════════════════
 async function fetchCSV(gid) {
   try {
-    const url = BASE_URL + gid + '&output=csv';
-    const r = await fetch(url);
-    const txt = await r.text();
-    return parseCSV(txt);
-  } catch(e) {
-    console.warn('CSV fetch error:', e);
-    return [];
-  }
+    const r = await fetch(BASE_URL + gid + '&output=csv');
+    return parseCSV(await r.text());
+  } catch(e) { console.warn('CSV error:', e); return []; }
 }
 
 function parseCSV(txt) {
@@ -715,131 +843,6 @@ function parseCSV(txt) {
 }
 
 // ══════════════════════════════════════════════
-// PLACEHOLDER DATA (activo hasta que GID disponibles)
-// ══════════════════════════════════════════════
-const PLACEHOLDER_CARGOS = [
-  {codigo:'OP', cargo:'Operador'},
-  {codigo:'JL', cargo:'Jefe de Local'},
-  {codigo:'CC', cargo:'Chef CC'},
-  {codigo:'JA', cargo:'Jefe Abastecimiento'},
-  {codigo:'JO', cargo:'Jefe Operaciones'},
-  {codigo:'AD', cargo:'Admin/Directivo'},
-];
-
-const PLACEHOLDER_USUARIOS = [
-  {nombre:'Alberto Agostini',  codigo:'AD', cargo:'Admin/Directivo',       local:'Todos',          pwd:'123456'},
-  {nombre:'Andres Agostini',   codigo:'AD', cargo:'Admin/Directivo',       local:'Todos',          pwd:'123456'},
-  {nombre:'Michele Agostini',  codigo:'AD', cargo:'Admin/Directivo',       local:'Todos',          pwd:'123456'},
-  {nombre:'Mauricio',          codigo:'JO', cargo:'Jefe Operaciones',      local:'Candelaria',     pwd:'123456'},
-  {nombre:'Francisco',         codigo:'JA', cargo:'Jefe Abastecimiento',   local:'Bodega Central', pwd:'123456'},
-];
-
-const PLACEHOLDER_RECIPES = [
-  {
-    id:'R1', nombre:'Pinsa Funghi e Tartufo', familia:'PINSAS', cat:'SOLIDOS',
-    tipo:'ENSAMBLE', seccion:'Barra Café', estado:'ACTIVA', formato:'25cm',
-    t_prep:8, t_coccion:4, temp:'380°C / Turbo', dificultad:2,
-    url:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&q=80',
-    url_video:'https://youtube.com',
-    q_lote:1, unidad:'unidad', precio_venta:11900, costo_u:2850, costo_lote:2850,
-    visible_para:'OP,JL,CC,JA,JO,AD',
-    ingredientes:[
-      {n:'Masa pinsa 25cm',qty:1,um:'unidad',costo:1200,nota:''},
-      {n:'Salsa funghi',qty:80,um:'ml',costo:null,nota:'Puede sustituir con crema de champiñones'},
-      {n:'Mozzarella fior di latte',qty:90,um:'g',costo:890,nota:''},
-      {n:'Funghi porcini',qty:40,um:'g',costo:1200,nota:'En temporada usar funghi frescos'},
-      {n:'Aceite de trufa',qty:5,um:'ml',costo:450,nota:''},
-      {n:'Rúcula',qty:15,um:'g',costo:120,nota:''},
-    ],
-    proc:[
-      {t:'Precalentar',b:'Calentar horno a 380°C con piedra refractaria al menos 20 min antes.'},
-      {t:'Base',b:'Estirar masa en forma oval, aplicar salsa funghi dejando borde libre de 1.5 cm.'},
-      {t:'Armar',b:'Distribuir mozzarella rasgada a mano, agregar porcini laminados uniformemente.'},
-      {t:'Hornear',b:'Colocar sobre piedra 3–4 min hasta bordes dorados y base crujiente.'},
-      {t:'Finalizar',b:'Al salir del horno, agregar rúcula fresca y gotas de aceite de trufa.'},
-    ],
-    perfect_serve:'Cortar en 6 porciones irregulares. Presentar en tabla de madera con servilleta de lino. Servir inmediatamente — los primeros 30 segundos post-horno son críticos.',
-    notas_generales:'En temporada de verano reducir tiempo de cocción 30 segundos. La masa debe estar a temperatura ambiente antes de hornear.',
-  },
-  {
-    id:'REC-0046', nombre:'Zen Ju', familia:'HOT_SUPER_LATTE', cat:'LIQUIDOS',
-    tipo:'ENSAMBLE', seccion:'Barra Cafe', estado:'ACTIVA', formato:'12OZ',
-    t_prep:5, t_coccion:0, temp:null, dificultad:1,
-    url:'https://drive.google.com/uc?id=14Rh6uuRcLrJuk32iJ-oCarOfBRtIgoXl',
-    url_video:'https://youtube.com/shorts/_9aMitUaK1c?feature=share',
-    q_lote:1, unidad:'ml', precio_venta:1900, costo_u:null, costo_lote:null,
-    visible_para:'OP',
-    ingredientes:[
-      {n:'Extra mild (base)',qty:9,um:'gr',costo:null,nota:''},
-      {n:'Leche entera cremosa',qty:150,um:'ml',costo:null,nota:''},
-      {n:'Coffee creamer 7 funghi',qty:3,um:'gr',costo:null,nota:''},
-      {n:'Canela ceylan',qty:0.5,um:'gr',costo:null,nota:''},
-      {n:'Miel de palma',qty:10,um:'gr',costo:null,nota:''},
-      {n:'Hielo',qty:1,um:'pala',costo:null,nota:''},
-    ],
-    proc:[
-      {t:'Vaso',b:'Preparar vaso ripple 12oz con 1 pala de hielo.'},
-      {t:'Base',b:'Agregar 9gr extra mild + 150ml leche entera cremosa + 3gr coffee creamer 7 funghi.'},
-      {t:'Especias',b:'Añadir 0.5gr canela ceylan + 10gr miel de palma.'},
-      {t:'Decoración',b:'Terminar con canela en polvo sobre la superficie.'},
-    ],
-    perfect_serve:'Servir caliente a 65°C. Mezclar bien antes de entregar. Presentar con bombilla negra 8mm. Sin tapa.',
-    notas_generales:'',
-  },
-  {
-    id:'R3', nombre:'Salsa Pomodoro Concentrata', familia:'SALSAS', cat:'SOLIDOS',
-    tipo:'PREPARACION', seccion:'CC Salsas', estado:'ACTIVA', formato:'',
-    t_prep:10, t_coccion:25, temp:'Fuego medio', dificultad:1,
-    url:'https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?w=600&q=80',
-    url_video:null,
-    q_lote:2000, unidad:'ml', precio_venta:null, costo_u:180, costo_lote:360000,
-    visible_para:'CC,JO,AD',
-    ingredientes:[
-      {n:'Tomate San Marzano',qty:3000,um:'g',costo:null,nota:''},
-      {n:'Aceite oliva extra virgen',qty:60,um:'ml',costo:null,nota:''},
-      {n:'Ajo fresco',qty:20,um:'g',costo:null,nota:''},
-      {n:'Sal marina',qty:12,um:'g',costo:null,nota:''},
-      {n:'Albahaca fresca',qty:10,um:'g',costo:null,nota:'Puede sustituir con albahaca seca (reducir 70%)'},
-    ],
-    proc:[
-      {t:'Preparar',b:'Escaldar y pelar tomates. Picar ajo finamente.'},
-      {t:'Sofreír',b:'Dorar ajo en aceite 2 min a fuego bajo, sin quemar.'},
-      {t:'Cocinar',b:'Agregar tomates triturados, cocinar a fuego medio 20 min removiendo cada 5 min.'},
-      {t:'Sazonar',b:'Añadir sal y albahaca, reducir 5 min más.'},
-      {t:'Envasar',b:'Procesar con mixer, envasar en caliente y etiquetar con fecha de producción.'},
-    ],
-    perfect_serve:null,
-    notas_generales:'Producción mínima 2L. Conservar en frío máx 5 días. Etiquetar con fecha.',
-  },
-  {
-    id:'R4', nombre:'Impasto Pinsa 25cm', familia:'BASES', cat:'SOLIDOS',
-    tipo:'PREPARACION', seccion:'CC Bases', estado:'ACTIVA', formato:'',
-    t_prep:20, t_coccion:0, temp:null, dificultad:3,
-    url:null, url_video:null,
-    q_lote:10, unidad:'unidades', precio_venta:null, costo_u:320, costo_lote:3200,
-    visible_para:'CC,JO,AD',
-    ingredientes:[
-      {n:'Harina tipo 0',qty:600,um:'g',costo:null,nota:''},
-      {n:'Harina de arroz',qty:200,um:'g',costo:null,nota:''},
-      {n:'Harina de soya',qty:60,um:'g',costo:null,nota:''},
-      {n:'Agua fría',qty:700,um:'ml',costo:null,nota:'Temperatura máx 4°C'},
-      {n:'Levadura seca',qty:4,um:'g',costo:null,nota:'En invierno (T° < 18°C) usar 5g'},
-      {n:'Sal marina',qty:18,um:'g',costo:null,nota:''},
-      {n:'Aceite oliva',qty:30,um:'ml',costo:null,nota:''},
-    ],
-    proc:[
-      {t:'Autolisis',b:'Mezclar harinas con 80% agua. Reposar 30 min tapado.'},
-      {t:'Amasado',b:'Incorporar levadura, sal y aceite. Amasar 15 min hasta obtener elasticidad.'},
-      {t:'Fermentación 1',b:'Cubrir y dejar 2h a temperatura ambiente.'},
-      {t:'Bolas',b:'Dividir en porciones de 130g y bollar.'},
-      {t:'Fermentación 2',b:'Envasar individualmente y guardar 72h en frío a 4°C.'},
-    ],
-    perfect_serve:null,
-    notas_generales:'Fermentación 72h mínimo a 4°C. Este es el corazón del producto PINSA.',
-  },
-];
-
-// ══════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════
 window.addEventListener('load', async () => {
@@ -851,426 +854,570 @@ window.addEventListener('load', async () => {
   setTimeout(() => {
     document.getElementById('loadingOverlay').style.display = 'none';
     const saved = sessionStorage.getItem('pinsa_visor_user');
-    if (saved) {
-      currentUser = JSON.parse(saved);
-      showApp();
-    } else {
-      showLogin();
-    }
+    if (saved) { currentUser = JSON.parse(saved); showApp(); }
+    else showLogin();
   }, 500);
 });
+function animateBar(pct) { document.getElementById('ldBar').style.width = pct+'%'; }
 
-function animateBar(pct) {
-  document.getElementById('ldBar').style.width = pct + '%';
-}
+// ══════════════════════════════════════════════
+// LOAD DATA
+// ══════════════════════════════════════════════
+const PLACEHOLDER_CARGOS = [
+  {codigo:'OP',cargo:'Operador'},{codigo:'JL',cargo:'Jefe de Local'},
+  {codigo:'CC',cargo:'Chef CC'},{codigo:'JA',cargo:'Jefe Abastecimiento'},
+  {codigo:'JO',cargo:'Jefe Operaciones'},{codigo:'AD',cargo:'Admin/Directivo'},
+];
+const PLACEHOLDER_USUARIOS = [
+  {nombre:'Alberto Agostini',codigo:'AD',cargo:'Admin/Directivo',local:'Todos',pwd:'123456'},
+  {nombre:'Andres Agostini', codigo:'AD',cargo:'Admin/Directivo',local:'Todos',pwd:'123456'},
+  {nombre:'Michele Agostini',codigo:'AD',cargo:'Admin/Directivo',local:'Todos',pwd:'123456'},
+  {nombre:'Mauricio',        codigo:'JO',cargo:'Jefe Operaciones',local:'Candelaria',pwd:'123456'},
+  {nombre:'Francisco',       codigo:'JA',cargo:'Jefe Abastecimiento',local:'Bodega Central',pwd:'123456'},
+];
 
 async function loadData() {
-  // PARAMETROS — struttura a più tabelle sulle stesse righe
-  // Col M=Codigo, N=Cargo | Col P=Nombre(usuario), Q=Cargo(label), S=Local, T=email, U=ACTIVO
-  // Col P=Usuario(pwd), Q=PWD  (da riga 29+)
   try {
     const rows = await fetchCSV(GID.PARAMETROS);
     if (rows.length) {
-      // Tabella CARGOS (col M/N): righe con Codigo valido (OP,JL,CC,JA,JO,AD)
       const validCodigos = new Set(['OP','JL','CC','JA','JO','AD']);
-      CARGOS = rows
-        .filter(r => r['Codigo'] && validCodigos.has(r['Codigo'].trim()))
-        .map(r => ({codigo: r['Codigo'].trim(), cargo: r['Cargo'].trim()}));
-
-      // Tabella USUARIOS (col P=Nombre, Q=Cargo, S=Local, T=email, U=ACTIVO)
+      CARGOS = rows.filter(r => r['Codigo'] && validCodigos.has(r['Codigo'].trim()))
+               .map(r => ({codigo:r['Codigo'].trim(), cargo:r['Cargo'].trim()}));
       const usuariosRaw = rows
-        .filter(r => r['Nombre'] && r['Cargo'] && r['ACTIVO'] === 'SI')
+        .filter(r => r['Nombre'] && r['Cargo'] && r['ACTIVO']==='SI')
         .map(r => {
-          // Trovare cargo codigo dal nome cargo
-          const cargoLabel = (r['Cargo'] || '').trim();
-          const cargoObj   = CARGOS.find(c => c.cargo === cargoLabel) ||
-                             CARGOS.find(c => cargoLabel.includes(c.cargo)) || null;
-          return {
-            nombre: r['Nombre'].trim(),
-            cargo:  cargoLabel,
-            codigo: cargoObj ? cargoObj.codigo : cargoLabel.substring(0,2).toUpperCase(),
-            local:  (r['Local'] || '').trim(),
-            email:  (r['email'] || '').trim(),
-            pwd:    '',
-          };
+          const cargoLabel = (r['Cargo']||'').trim();
+          const cargoObj = CARGOS.find(c=>c.cargo===cargoLabel)||CARGOS.find(c=>cargoLabel.includes(c.cargo))||null;
+          return {nombre:r['Nombre'].trim(), cargo:cargoLabel,
+                  codigo:cargoObj?cargoObj.codigo:cargoLabel.substring(0,2).toUpperCase(),
+                  local:(r['Local']||'').trim(), email:(r['email']||'').trim(), pwd:''};
         });
-
-      // Tabella PWD (col P=Usuario, Q=PWD — intestazione "Usuario"/"PWD")
-      // Nel CSV queste colonne si chiamano anche Nombre/Cargo ma da riga 29+
-      // Leggiamo direttamente cercando righe dove esiste solo col P e Q con numero
       rows.forEach(r => {
-        const u = (r['Usuario'] || '').trim();
-        const p = (r['PWD']     || '').trim();
-        if (u && p) {
-          const found = usuariosRaw.find(x => x.nombre === u);
-          if (found) found.pwd = p;
-        }
+        const u=(r['Usuario']||'').trim(), p=(r['PWD']||'').trim();
+        if(u&&p){ const f=usuariosRaw.find(x=>x.nombre===u); if(f) f.pwd=p; }
       });
-
       USUARIOS = usuariosRaw.length ? usuariosRaw : PLACEHOLDER_USUARIOS;
     }
-  } catch(e) { console.warn('PARAMETROS fetch error:', e); }
-
+  } catch(e) { console.warn('PARAMETROS error:',e); }
   if (!CARGOS.length)   CARGOS   = PLACEHOLDER_CARGOS;
   if (!USUARIOS.length) USUARIOS = PLACEHOLDER_USUARIOS;
 
-  // RECETAS — carica da GID reali
   try {
     const master = await fetchCSV(GID.MASTER);
-    if (master.length) {
-      RECIPES = master.filter(r => r['ID_Receta']).map(mapMasterRow);
-    }
-  } catch(e) { console.warn('MASTER fetch error:', e); }
-  if (!RECIPES.length) RECIPES = PLACEHOLDER_RECIPES;
+    if (master.length) RECIPES = master.filter(r=>r['ID_Receta']).map(mapMasterRow);
+  } catch(e) { console.warn('MASTER error:',e); }
 
-  // DETALLE — carica ingredienti e fa join su ID_Receta
-  // Colonne: ID_Receta | Orden | SKU_Insumo | Descripcion | Q_lote | UM | Precio_actual | Costo_linea | Es_SubReceta | Notas
   try {
     const detalle = await fetchCSV(GID.DETALLE);
     if (detalle.length) {
-      // Ordina per Orden prima del join
-      detalle.sort((a,b) => Number(a['Orden']||0) - Number(b['Orden']||0));
+      detalle.sort((a,b)=>Number(a['Orden']||0)-Number(b['Orden']||0));
       detalle.forEach(d => {
-        const rid = (d['ID_Receta'] || '').trim();
-        if (!rid) return;
-        const recipe = RECIPES.find(r => r.id === rid);
-        if (!recipe) return;
-        const ing = {
-          n:    (d['Descripcion'] || '').trim(),
-          qty:  cleanNum(d['Q_lote']),
-          um:   (d['UM'] || '').trim(),
-          costo: cleanNum(d['Precio_actual']) || null,
-          costoLinea: cleanNum(d['Costo_linea']) || null,
-          nota: (d['Notas'] || '').trim(),
-          esSub: d['Es_SubReceta'] === 'TRUE',
+        const rid=(d['ID_Receta']||'').trim();
+        if(!rid) return;
+        const recipe=RECIPES.find(r=>r.id===rid);
+        if(!recipe) return;
+        const ing={
+          n:(d['Descripcion']||'').trim(), qty:cleanNum(d['Q_lote']),
+          um:(d['UM']||'').trim(), costo:cleanNum(d['Precio_actual'])||null,
+          costoLinea:cleanNum(d['Costo_linea'])||null,
+          nota:(d['Notas']||'').trim(), esSub:d['Es_SubReceta']==='TRUE',
         };
-        if (ing.n) recipe.ingredientes.push(ing);
+        if(ing.n) recipe.ingredientes.push(ing);
       });
     }
-  } catch(e) { console.warn('DETALLE fetch error:', e); }
+  } catch(e) { console.warn('DETALLE error:',e); }
 }
 
 function cleanNum(v) {
-  if (!v) return 0;
+  if(!v) return 0;
   return Number(String(v).replace(/[$\s]/g,'').replace(/\./g,'').replace(',','.')) || 0;
 }
 
 function mapMasterRow(r) {
-  // Colonne CSV RECETAS_MASTER aggiornato:
-  // ID_Receta | Nombre | Tipo Receta | Seccion | Familia | Categoria | Estado | Formato |
-  // Unidad salida | Q lote std | Rendimiento | Costo Lote | Costo Unitario |
-  // Precio de Venta Unitario | Tiempo Prep min | Tiempo Coccion | Dificultad |
-  // URL_Foto | URL_Video | Procedimiento | Perfect_Serve | Notas | Visible para
-
-  const difStr    = (r['Dificultad'] || '').toLowerCase();
-  const difNum    = difStr === 'alta' ? 3 : difStr === 'media' ? 2 : 1;
-  const rendPct   = parseFloat(r['Rendimiento'] || 1);
-  const rend      = rendPct > 1 ? rendPct / 100 : rendPct;
-  const qLote     = cleanNum(r['Q lote std']);
-  const costoLote = cleanNum(r['Costo Lote']) || null;
-  const costoU    = cleanNum(r['Costo Unitario']) || null ||
-                    (costoLote && qLote && rend ? costoLote / (qLote * rend) : null);
-  const precioV   = cleanNum(r['Precio de Venta Unitario']) || null;
-  const visRaw    = r['Visible para'] || 'OP,JL,CC,JA,JO,AD';
-  const tPrep     = cleanNum(r['Tiempo Prep min']);
-  const tCoccion  = cleanNum(r['Tiempo Coccion'] || r['Tiempo Cocción']);
-
+  const difStr=(r['Dificultad']||'').toLowerCase();
+  const difNum=difStr==='alta'?3:difStr==='media'?2:1;
+  const rendPct=parseFloat(r['Rendimiento']||1);
+  const rend=rendPct>1?rendPct/100:rendPct;
+  const qLote=cleanNum(r['Q lote std']);
+  const costoLote=cleanNum(r['Costo Lote'])||null;
+  const costoU=cleanNum(r['Costo Unitario'])||null||(costoLote&&qLote&&rend?costoLote/(qLote*rend):null);
+  const precioV=cleanNum(r['Precio de Venta Unitario'])||null;
+  const visRaw=r['Visible para']||'OP,JL,CC,JA,JO,AD';
   return {
-    id:              r['ID_Receta']    || '',
-    nombre:          r['Nombre']       || '',
-    familia:         (r['Familia']     || '').toUpperCase(),
-    cat:             (r['Categoria']   || '').toUpperCase(),
-    tipo:            (r['Tipo Receta'] || '').toUpperCase(),
-    seccion:         r['Seccion']      || '',
-    estado:          (r['Estado']      || 'ACTIVA').toUpperCase(),
-    formato:         r['Formato']      || '',
-    t_prep:          tPrep,
-    t_coccion:       tCoccion,
-    temp:            null,
-    dificultad:      difNum,
-    rendimiento:     rend,
-    url:             r['URL_Foto']     || null,
-    url_video:       r['URL_Video']    || null,
-    q_lote:          qLote || 1,
-    unidad:          r['Unidad salida'] || 'unidad',
-    precio_venta:    precioV,
-    costo_u:         costoU,
-    costo_lote:      costoLote,
-    visible_para:    visRaw.replace(/\s/g, ''),
-    notas_generales: (r['Notas'] || '').trim(),
-    ingredientes:    [],
-    proc:            parseProcedimiento(r['Procedimiento'] || ''),
-    perfect_serve:   (r['Perfect_Serve'] || '').trim() || null,
+    id:r['ID_Receta']||'', nombre:r['Nombre']||'', familia:(r['Familia']||'').toUpperCase(),
+    cat:(r['Categoria']||'').toUpperCase(), tipo:(r['Tipo Receta']||'').toUpperCase(),
+    seccion:r['Seccion']||'', estado:(r['Estado']||'ACTIVA').toUpperCase(),
+    formato:r['Formato']||'', t_prep:cleanNum(r['Tiempo Prep min']),
+    t_coccion:cleanNum(r['Tiempo Coccion']||r['Tiempo Cocción']), temp:null,
+    dificultad:difNum, rendimiento:rend, url:r['URL_Foto']||null, url_video:r['URL_Video']||null,
+    q_lote:qLote||1, unidad:r['Unidad salida']||'unidad', precio_venta:precioV,
+    costo_u:costoU, costo_lote:costoLote, visible_para:visRaw.replace(/\s/g,''),
+    notas_generales:(r['Notas']||'').trim(), ingredientes:[],
+    proc:parseProcedimiento(r['Procedimiento']||''),
+    perfect_serve:(r['Perfect_Serve']||'').trim()||null,
   };
 }
 
 function parseProcedimiento(txt) {
-  if (!txt) return [];
+  if(!txt) return [];
   return txt.split('|').map(block => {
-    const t = block.trim();
-    const ci = t.indexOf(':');
-    if (ci > 0 && ci < 25) {
-      return {t: t.substring(0,ci).trim(), b: t.substring(ci+1).trim()};
-    }
+    const t=block.trim();
+    const ci=t.indexOf(':');
+    if(ci>0&&ci<25) return {t:t.substring(0,ci).trim(), b:t.substring(ci+1).trim()};
     return {t:'', b:t};
-  }).filter(p => p.b);
+  }).filter(p=>p.b);
 }
 
 // ══════════════════════════════════════════════
 // LOGIN / LOGOUT
 // ══════════════════════════════════════════════
 function showLogin() {
-  document.getElementById('app').style.display = 'none';
-  const ls = document.getElementById('loginScreen');
-  ls.style.display = 'flex';
-  document.getElementById('lwNombre').value = '';
-  document.getElementById('lwPwd').value = '';
-  document.getElementById('lwNombreList').style.display = 'none';
-  document.getElementById('lwErr').style.display = 'none';
-  setTimeout(() => document.getElementById('lwNombre').focus(), 100);
+  document.getElementById('app').style.display='none';
+  const ls=document.getElementById('loginScreen');
+  ls.style.display='flex';
+  document.getElementById('lwNombre').value='';
+  document.getElementById('lwPwd').value='';
+  document.getElementById('lwNombreList').style.display='none';
+  document.getElementById('lwErr').style.display='none';
+  setTimeout(()=>document.getElementById('lwNombre').focus(),100);
 }
-
 function filterNombreList(val) {
-  const list = document.getElementById('lwNombreList');
-  if (!val || val.length < 1) { list.style.display = 'none'; return; }
-  const matches = USUARIOS.filter(u => u.nombre.toLowerCase().startsWith(val.toLowerCase()));
-  if (!matches.length) { list.style.display = 'none'; return; }
-  list.innerHTML = matches.map(u =>
+  const list=document.getElementById('lwNombreList');
+  if(!val||val.length<1){list.style.display='none';return;}
+  const matches=USUARIOS.filter(u=>u.nombre.toLowerCase().startsWith(val.toLowerCase()));
+  if(!matches.length){list.style.display='none';return;}
+  list.innerHTML=matches.map(u=>
     `<div onclick="selectNombre('${u.nombre.replace(/'/g,"\\'")}');document.getElementById('lwPwd').focus()"
       style="padding:9px 12px;font-size:12px;color:var(--t1);cursor:pointer;border-bottom:1px solid var(--b1);transition:background 0.1s"
       onmouseover="this.style.background='var(--p4)'" onmouseout="this.style.background=''">${u.nombre}
       <span style="font-size:9px;color:var(--tc);letter-spacing:1px;margin-left:8px">${u.codigo}</span>
     </div>`
   ).join('');
-  list.style.display = 'block';
+  list.style.display='block';
 }
-
-function selectNombre(nombre) {
-  document.getElementById('lwNombre').value = nombre;
-  document.getElementById('lwNombreList').style.display = 'none';
-}
-
+function selectNombre(nombre){document.getElementById('lwNombre').value=nombre;document.getElementById('lwNombreList').style.display='none';}
 function doLogin() {
-  const nombre = document.getElementById('lwNombre').value.trim();
-  const pwd    = document.getElementById('lwPwd').value;
-  const err    = document.getElementById('lwErr');
-
-  if (!nombre) {
-    err.textContent = 'Ingresa tu nombre';
-    err.style.display = 'block'; return;
-  }
-
-  const usuario = USUARIOS.find(u => u.nombre.toLowerCase() === nombre.toLowerCase());
-  if (!usuario) {
-    err.textContent = 'Usuario no encontrado';
-    err.style.display = 'block'; return;
-  }
-
-  // Validar PWD
-  const pwdOk = !usuario.pwd || usuario.pwd === pwd;
-  if (!pwdOk) {
-    err.textContent = 'Contraseña incorrecta';
-    err.style.display = 'block';
-    document.getElementById('lwPwd').value = '';
-    document.getElementById('lwPwd').focus();
-    return;
-  }
-
-  err.style.display = 'none';
-  currentUser = {
-    nombre: usuario.nombre,
-    cargo:  usuario.cargo,
-    codigo: usuario.codigo,
-    local:  usuario.local,
-  };
-  sessionStorage.setItem('pinsa_visor_user', JSON.stringify(currentUser));
-  document.getElementById('loginScreen').style.display = 'none';
+  const nombre=document.getElementById('lwNombre').value.trim();
+  const pwd=document.getElementById('lwPwd').value;
+  const err=document.getElementById('lwErr');
+  if(!nombre){err.textContent='Ingresa tu nombre';err.style.display='block';return;}
+  const usuario=USUARIOS.find(u=>u.nombre.toLowerCase()===nombre.toLowerCase());
+  if(!usuario){err.textContent='Usuario no encontrado';err.style.display='block';return;}
+  const pwdOk=!usuario.pwd||usuario.pwd===pwd;
+  if(!pwdOk){err.textContent='Contraseña incorrecta';err.style.display='block';document.getElementById('lwPwd').value='';document.getElementById('lwPwd').focus();return;}
+  err.style.display='none';
+  currentUser={nombre:usuario.nombre,cargo:usuario.cargo,codigo:usuario.codigo,local:usuario.local};
+  sessionStorage.setItem('pinsa_visor_user',JSON.stringify(currentUser));
+  document.getElementById('loginScreen').style.display='none';
   showApp();
 }
-
-function doLogout() {
-  sessionStorage.removeItem('pinsa_visor_user');
-  currentUser = null; current = null;
-  document.getElementById('app').style.display = 'none';
-  showLogin();
-}
+function doLogout(){sessionStorage.removeItem('pinsa_visor_user');currentUser=null;current=null;document.getElementById('app').style.display='none';showLogin();}
 
 // ══════════════════════════════════════════════
 // APP
 // ══════════════════════════════════════════════
 function showApp() {
-  document.getElementById('app').style.display = 'block';
-  document.getElementById('hNombre').textContent = currentUser.nombre;
-  document.getElementById('hCargo').textContent = currentUser.codigo + ' — ' + currentUser.cargo;
-  // Visibilità Simulador/Descuentos per cargo
-  const canSim = ['CC','JO','AD'].includes(currentUser.codigo);
-  document.getElementById('btn-simulador').style.display = canSim ? '' : 'none';
-  document.getElementById('btn-descuentos').style.display = canSim ? '' : 'none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('hNombre').textContent=currentUser.nombre;
+  document.getElementById('hCargo').textContent=currentUser.codigo+' — '+currentUser.cargo;
+  // FIX V7: JA aggiunto a canSim
+  const canSim=['CC','JO','AD','JA'].includes(currentUser.codigo);
+  document.getElementById('btn-simulador').style.display=canSim?'':'none';
+  document.getElementById('btn-descuentos').style.display=canSim?'':'none';
+  buildEstadoOptions();
   buildL2();
   renderList('');
   populateSimFamilias();
   populateDescSelect();
 }
+function canSeeCosts(){return ['JL','CC','JA','JO','AD'].includes(currentUser.codigo);}
+function canEdit(){return ['CC','JO','AD','JA'].includes(currentUser.codigo);}
+function canChangeToActive(){return ['JO','AD'].includes(currentUser.codigo);}
 
-function canSeeCosts() {
-  return ['JL','CC','JA','JO','AD'].includes(currentUser.codigo);
+function buildEstadoOptions() {
+  const sel=document.getElementById('simEstado');
+  const canActive=canChangeToActive();
+  sel.innerHTML=`
+    <option value="SIMULACION">SIMULACION</option>
+    <option value="PENDIENTE">PENDIENTE</option>
+    ${canActive?'<option value="ACTIVA_SIN_DATA">ACTIVA_SIN_DATA</option>':''}
+    ${canActive?'<option value="ACTIVA">ACTIVA</option>':''}
+    ${canActive?'<option value="ARCHIVADA">ARCHIVADA</option>':''}
+  `;
+  updateEstadoHint();
 }
+
+function updateEstadoHint() {
+  const val=document.getElementById('simEstado').value;
+  const hints={
+    SIMULACION:'Borrador personal. Solo visible para ti mientras desarrollas.',
+    PENDIENTE:'Lista para revisión. Jefe de Operaciones o Admin deben aprobarla.',
+    ACTIVA_SIN_DATA:'Aprobada en estructura pero sin datos de costo completos.',
+    ACTIVA:'En producción activa. Visible según permisos.',
+    ARCHIVADA:'Fuera de uso. Se mantiene en historial.',
+  };
+  document.getElementById('simEstadoHint').textContent=hints[val]||'';
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const sel=document.getElementById('simEstado');
+  if(sel) sel.addEventListener('change',updateEstadoHint);
+});
 
 function getVisibleRecipes() {
   return RECIPES.filter(r => {
-    const vp = (r.visible_para || '').split(',').map(x => x.trim());
+    const vp=(r.visible_para||'').split(',').map(x=>x.trim());
     return vp.includes(currentUser.codigo);
   });
 }
 
 // ══════════════════════════════════════════════
-// NAV SECTIONS
+// NAV
 // ══════════════════════════════════════════════
 function setSection(s, el) {
-  document.querySelectorAll('.h-nav-btn').forEach(b => b.classList.remove('on'));
-  document.querySelectorAll('.sec-panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.h-nav-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.sec-panel').forEach(p=>p.classList.remove('on'));
   el.classList.add('on');
   document.getElementById('panel-'+s).classList.add('on');
+  if(s==='simulador') renderMisRecetas();
 }
 
 // ══════════════════════════════════════════════
 // FILTRO SIDEBAR
 // ══════════════════════════════════════════════
-function setL1(f, el) {
-  filterL1 = f; filterL2 = 'todas';
-  document.querySelectorAll('#chips-l1 .chip').forEach(c => c.classList.remove('on'));
-  el.classList.add('on');
-  buildL2();
-  renderList('');
+function setL1(f,el){
+  filterL1=f;filterL2='todas';
+  document.querySelectorAll('#chips-l1 .chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');buildL2();renderList('');
 }
+function buildL2(){
+  const pool=filterL1==='todas'?getVisibleRecipes():getVisibleRecipes().filter(r=>r.cat===filterL1);
+  const familias=[...new Set(pool.map(r=>r.familia))].filter(Boolean).sort();
+  const wrap=document.getElementById('familia-wrap');
+  const sel=document.getElementById('familiaSelect');
+  if(filterL1==='todas'){wrap.style.display='none';filterL2='todas';return;}
+  wrap.style.display='block';
+  sel.innerHTML=`<option value="todas">Todas las familias</option>`
+    +familias.map(f=>`<option value="${f}">${f.charAt(0)+f.slice(1).toLowerCase()}</option>`).join('');
+  sel.value='todas';filterL2='todas';
+}
+function setL2Dropdown(f){filterL2=f;renderList('');}
 
-function buildL2() {
-  const pool = filterL1==='todas' ? getVisibleRecipes() : getVisibleRecipes().filter(r => r.cat===filterL1);
-  const familias = [...new Set(pool.map(r => r.familia))].filter(Boolean).sort();
-  const wrap = document.getElementById('familia-wrap');
-  const sel  = document.getElementById('familiaSelect');
-  if (filterL1==='todas') { wrap.style.display='none'; filterL2='todas'; return; }
-  wrap.style.display = 'block';
-  sel.innerHTML = `<option value="todas">Todas las familias</option>`
-    + familias.map(f => `<option value="${f}">${f.charAt(0)+f.slice(1).toLowerCase()}</option>`).join('');
-  sel.value = 'todas'; filterL2 = 'todas';
-}
-
-function setL2Dropdown(f) {
-  filterL2 = f;
-  renderList('');
-}
-
-// ══════════════════════════════════════════════
-// LISTA
-// ══════════════════════════════════════════════
-function miniDots(n) {
-  return [1,2,3].map(i =>
-    `<span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:${i<=n?'var(--tc)':'var(--p5)'};margin-right:2px"></span>`
-  ).join('');
-}
+function miniDots(n){return[1,2,3].map(i=>`<span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:${i<=n?'var(--tc)':'var(--p5)'};margin-right:2px"></span>`).join('');}
 
 function renderList(q='') {
-  const list = document.getElementById('sbList');
-  const items = getVisibleRecipes().filter(r => {
-    const m1 = filterL1==='todas' || r.cat===filterL1;
-    const m2 = filterL2==='todas' || r.familia===filterL2;
-    const ms = !q || r.nombre.toLowerCase().includes(q.toLowerCase());
-    return m1 && m2 && ms;
-  }).sort((a,b) => a.nombre.localeCompare(b.nombre, 'es'));
-
-  if (!items.length) {
-    list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--t3);font-size:11px;letter-spacing:1px;text-transform:uppercase">Sin resultados</div>';
-    return;
-  }
-  list.innerHTML = items.map(r => {
-    const isActiva = r.estado.includes('ACTIVA');
+  const list=document.getElementById('sbList');
+  const items=getVisibleRecipes().filter(r=>{
+    const m1=filterL1==='todas'||r.cat===filterL1;
+    const m2=filterL2==='todas'||r.familia===filterL2;
+    const ms=!q||r.nombre.toLowerCase().includes(q.toLowerCase());
+    return m1&&m2&&ms;
+  }).sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+  if(!items.length){list.innerHTML='<div style="padding:20px;text-align:center;color:var(--t3);font-size:11px;letter-spacing:1px;text-transform:uppercase">Sin resultados</div>';return;}
+  list.innerHTML=items.map(r=>{
+    const isActiva=r.estado.includes('ACTIVA');
+    const isSim=r.estado==='SIMULACION';
+    const dotClass=isActiva?'ok':isSim?'sim':r.estado==='ARCHIVADA'?'arch':'pend';
     return `<div class="ri ${current?.id===r.id?'on':''}" onclick="pickRecipe('${r.id}')">
       <div class="ri-name">${r.nombre}</div>
       <div class="ri-meta">
         <span class="tag">${r.familia}</span>
-        ${r.formato ? `<span class="tag">${r.formato}</span>` : ''}
+        ${r.formato?`<span class="tag">${r.formato}`:''}</span>
         <span class="ri-right">
           ${miniDots(r.dificultad)}
           <span class="ri-mins">${r.t_prep+(r.t_coccion||0)}′</span>
-          <span class="sdot ${isActiva?'ok':'pend'}"></span>
+          <span class="sdot ${dotClass}"></span>
         </span>
       </div>
     </div>`;
   }).join('');
 }
 
-function pickRecipe(id) {
-  current = RECIPES.find(r => r.id===id);
-  renderList(document.getElementById('searchInput').value || '');
+function pickRecipe(id){
+  current=RECIPES.find(r=>r.id===id);
+  renderList(document.getElementById('searchInput').value||''  );
   renderRecipe(current);
 }
 
 // ══════════════════════════════════════════════
-// VIDEO MODAL
+// VIDEO / FOTO
 // ══════════════════════════════════════════════
 function openVideo(url, nombre) {
-  let embedUrl = url;
-  if (url.includes('shorts/')) {
-    const id = url.split('shorts/')[1].split('?')[0];
-    embedUrl = `https://www.youtube.com/embed/${id}`;
-  } else if (url.includes('youtu.be/')) {
-    const id = url.split('youtu.be/')[1].split('?')[0];
-    embedUrl = `https://www.youtube.com/embed/${id}`;
-  } else if (url.includes('youtube.com/watch')) {
-    const id = new URL(url).searchParams.get('v');
-    embedUrl = `https://www.youtube.com/embed/${id}`;
-  }
-  document.getElementById('videoFrame').src = embedUrl;
-  document.getElementById('modalTitle').textContent = nombre;
+  let embedUrl=url;
+  if(url.includes('shorts/')){const id=url.split('shorts/')[1].split('?')[0];embedUrl=`https://www.youtube.com/embed/${id}`;}
+  else if(url.includes('youtu.be/')){const id=url.split('youtu.be/')[1].split('?')[0];embedUrl=`https://www.youtube.com/embed/${id}`;}
+  else if(url.includes('youtube.com/watch')){const id=new URL(url).searchParams.get('v');embedUrl=`https://www.youtube.com/embed/${id}`;}
+  document.getElementById('videoFrame').src=embedUrl;
+  document.getElementById('modalTitle').textContent=nombre;
   document.getElementById('videoModal').classList.add('open');
 }
-function closeVideo() {
-  document.getElementById('videoModal').classList.remove('open');
-  document.getElementById('videoFrame').src = '';
-}
-
-// ══════════════════════════════════════════════
-// FOTO LIGHTBOX
-// ══════════════════════════════════════════════
-function openFoto(url, nombre) {
-  const lb = document.getElementById('fotoLightbox');
-  document.getElementById('lbImg').src = url;
-  document.getElementById('lbNombre').textContent = nombre;
+function closeVideo(){document.getElementById('videoModal').classList.remove('open');document.getElementById('videoFrame').src='';}
+function openFoto(url, nombre){
+  const lb=document.getElementById('fotoLightbox');
+  document.getElementById('lbImg').src=url;
+  document.getElementById('lbNombre').textContent=nombre;
   lb.classList.add('open');
-  // ESC per chiudere
-  document.addEventListener('keydown', _lbKey);
+  document.addEventListener('keydown',_lbKey);
 }
-function closeFoto() {
-  document.getElementById('fotoLightbox').classList.remove('open');
-  document.getElementById('lbImg').src = '';
-  document.removeEventListener('keydown', _lbKey);
-}
-function _lbKey(e) { if (e.key === 'Escape') closeFoto(); }
+function closeFoto(){document.getElementById('fotoLightbox').classList.remove('open');document.getElementById('lbImg').src='';document.removeEventListener('keydown',_lbKey);}
+function _lbKey(e){if(e.key==='Escape')closeFoto();}
 
 // ══════════════════════════════════════════════
-// SIMULADOR
+// TOAST
 // ══════════════════════════════════════════════
-let simIngCounter = 0;
-let simIngredients = [];
+function showToast(msg, type='ok') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=type;
+  t.style.display='block';
+  setTimeout(()=>{t.style.display='none';},3000);
+}
 
+// ══════════════════════════════════════════════
+// CONFIRM MODAL
+// ══════════════════════════════════════════════
+function openConfirm(title, msg, onOk) {
+  document.getElementById('confirmTitle').textContent=title;
+  document.getElementById('confirmMsg').textContent=msg;
+  const btn=document.getElementById('confirmOk');
+  btn.onclick=()=>{closeConfirm();onOk();};
+  document.getElementById('confirmModal').classList.add('open');
+}
+function closeConfirm(){document.getElementById('confirmModal').classList.remove('open');}
+
+// ══════════════════════════════════════════════
+// RENDER RECETA (con botones Editar/Eliminar)
+// ══════════════════════════════════════════════
+function renderRecipe(r) {
+  document.getElementById('emptyState').style.display='none';
+  const out=document.getElementById('recipeOut');
+  out.style.display='block';
+  const canCost=canSeeCosts();
+  const canEdit_=canEdit();
+  const total=r.t_prep+(r.t_coccion||0);
+  const fc=canCost&&r.costo_u&&r.precio_venta?(r.costo_u/r.precio_venta*100).toFixed(1):null;
+  const fcColor=fc?(fc<25?'verde':fc<30?'amarillo':'rojo'):null;
+  const dDots=[1,2,3].map(i=>`<div class="t-dif-dot ${i<=r.dificultad?'on':''} "></div>`).join('');
+  const hasNotas=!!(r.notas_generales&&r.notas_generales.trim())||r.ingredientes.some(i=>i.nota);
+
+  const estadoBadgeClass=r.estado==='ACTIVA'||r.estado==='ACTIVA_SIN_DATA'?'ok':r.estado==='SIMULACION'?'sim':r.estado==='ARCHIVADA'?'arch':'pend';
+
+  out.innerHTML = `
+    <div class="hero">
+      <div class="hero-info">
+        <div class="hero-bc">${r.familia} <span>·</span> ${r.seccion}</div>
+        <div class="hero-tipo">${r.tipo}</div>
+        <div class="hero-name">${r.nombre.split(' ').map((w,i)=>i===0?`<em>${w}</em>`:w).join(' ')}</div>
+        <div class="hero-badges">
+          <span class="badge ${estadoBadgeClass}">${r.estado}</span>
+          <span class="badge tipo">${r.tipo}</span>
+          ${r.formato?`<span class="badge fmt">${r.formato}</span>`:''}
+          ${r.url_video?`<button class="hero-video-btn" onclick="openVideo('${r.url_video.replace(/'/g,"\\'")}','${r.nombre.replace(/'/g,"\\'")}')">▶ Ver video</button>`:''}
+        </div>
+        ${canEdit_?`<div class="hero-actions">
+          <button class="btn-edit" onclick="editRecipe('${r.id}')">✏ Editar</button>
+          <button class="btn-del" onclick="confirmDelete('${r.id}','${r.nombre.replace(/'/g,"\\'")}')">🗑 Eliminar</button>
+        </div>`:''}
+      </div>
+      <div class="hero-foto">
+        ${r.url
+          ?`<img src="${r.url}" alt="${r.nombre}"
+               onclick="openFoto('${r.url.replace(/'/g,"\\'")}','${r.nombre.replace(/'/g,"\\'")})')"
+               onerror="this.style.cursor='default';this.parentElement.innerHTML='<div class=hero-foto-ph><div class=hero-foto-ph-icon>📷</div><div class=hero-foto-ph-txt>Foto pendiente</div></div>'">`
+          :`<div class="hero-foto-ph"><div class="hero-foto-ph-icon">📷</div><div class="hero-foto-ph-txt">Foto pendiente</div></div>`}
+        ${r.url_video?`<a class="hero-video" onclick="openVideo('${r.url_video}','${r.nombre}')" style="cursor:pointer">▶ Ver video</a>`:''}
+      </div>
+    </div>
+    <div class="t-bar">
+      <div class="t-step">
+        <div class="t-icon">🔪</div>
+        <div class="t-meta"><span class="t-lbl">Prep</span><span class="t-unit">mise en place</span></div>
+        <div class="t-val">${r.t_prep}<span style="font-size:13px;color:var(--t3)"> min</span></div>
+      </div>
+      ${r.t_coccion>0?`
+        <div class="t-sep">→</div>
+        <div class="t-step">
+          <div class="t-icon">🔥</div>
+          <div class="t-meta"><span class="t-lbl">Cocción</span><span class="t-unit">en horno</span></div>
+          <div class="t-val">${r.t_coccion}<span style="font-size:13px;color:var(--t3)"> min</span></div>
+        </div>`:''}
+      ${r.temp?`<div class="t-temp">🌡 ${r.temp}</div>`:''}
+      <div class="t-dif">
+        <span class="t-dif-lbl">Dificultad</span>
+        <div class="t-dif-dots">${dDots}</div>
+      </div>
+      <div class="t-total">
+        <div class="t-icon">⏱</div>
+        <div class="t-meta"><span class="t-lbl" style="color:rgba(196,98,45,0.6)">Total</span><span class="t-unit" style="color:rgba(196,98,45,0.5)">minutos</span></div>
+        <div class="t-val">${total}<span style="font-size:13px;color:var(--tc);opacity:0.7"> min</span></div>
+      </div>
+    </div>
+    ${canCost?`
+    <div class="section">
+      <div class="sec-hdr"><span class="sec-num">FC</span><span class="sec-title">Costos & Food Cost</span><div class="sec-line"></div></div>
+      <div class="costos-grid">
+        <div class="cc-card"><div class="cc-lbl">Costo lote</div><div class="cc-val">${r.costo_lote?'$'+Number(r.costo_lote).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">${r.q_lote} ${r.unidad}</div></div>
+        <div class="cc-card"><div class="cc-lbl">Costo unitario</div><div class="cc-val">${r.costo_u?'$'+Number(r.costo_u).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">por ${r.unidad}</div></div>
+        <div class="cc-card"><div class="cc-lbl">Precio carta</div><div class="cc-val">${r.precio_venta?'$'+Number(r.precio_venta).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">CLP neto</div></div>
+        <div class="cc-card fc"><div class="cc-lbl">Food Cost</div><div class="cc-val">${fc?fc+'%':'—'}</div>${fc?`<div><span class="semaforo ${fcColor}">● ${fcColor==='verde'?'OK':fcColor==='amarillo'?'Revisar':'Alerta'}</span></div>`:'\ <div class="cc-sub">Sin datos</div>'}</div>
+      </div>
+    </div>`:''}
+    <div class="dtabs">
+      <button class="dtab on" data-tab="ing" onclick="switchTab('ing',this)">Ingredientes</button>
+      <button class="dtab" data-tab="proc" onclick="switchTab('proc',this)">Procedimiento</button>
+      ${r.perfect_serve?`<button class="dtab" data-tab="serve" onclick="switchTab('serve',this)">Perfect Serve</button>`:''}
+      ${hasNotas?`<button class="dtab" data-tab="notas" onclick="switchTab('notas',this)">Notas</button>`:''}
+    </div>
+    <div class="tab-panel on" id="tp-ing">
+      <div class="ing-list">
+        ${r.ingredientes.length===0
+          ?'<div style="padding:20px;text-align:center;color:var(--t3);font-size:11px;letter-spacing:1px;text-transform:uppercase">Sin ingredientes registrados</div>'
+          :r.ingredientes.map(i=>{
+            const cl=i.costoLinea||(i.costo&&i.qty?i.costo*i.qty:null);
+            return `<div class="ing-row ${i.esSub?'ing-sub':''}">
+              <div class="ing-name">${i.esSub?'↳ ':''}${i.n}</div>
+              <div class="ing-qty-wrap"><span class="ing-qty">${i.qty}</span><span class="ing-um">${i.um}</span></div>
+              ${canCost?`<div class="ing-costo">${cl?'$'+Math.round(cl).toLocaleString('es-CL'):'—'}</div>`:''}
+            </div>`;
+          }).join('')}
+        ${canCost&&r.ingredientes.length>0?`<div class="ing-total-row">
+          <span class="ing-total-lbl">Total ingredientes</span>
+          <span class="ing-total-val">$${Math.round(r.ingredientes.reduce((s,i)=>s+(i.costoLinea||(i.costo||0)*i.qty),0)).toLocaleString('es-CL')}</span>
+        </div>`:''}
+      </div>
+    </div>
+    <div class="tab-panel" id="tp-proc">
+      <div class="proc-steps">
+        ${r.proc.map((p,i)=>`
+          <div class="proc-step">
+            <div class="proc-num">${String(i+1).padStart(2,'0')}</div>
+            <div>${p.t?`<div class="proc-step-title">${p.t}</div>`:''}
+              <div class="proc-step-txt">${p.b}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+    ${r.perfect_serve?`<div class="tab-panel" id="tp-serve"><div class="ps-box"><div class="ps-lbl">⭑ Instrucción de servicio</div><div class="ps-txt">${r.perfect_serve}</div></div></div>`:''}
+    ${hasNotas?`<div class="tab-panel" id="tp-notas">
+      ${r.notas_generales?`<div class="nota-gen"><div class="nota-gen-lbl">Nota general</div><div class="nota-gen-txt">${r.notas_generales}</div></div>`:''}
+      ${r.ingredientes.filter(i=>i.nota).length>0?`
+        <div class="notas-sust-lbl">Sustituciones posibles</div>
+        <div class="notas-sust-list">
+          ${r.ingredientes.filter(i=>i.nota).map(i=>`
+            <div class="nota-sust-row"><div class="nota-sust-ing">⇄ ${i.n}</div><div class="nota-sust-txt">${i.nota}</div></div>`).join('')}
+        </div>`:''}
+    </div>`:''}
+    <div style="height:40px"></div>
+  `;
+}
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.dtab').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  const tp=document.getElementById('tp-'+tab);
+  if(tp) tp.classList.add('on');
+}
+
+// ══════════════════════════════════════════════
+// SIMULADOR — Tabs (Nueva / Mis recetas)
+// ══════════════════════════════════════════════
+function simShowTab(tab, el) {
+  document.querySelectorAll('.sim-tab').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('sim-panel-nueva').style.display=tab==='nueva'?'':' none';
+  document.getElementById('sim-panel-mis').style.display=tab==='mis'?'':' none';
+  if(tab==='mis') renderMisRecetas();
+}
+
+// ══════════════════════════════════════════════
+// MIS RECETAS (lista filtrabile per stato)
+// ══════════════════════════════════════════════
+function renderMisRecetas() {
+  const filter=document.getElementById('misEstadoFilter').value;
+  const list=document.getElementById('misRecetasList');
+  // Mostra ricette create da questo utente (le identifica per essere nell'array RECIPES
+  // e stato visibile — per ora mostra tutte le visibili con lo stato selezionato)
+  let items=RECIPES.filter(r=>{
+    const vp=(r.visible_para||'').split(',').map(x=>x.trim());
+    const visible=vp.includes(currentUser.codigo);
+    if(!visible) return false;
+    if(filter&&r.estado!==filter) return false;
+    return true;
+  }).sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+
+  if(!items.length){
+    list.innerHTML='<div style="padding:20px;text-align:center;color:var(--t3);font-size:11px;letter-spacing:1px;text-transform:uppercase">Sin recetas</div>';
+    return;
+  }
+  const canEdit_=canEdit();
+  const canActive_=canChangeToActive();
+  list.innerHTML=items.map(r=>`
+    <div class="mis-rec-item">
+      <div class="mis-rec-dot ${r.estado}"></div>
+      <div class="mis-rec-name">${r.nombre}</div>
+      <div class="mis-rec-estado">${r.estado}</div>
+      <div class="mis-rec-actions">
+        <button class="mis-rec-btn" onclick="pickAndGo('${r.id}')">Ver</button>
+        ${canEdit_?`<button class="mis-rec-btn" onclick="editRecipe('${r.id}')">Editar</button>`:''}
+        ${canActive_&&r.estado==='PENDIENTE'?`<button class="mis-rec-btn" onclick="cambiarEstado('${r.id}','ACTIVA')">Activar</button>`:''}
+        ${canActive_&&r.estado==='ACTIVA'?`<button class="mis-rec-btn" onclick="cambiarEstado('${r.id}','ARCHIVADA')">Archivar</button>`:''}
+        ${canEdit_?`<button class="mis-rec-btn danger" onclick="confirmDelete('${r.id}','${r.nombre.replace(/'/g,"\\'")}')">✕</button>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function pickAndGo(id) {
+  current=RECIPES.find(r=>r.id===id);
+  setSection('recetas', document.getElementById('btn-recetas'));
+  renderList('');
+  renderRecipe(current);
+}
+
+// ══════════════════════════════════════════════
+// POPULATORS
+// ══════════════════════════════════════════════
 function populateSimFamilias() {
-  const familias = [...new Set(RECIPES.map(r => r.familia))].filter(Boolean).sort();
-  const sel = document.getElementById('simFamilia');
-  sel.innerHTML = familias.map(f => `<option value="${f}">${f.replace(/_/g,' ')}</option>`).join('');
+  const familias=[...new Set(RECIPES.map(r=>r.familia))].filter(Boolean).sort();
+  const sel=document.getElementById('simFamilia');
+  sel.innerHTML=familias.map(f=>`<option value="${f}">${f.replace(/_/g,' ')}</option>`).join('');
+}
+function populateDescSelect() {
+  const sel=document.getElementById('descSelect');
+  const recipes=getVisibleRecipes().filter(r=>r.precio_venta);
+  sel.innerHTML='<option value="">Selecciona receta...</option>'+
+    recipes.sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'))
+           .map(r=>`<option value="${r.id}">${r.nombre} — $${Number(r.precio_venta).toLocaleString('es-CL')}</option>`).join('');
 }
 
+// ══════════════════════════════════════════════
+// TIPO RECETA toggle
+// ══════════════════════════════════════════════
+function onTipoChange() {
+  const tipo=document.getElementById('simTipo').value;
+  const isOferta=tipo==='OFERTA';
+  document.getElementById('sim-bloque-ingredientes').style.display=isOferta?'none':'';
+  document.getElementById('sim-bloque-subrecetas').style.display=isOferta?'':' none';
+}
+
+// ══════════════════════════════════════════════
+// AUTOCOMPLETE INGREDIENTES
+// ══════════════════════════════════════════════
 function addSimIng() {
-  const id = ++simIngCounter;
+  const id=++simIngCounter;
   simIngredients.push({id});
-  const list = document.getElementById('simIngList');
-  const div = document.createElement('div');
-  div.className = 'sim-row'; div.id = `si-${id}`;
-  div.innerHTML = `
-    <input class="sim-input" placeholder="Ingrediente" id="si-n-${id}" oninput="calcSim()">
+  const list=document.getElementById('simIngList');
+  const div=document.createElement('div');
+  div.className='sim-row'; div.id=`si-${id}`;
+  div.innerHTML=`
+    <div class="sim-autocomplete-wrap">
+      <input class="sim-input" placeholder="Ingrediente" id="si-n-${id}"
+        oninput="showAutocomplete(${id},this.value)" autocomplete="off"
+        onblur="setTimeout(()=>hideAutocomplete(${id}),200)">
+      <div class="sim-autocomplete-list" id="si-ac-${id}"></div>
+    </div>
     <input class="sim-input" type="number" placeholder="0" id="si-q-${id}" min="0" step="any" oninput="calcSim()">
     <select class="sim-input" id="si-u-${id}" onchange="calcSim()">
-      <option>g</option><option>ml</option><option>kg</option><option>L</option><option>unidad</option><option>pala</option>
+      <option>g</option><option>ml</option><option>kg</option><option>L</option>
+      <option>unidad</option><option>pala</option><option>gr</option>
     </select>
     <input class="sim-input" type="number" placeholder="$/u" id="si-c-${id}" min="0" step="any" oninput="calcSim()" title="Costo por unidad de medida">
     <button class="sim-del" onclick="delSimIng(${id})">×</button>`;
@@ -1278,309 +1425,409 @@ function addSimIng() {
   document.getElementById(`si-n-${id}`).focus();
 }
 
-function delSimIng(id) {
-  simIngredients = simIngredients.filter(i => i.id !== id);
+function showAutocomplete(id, val) {
+  const ac=document.getElementById(`si-ac-${id}`);
+  if(!val||val.length<2){ac.classList.remove('open');return;}
+  const lower=val.toLowerCase();
+  const matches=INSUMOS_LIST.filter(x=>x.toLowerCase().includes(lower)).slice(0,8);
+  if(!matches.length){ac.classList.remove('open');return;}
+  ac.innerHTML=matches.map(m=>`<div class="sim-autocomplete-item" onclick="selectInsumo(${id},'${m.replace(/'/g,"\\'")}');">${m}</div>`).join('');
+  ac.classList.add('open');
+  calcSim();
+}
+
+function hideAutocomplete(id){
+  const ac=document.getElementById(`si-ac-${id}`);
+  if(ac) ac.classList.remove('open');
+}
+
+function selectInsumo(id, nombre) {
+  document.getElementById(`si-n-${id}`).value=nombre;
+  hideAutocomplete(id);
+  document.getElementById(`si-q-${id}`).focus();
+  calcSim();
+}
+
+function delSimIng(id){
+  simIngredients=simIngredients.filter(i=>i.id!==id);
   document.getElementById(`si-${id}`)?.remove();
   calcSim();
 }
 
-function calcSim() {
-  let totalCosto = 0;
-  let totalQEnt  = 0;
-
-  simIngredients.forEach(ing => {
-    const q = parseFloat(document.getElementById(`si-q-${ing.id}`)?.value) || 0;
-    const c = parseFloat(document.getElementById(`si-c-${ing.id}`)?.value) || 0;
-    totalQEnt  += q;
-    totalCosto += q * c;
-  });
-
-  const rend   = (parseFloat(document.getElementById('simRend').value) || 95) / 100;
-  const pv     = parseFloat(document.getElementById('simPrecio').value) || 0;
-  const qSal   = totalQEnt * rend;
-  const cu     = qSal > 0 ? totalCosto / qSal : 0;
-  const fc     = (pv && cu) ? (cu / pv * 100) : null;
-  const fcColor= fc !== null ? (fc < 25 ? 'verde' : fc < 30 ? 'amarillo' : 'rojo') : null;
-  const margin = (pv && cu) ? pv - cu : null;
-  const pmin   = cu > 0 ? cu / 0.30 : null;   // precio para FC máx 30%
-  const pobj   = cu > 0 ? cu / 0.25 : null;   // precio objetivo FC 25%
-
-  // Unidad de salida dinámica
-  const umSel  = document.getElementById(`si-u-1`)?.value || '';
-  const umLabel= qSal !== Math.floor(qSal) ? qSal.toFixed(1) : qSal;
-
-  document.getElementById('sr-costo').textContent = '$' + Math.round(totalCosto).toLocaleString('es-CL');
-  document.getElementById('sr-qent').textContent  = totalQEnt > 0 ? totalQEnt.toLocaleString('es-CL') : '0';
-  document.getElementById('sr-qsal').textContent  = qSal > 0 ? Number(qSal.toFixed(1)).toLocaleString('es-CL') : '0';
-  document.getElementById('sr-cu').textContent    = cu > 0 ? '$' + cu.toFixed(2) : '—';
-  document.getElementById('sr-pv').textContent    = pv ? '$' + pv.toLocaleString('es-CL') : '—';
-  document.getElementById('sr-fc').textContent    = fc !== null ? fc.toFixed(1) + '%' : '—';
-  document.getElementById('sr-mg').textContent    = margin !== null ? '$' + Math.round(margin).toLocaleString('es-CL') : '—';
-  document.getElementById('sr-mg').style.color    = margin !== null ? (margin > 0 ? 'var(--green)' : 'var(--red)') : 'var(--t2)';
-  document.getElementById('sr-pmin').textContent  = pmin ? '$' + Math.round(pmin).toLocaleString('es-CL') : '—';
-  document.getElementById('sr-pobj').textContent  = pobj ? '$' + Math.round(pobj).toLocaleString('es-CL') : '—';
-  document.getElementById('sr-semaforo').innerHTML = fc !== null
-    ? `<span class="semaforo ${fcColor}">● Food Cost ${fcColor==='verde'?'OK ✓':fcColor==='amarillo'?'Revisar':'Alto ⚠'}: ${fc.toFixed(1)}%</span>`
-    : '';
+// ══════════════════════════════════════════════
+// SUB-RECETAS (OFERTA)
+// ══════════════════════════════════════════════
+let subRecCounter=0;
+function addSubRec() {
+  const id=++subRecCounter;
+  const list=document.getElementById('simSubRecList');
+  const div=document.createElement('div');
+  div.className='sim-row'; div.id=`sr-${id}`;
+  const opts=RECIPES.filter(r=>r.estado==='ACTIVA').map(r=>`<option value="${r.id}">${r.nombre}</option>`).join('');
+  div.innerHTML=`
+    <select class="sim-input" id="sr-s-${id}" onchange="calcSim()"><option value="">— Sub-receta —</option>${opts}</select>
+    <input class="sim-input" type="number" placeholder="1" id="sr-q-${id}" min="0" step="any" oninput="calcSim()">
+    <input class="sim-input" placeholder="un." id="sr-u-${id}">
+    <span></span>
+    <button class="sim-del" onclick="document.getElementById('sr-${id}').remove();calcSim()">×</button>`;
+  list.appendChild(div);
 }
 
-function saveSim() {
-  const nombre = document.getElementById('simNombre').value.trim();
-  if (!nombre) { alert('Ingresa un nombre para la receta'); return; }
-  alert(`Receta "${nombre}" guardada como SIMULACION.\n\nPara conectar el guardado automático se necesita el GID del sheet de simulaciones y Apps Script.`);
+// ══════════════════════════════════════════════
+// PROCEDIMIENTO PASOS
+// ══════════════════════════════════════════════
+function addProcStep() {
+  const id=++simProcCounter;
+  simProcSteps.push({id});
+  const list=document.getElementById('simProcList');
+  const div=document.createElement('div');
+  div.id=`sp-${id}`; div.style.marginBottom='8px';
+  div.innerHTML=`
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">
+      <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--tc);min-width:24px">${String(simProcSteps.length).padStart(2,'0')}</span>
+      <input class="sim-input" placeholder="Título del paso (ej: Vaso)" id="sp-t-${id}" style="flex:0 0 160px">
+      <button class="sim-del" onclick="delProcStep(${id})">×</button>
+    </div>
+    <div style="padding-left:30px">
+      <textarea class="sim-input" placeholder="Descripción del paso..." id="sp-b-${id}" rows="2" style="resize:vertical;min-height:48px"></textarea>
+    </div>`;
+  list.appendChild(div);
+}
+function delProcStep(id){
+  simProcSteps=simProcSteps.filter(s=>s.id!==id);
+  document.getElementById(`sp-${id}`)?.remove();
+}
+
+// ══════════════════════════════════════════════
+// CALCULAR SIMULACION
+// ══════════════════════════════════════════════
+function calcSim() {
+  let totalCosto=0, totalQEnt=0;
+  simIngredients.forEach(ing=>{
+    const q=parseFloat(document.getElementById(`si-q-${ing.id}`)?.value)||0;
+    const c=parseFloat(document.getElementById(`si-c-${ing.id}`)?.value)||0;
+    totalQEnt+=q; totalCosto+=q*c;
+  });
+  const rend=(parseFloat(document.getElementById('simRend').value)||95)/100;
+  const pv=parseFloat(document.getElementById('simPrecio').value)||0;
+  const qSal=totalQEnt*rend;
+  const cu=qSal>0?totalCosto/qSal:0;
+  const fc=(pv&&cu)?(cu/pv*100):null;
+  const fcColor=fc!==null?(fc<25?'verde':fc<30?'amarillo':'rojo'):null;
+  const margin=(pv&&cu)?pv-cu:null;
+  const pmin=cu>0?cu/0.30:null;
+  const pobj=cu>0?cu/0.25:null;
+  document.getElementById('sr-costo').textContent='$'+Math.round(totalCosto).toLocaleString('es-CL');
+  document.getElementById('sr-qent').textContent=totalQEnt>0?totalQEnt.toLocaleString('es-CL'):'0';
+  document.getElementById('sr-qsal').textContent=qSal>0?Number(qSal.toFixed(1)).toLocaleString('es-CL'):'0';
+  document.getElementById('sr-cu').textContent=cu>0?'$'+cu.toFixed(2):'—';
+  document.getElementById('sr-pv').textContent=pv?'$'+pv.toLocaleString('es-CL'):'—';
+  document.getElementById('sr-fc').textContent=fc!==null?fc.toFixed(1)+'%':'—';
+  document.getElementById('sr-mg').textContent=margin!==null?'$'+Math.round(margin).toLocaleString('es-CL'):'—';
+  document.getElementById('sr-mg').style.color=margin!==null?(margin>0?'var(--green)':'var(--red)'):'var(--t2)';
+  document.getElementById('sr-pmin').textContent=pmin?'$'+Math.round(pmin).toLocaleString('es-CL'):'—';
+  document.getElementById('sr-pobj').textContent=pobj?'$'+Math.round(pobj).toLocaleString('es-CL'):'—';
+  document.getElementById('sr-semaforo').innerHTML=fc!==null
+    ?`<span class="semaforo ${fcColor}">● Food Cost ${fcColor==='verde'?'OK ✓':fcColor==='amarillo'?'Revisar':'Alto ⚠'}: ${fc.toFixed(1)}%</span>`:''  ;
+}
+
+// ══════════════════════════════════════════════
+// RACCOGLIERE DATI FORM
+// ══════════════════════════════════════════════
+function collectFormData() {
+  const ingredientes=simIngredients.map(ing=>{
+    const n=(document.getElementById(`si-n-${ing.id}`)?.value||'').trim();
+    const q=parseFloat(document.getElementById(`si-q-${ing.id}`)?.value)||0;
+    const um=document.getElementById(`si-u-${ing.id}`)?.value||'g';
+    const c=parseFloat(document.getElementById(`si-c-${ing.id}`)?.value)||0;
+    return {descripcion:n, q_lote:q, um, precio_actual:c, es_subreceta:false, notas:''};
+  }).filter(i=>i.descripcion);
+  const pasos=simProcSteps.map(s=>{
+    const t=(document.getElementById(`sp-t-${s.id}`)?.value||'').trim();
+    const b=(document.getElementById(`sp-b-${s.id}`)?.value||'').trim();
+    return b?`${t?t+': ':''}${b}`:'';
+  }).filter(Boolean);
+  return {
+    nombre:document.getElementById('simNombre').value.trim(),
+    tipo_receta:document.getElementById('simTipo').value,
+    seccion:document.getElementById('simSeccion').value,
+    familia:document.getElementById('simFamilia').value,
+    categoria:document.getElementById('simCategoria').value,
+    formato:document.getElementById('simFormato').value.trim(),
+    unidad_salida:document.getElementById('simUnidad').value.trim()||'unidad',
+    q_lote:parseFloat(document.getElementById('simQLote').value)||1,
+    rendimiento:(parseFloat(document.getElementById('simRend').value)||95)/100,
+    dificultad:document.getElementById('simDificultad').value,
+    tiempo_prep:parseInt(document.getElementById('simTPrep').value)||0,
+    tiempo_coccion:parseInt(document.getElementById('simTCoccion').value)||0,
+    precio_venta:parseFloat(document.getElementById('simPrecio').value)||0,
+    url_foto:document.getElementById('simUrlFoto').value.trim(),
+    url_video:document.getElementById('simUrlVideo').value.trim(),
+    procedimiento:pasos.join(' | '),
+    perfect_serve:document.getElementById('simPerfectServe').value.trim(),
+    notas:document.getElementById('simNotas').value.trim(),
+    visible_para:document.getElementById('simVisible').value,
+    estado:document.getElementById('simEstado').value,
+    ingredientes,
+  };
+}
+
+// ══════════════════════════════════════════════
+// GUARDAR / EDITAR
+// ══════════════════════════════════════════════
+async function saveSim() {
+  const nombre=document.getElementById('simNombre').value.trim();
+  if(!nombre){showToast('Ingresa un nombre para la receta','err');return;}
+  const data=collectFormData();
+  const editId=document.getElementById('simEditId').dataset.id;
+
+  if(!WEBAPP_URL||WEBAPP_URL==='TU_WEBAPP_URL_AQUI') {
+    // Modo offline: aggiorna solo la memoria locale
+    if(editId) {
+      const idx=RECIPES.findIndex(r=>r.id===editId);
+      if(idx>=0) {
+        RECIPES[idx]={...RECIPES[idx],...mapDataToRecipe(editId,data)};
+        showToast(`✓ "${nombre}" actualizado (local, sin WebApp)`,'ok');
+      }
+    } else {
+      const fakeId='SIM-'+Date.now();
+      RECIPES.push(mapDataToRecipe(fakeId,data));
+      showToast(`✓ "${nombre}" guardado (local, sin WebApp)`,'ok');
+    }
+    resetSimForm();
+    renderMisRecetas();
+    renderList('');
+    populateDescSelect();
+    return;
+  }
+
+  const btn=document.getElementById('simSaveBtn');
+  btn.textContent='Guardando...'; btn.disabled=true;
+  try {
+    const action=editId?'editar':'guardar';
+    const payload=editId?{action,id:editId,data}:{action,data};
+    const r=await fetch(WEBAPP_URL,{method:'POST',body:JSON.stringify(payload)});
+    const res=await r.json();
+    if(res.ok){
+      showToast(`✓ Receta "${nombre}" ${editId?'actualizada':'guardada'} (${res.id||editId})`,'ok');
+      // Aggiorna locale
+      if(editId){
+        const idx=RECIPES.findIndex(r=>r.id===editId);
+        if(idx>=0) RECIPES[idx]={...RECIPES[idx],...mapDataToRecipe(editId,data)};
+      } else {
+        RECIPES.push(mapDataToRecipe(res.id,data));
+      }
+      resetSimForm();
+      renderMisRecetas();
+      renderList('');
+      populateDescSelect();
+    } else {
+      showToast('Error: '+(res.error||'desconocido'),'err');
+    }
+  } catch(e){
+    showToast('Error de conexión con WebApp','err');
+    console.error(e);
+  } finally {
+    btn.textContent='Guardar receta'; btn.disabled=false;
+  }
+}
+
+function mapDataToRecipe(id, data) {
+  return {
+    id, nombre:data.nombre, familia:(data.familia||'').toUpperCase(),
+    cat:(data.categoria||'').toUpperCase(), tipo:(data.tipo_receta||'').toUpperCase(),
+    seccion:data.seccion, estado:(data.estado||'').toUpperCase(),
+    formato:data.formato, t_prep:data.tiempo_prep, t_coccion:data.tiempo_coccion,
+    temp:null, dificultad:data.dificultad==='Alta'?3:data.dificultad==='Media'?2:1,
+    rendimiento:data.rendimiento, url:data.url_foto||null, url_video:data.url_video||null,
+    q_lote:data.q_lote, unidad:data.unidad_salida, precio_venta:data.precio_venta||null,
+    costo_u:null, costo_lote:null, visible_para:data.visible_para,
+    notas_generales:data.notas, ingredientes:data.ingredientes.map(i=>({
+      n:i.descripcion, qty:i.q_lote, um:i.um, costo:i.precio_actual, costoLinea:null, nota:'', esSub:false
+    })),
+    proc:parseProcedimiento(data.procedimiento),
+    perfect_serve:data.perfect_serve||null,
+  };
+}
+
+// ══════════════════════════════════════════════
+// EDITAR RECETA
+// ══════════════════════════════════════════════
+function editRecipe(id) {
+  const r=RECIPES.find(x=>x.id===id);
+  if(!r){showToast('Receta no encontrada','err');return;}
+  simEditMode=true;
+  document.getElementById('simEditId').dataset.id=id;
+  // Navega al simulador
+  setSection('simulador', document.getElementById('btn-simulador'));
+  simShowTab('nueva', document.querySelector('.sim-tab'));
+  // Popola form
+  document.getElementById('simNombre').value=r.nombre;
+  document.getElementById('simTipo').value=r.tipo||'ENSAMBLE'; onTipoChange();
+  document.getElementById('simSeccion').value=r.seccion||'Barra Cafe';
+  // Familia: prova a settare, se esiste l'opzione
+  const famSel=document.getElementById('simFamilia');
+  Array.from(famSel.options).forEach(o=>{if(o.value===r.familia)o.selected=true;});
+  document.getElementById('simCategoria').value=r.cat||'LIQUIDOS';
+  document.getElementById('simFormato').value=r.formato||''  ;
+  document.getElementById('simUnidad').value=r.unidad||'unidad';
+  document.getElementById('simVisible').value=r.visible_para||'OP,JL,CC,JA,JO,AD';
+  document.getElementById('simQLote').value=r.q_lote||1;
+  document.getElementById('simRend').value=r.rendimiento?Math.round(r.rendimiento*100):95;
+  document.getElementById('simDificultad').value=r.dificultad===3?'Alta':r.dificultad===2?'Media':'Baja';
+  document.getElementById('simTPrep').value=r.t_prep||0;
+  document.getElementById('simTCoccion').value=r.t_coccion||0;
+  document.getElementById('simPrecio').value=r.precio_venta||''  ;
+  document.getElementById('simUrlFoto').value=r.url||''  ;
+  document.getElementById('simUrlVideo').value=r.url_video||''  ;
+  document.getElementById('simPerfectServe').value=r.perfect_serve||''  ;
+  document.getElementById('simNotas').value=r.notas_generales||''  ;
+  // Estado
+  buildEstadoOptions();
+  document.getElementById('simEstado').value=r.estado; updateEstadoHint();
+  // Reset + popola ingredienti
+  document.getElementById('simIngList').innerHTML='';
+  simIngCounter=0; simIngredients=[];
+  r.ingredientes.forEach(ing=>{
+    addSimIng();
+    const lastId=simIngCounter;
+    document.getElementById(`si-n-${lastId}`).value=ing.n;
+    document.getElementById(`si-q-${lastId}`).value=ing.qty;
+    document.getElementById(`si-u-${lastId}`).value=ing.um||'g';
+    document.getElementById(`si-c-${lastId}`).value=ing.costo||''  ;
+  });
+  // Reset + popola passi
+  document.getElementById('simProcList').innerHTML='';
+  simProcCounter=0; simProcSteps=[];
+  r.proc.forEach(p=>{
+    addProcStep();
+    const lastId=simProcCounter;
+    document.getElementById(`sp-t-${lastId}`).value=p.t||''  ;
+    document.getElementById(`sp-b-${lastId}`).value=p.b||''  ;
+  });
+  // UI
+  document.getElementById('simSaveBtn').textContent='Guardar cambios';
+  document.getElementById('simCancelBtn').style.display='';
+  document.getElementById('simSubtitle').textContent=`Editando: ${r.nombre}`;
+  calcSim();
+}
+
+function cancelEdit() {
+  resetSimForm();
+  showToast('Edición cancelada','ok');
+}
+
+function resetSimForm() {
+  simEditMode=false;
+  document.getElementById('simEditId').dataset.id='';
+  document.getElementById('simNombre').value='';
+  document.getElementById('simPrecio').value='';
+  document.getElementById('simRend').value='95';
+  document.getElementById('simUrlFoto').value='';
+  document.getElementById('simUrlVideo').value='';
+  document.getElementById('simPerfectServe').value='';
+  document.getElementById('simNotas').value='';
+  document.getElementById('simIngList').innerHTML='';
+  document.getElementById('simProcList').innerHTML='';
+  simIngCounter=0; simIngredients=[];
+  simProcCounter=0; simProcSteps=[];
+  document.getElementById('simSaveBtn').textContent='Guardar receta';
+  document.getElementById('simCancelBtn').style.display='none';
+  document.getElementById('simSubtitle').textContent='Nueva receta — datos en tiempo real';
+  document.getElementById('simEstado').value='SIMULACION'; updateEstadoHint();
+  calcSim();
+}
+
+// ══════════════════════════════════════════════
+// ELIMINAR RECETA
+// ══════════════════════════════════════════════
+function confirmDelete(id, nombre) {
+  openConfirm(
+    'Eliminar receta',
+    `¿Eliminar "${nombre}"? Esta acción no se puede deshacer.`,
+    ()=>deleteRecipe(id)
+  );
+}
+
+async function deleteRecipe(id) {
+  if(!WEBAPP_URL||WEBAPP_URL==='TU_WEBAPP_URL_AQUI') {
+    RECIPES=RECIPES.filter(r=>r.id!==id);
+    showToast('Receta eliminada (local, sin WebApp)','ok');
+    if(current?.id===id){current=null;document.getElementById('recipeOut').style.display='none';document.getElementById('emptyState').style.display='';}
+    renderList(''); renderMisRecetas(); populateDescSelect();
+    return;
+  }
+  try {
+    const r=await fetch(WEBAPP_URL,{method:'POST',body:JSON.stringify({action:'eliminar',id})});
+    const res=await r.json();
+    if(res.ok){
+      RECIPES=RECIPES.filter(r=>r.id!==id);
+      showToast('Receta eliminada','ok');
+      if(current?.id===id){current=null;document.getElementById('recipeOut').style.display='none';document.getElementById('emptyState').style.display='';}
+      renderList(''); renderMisRecetas(); populateDescSelect();
+    } else showToast('Error: '+(res.error||'desconocido'),'err');
+  } catch(e){showToast('Error de conexión','err');console.error(e);}
+}
+
+// ══════════════════════════════════════════════
+// CAMBIAR ESTADO
+// ══════════════════════════════════════════════
+async function cambiarEstado(id, nuevoEstado) {
+  const r=RECIPES.find(x=>x.id===id);
+  if(!r) return;
+  if(!WEBAPP_URL||WEBAPP_URL==='TU_WEBAPP_URL_AQUI') {
+    r.estado=nuevoEstado;
+    showToast(`Estado → ${nuevoEstado} (local)`,'ok');
+    renderMisRecetas(); renderList('');
+    if(current?.id===id) renderRecipe(r);
+    return;
+  }
+  try {
+    const res=await (await fetch(WEBAPP_URL,{method:'POST',body:JSON.stringify({action:'editar',id,data:{estado:nuevoEstado}})})).json();
+    if(res.ok){r.estado=nuevoEstado;showToast(`Estado → ${nuevoEstado}`,'ok');renderMisRecetas();renderList('');}
+    else showToast('Error: '+(res.error||'desconocido'),'err');
+  } catch(e){showToast('Error de conexión','err');}
 }
 
 // ══════════════════════════════════════════════
 // DESCUENTOS
 // ══════════════════════════════════════════════
-function populateDescSelect() {
-  const sel = document.getElementById('descSelect');
-  const recipes = getVisibleRecipes().filter(r => r.precio_venta);
-  sel.innerHTML = '<option value="">Selecciona receta...</option>' +
-    recipes.sort((a,b) => a.nombre.localeCompare(b.nombre,'es'))
-           .map(r => `<option value="${r.id}">${r.nombre} — $${Number(r.precio_venta).toLocaleString('es-CL')}</option>`).join('');
-}
-
 function calcDesc() {
-  const id  = document.getElementById('descSelect').value;
-  const pct = parseInt(document.getElementById('descSlider').value) || 0;
-  if (!id) return;
-  const r = RECIPES.find(x => x.id === id);
-  if (!r) return;
-
-  const pv       = Number(r.precio_venta);
-  const cu       = Number(r.costo_u) || 0;
-  const pvDesc   = pv * (1 - pct / 100);
-  const fcAntes  = cu ? (cu / pv * 100)      : null;
-  const fcDespues= cu ? (cu / pvDesc * 100)  : null;
-  const mgAntes  = cu ? pv - cu              : null;
-  const mgDespues= cu ? pvDesc - cu          : null;
-
-  // Colori semaforo
-  const colAntes  = fcAntes  ? (fcAntes  < 25 ? 'var(--green)' : fcAntes  < 30 ? 'var(--yellow)' : 'var(--red)') : 'var(--t2)';
-  const colDespues= fcDespues? (fcDespues< 25 ? 'var(--green)' : fcDespues< 30 ? 'var(--yellow)' : 'var(--red)') : 'var(--t2)';
-
-  // Break-even: descuento máx antes de que FC supere 30%
-  const descMax  = cu ? Math.max(0, (1 - cu / (pv * 0.30)) * 100) : null;
-  // Descuento para FC 25%
-  const descObj  = cu ? Math.max(0, (1 - cu / (pv * 0.25)) * 100) : null;
-
-  document.getElementById('dc-pv-antes').textContent    = '$' + pv.toLocaleString('es-CL');
-  document.getElementById('dc-fc-antes').textContent    = fcAntes  !== null ? 'FC: ' + fcAntes.toFixed(1)  + '%' : 'FC: —';
-  document.getElementById('dc-fc-antes').style.color    = colAntes;
-  document.getElementById('dc-mg-antes').textContent    = mgAntes  !== null ? 'Margen: $' + Math.round(mgAntes).toLocaleString('es-CL')  : 'Margen: —';
-
-  document.getElementById('dc-pv-despues').textContent  = '$' + Math.round(pvDesc).toLocaleString('es-CL');
-  document.getElementById('dc-fc-despues').textContent  = fcDespues!== null ? 'FC: ' + fcDespues.toFixed(1) + '%' : 'FC: —';
-  document.getElementById('dc-fc-despues').style.color  = colDespues;
-  document.getElementById('dc-mg-despues').textContent  = mgDespues!== null ? 'Margen: $' + Math.round(mgDespues).toLocaleString('es-CL') : 'Margen: —';
-
-  // Mensaje break-even
-  let msg = '';
-  if (pct === 0) {
-    msg = cu
-      ? `Sin descuento. Food Cost actual: ${fcAntes.toFixed(1)}%.`
-      : 'Mueve el slider para simular el impacto del descuento.';
-  } else {
-    msg = `Con ${pct}% desc.: precio baja de <strong>$${pv.toLocaleString('es-CL')}</strong> → <strong>$${Math.round(pvDesc).toLocaleString('es-CL')}</strong> CLP.`;
-    if (descMax !== null) {
-      if (pct > descMax) {
-        msg += ` <span style="color:var(--red)">⚠ Supera el FC máximo del 30%. Descuento límite: ${descMax.toFixed(1)}%.</span>`;
-      } else {
-        msg += ` <span style="color:var(--green)">✓ Dentro del límite (máx ${descMax.toFixed(1)}% desc. para FC 30%).</span>`;
-      }
+  const id=document.getElementById('descSelect').value;
+  const pct=parseInt(document.getElementById('descSlider').value)||0;
+  if(!id) return;
+  const r=RECIPES.find(x=>x.id===id);
+  if(!r) return;
+  const pv=Number(r.precio_venta);
+  const cu=Number(r.costo_u)||0;
+  const pvDesc=pv*(1-pct/100);
+  const fcAntes=cu?(cu/pv*100):null;
+  const fcDespues=cu?(cu/pvDesc*100):null;
+  const mgAntes=cu?pv-cu:null;
+  const mgDespues=cu?pvDesc-cu:null;
+  const colAntes=fcAntes?(fcAntes<25?'var(--green)':fcAntes<30?'var(--yellow)':'var(--red)'):'var(--t2)';
+  const colDespues=fcDespues?(fcDespues<25?'var(--green)':fcDespues<30?'var(--yellow)':'var(--red)'):'var(--t2)';
+  const descMax=cu?Math.max(0,(1-cu/(pv*0.30))*100):null;
+  const descObj=cu?Math.max(0,(1-cu/(pv*0.25))*100):null;
+  document.getElementById('dc-pv-antes').textContent='$'+pv.toLocaleString('es-CL');
+  document.getElementById('dc-fc-antes').textContent=fcAntes!==null?'FC: '+fcAntes.toFixed(1)+'%':'FC: —';
+  document.getElementById('dc-fc-antes').style.color=colAntes;
+  document.getElementById('dc-mg-antes').textContent=mgAntes!==null?'Margen: $'+Math.round(mgAntes).toLocaleString('es-CL'):'Margen: —';
+  document.getElementById('dc-pv-despues').textContent='$'+Math.round(pvDesc).toLocaleString('es-CL');
+  document.getElementById('dc-fc-despues').textContent=fcDespues!==null?'FC: '+fcDespues.toFixed(1)+'%':'FC: —';
+  document.getElementById('dc-fc-despues').style.color=colDespues;
+  document.getElementById('dc-mg-despues').textContent=mgDespues!==null?'Margen: $'+Math.round(mgDespues).toLocaleString('es-CL'):'Margen: —';
+  let msg='';
+  if(pct===0){msg=cu?`Sin descuento. Food Cost actual: ${fcAntes.toFixed(1)}%.`:'Mueve el slider para simular el impacto del descuento.';}
+  else{
+    msg=`Con ${pct}% desc.: precio baja de <strong>$${pv.toLocaleString('es-CL')}</strong> → <strong>$${Math.round(pvDesc).toLocaleString('es-CL')}</strong> CLP.`;
+    if(descMax!==null){
+      if(pct>descMax) msg+=` <span style="color:var(--red)">⚠ Supera FC máx 30%. Límite: ${descMax.toFixed(1)}%.</span>`;
+      else msg+=` <span style="color:var(--green)">✓ Dentro del límite (máx ${descMax.toFixed(1)}% para FC 30%).</span>`;
     }
   }
-  if (descObj !== null && pct === 0) {
-    msg += ` Descuento máx sin superar FC 25%: <strong>${descObj.toFixed(1)}%</strong>.`;
-  }
-  document.getElementById('dc-breakeven').innerHTML = msg;
-}
-
-// ══════════════════════════════════════════════
-// RENDER RECETA
-// ══════════════════════════════════════════════
-function renderRecipe(r) {
-  document.getElementById('emptyState').style.display = 'none';
-  const out = document.getElementById('recipeOut');
-  out.style.display = 'block';
-
-  const canCost = canSeeCosts();
-  const total   = r.t_prep + (r.t_coccion||0);
-  const fc      = canCost && r.costo_u && r.precio_venta ? (r.costo_u/r.precio_venta*100).toFixed(1) : null;
-  const fcColor = fc ? (fc<25?'verde':fc<30?'amarillo':'rojo') : null;
-  const dDots   = [1,2,3].map(i=>`<div class="t-dif-dot ${i<=r.dificultad?'on':''}"></div>`).join('');
-  const hasNotas = !!(r.notas_generales && r.notas_generales.trim()) || r.ingredientes.some(i=>i.nota);
-
-  out.innerHTML = `
-    <!-- HERO -->
-    <div class="hero">
-      <div class="hero-info">
-        <div class="hero-bc">${r.familia} <span>·</span> ${r.seccion}</div>
-        <div class="hero-tipo">${r.tipo}</div>
-        <div class="hero-name">${r.nombre.split(' ').map((w,i)=>i===0?`<em>${w}</em>`:w).join(' ')}</div>
-        <div class="hero-badges">
-          <span class="badge ${r.estado.includes('ACTIVA')?'ok':'pend'}">${r.estado}</span>
-          <span class="badge tipo">${r.tipo}</span>
-          ${r.formato ? `<span class="badge fmt">${r.formato}</span>` : ''}
-          ${r.url_video ? `<button class="hero-video-btn" onclick="openVideo('${r.url_video.replace(/'/g,"\\'")}','${r.nombre.replace(/'/g,"\\'")}')">▶ Ver video</button>` : ''}
-        </div>
-      </div>
-      <div class="hero-foto">
-        ${r.url
-          ? `<img src="${r.url}" alt="${r.nombre}"
-               onclick="openFoto('${r.url.replace(/'/g,"\\'")}','${r.nombre.replace(/'/g,"\\'")}')"
-               onerror="this.style.cursor='default';this.parentElement.innerHTML='<div class=hero-foto-ph><div class=hero-foto-ph-icon>📷</div><div class=hero-foto-ph-txt>Foto pendiente</div></div>'">`
-          : `<div class="hero-foto-ph"><div class="hero-foto-ph-icon">📷</div><div class="hero-foto-ph-txt">Foto pendiente</div></div>`}
-        ${r.url_video ? `<a class="hero-video" onclick="openVideo('${r.url_video}','${r.nombre}')" style="cursor:pointer">▶ Ver video</a>` : ''}
-      </div>
-    </div>
-
-    <!-- BARRA TEMPI -->
-    <div class="t-bar">
-      <div class="t-step">
-        <div class="t-icon">🔪</div>
-        <div class="t-meta"><span class="t-lbl">Prep</span><span class="t-unit">mise en place</span></div>
-        <div class="t-val">${r.t_prep}<span style="font-size:13px;color:var(--t3)"> min</span></div>
-      </div>
-      ${r.t_coccion>0 ? `
-        <div class="t-sep">→</div>
-        <div class="t-step">
-          <div class="t-icon">🔥</div>
-          <div class="t-meta"><span class="t-lbl">Cocción</span><span class="t-unit">en horno</span></div>
-          <div class="t-val">${r.t_coccion}<span style="font-size:13px;color:var(--t3)"> min</span></div>
-        </div>` : ''}
-      ${r.temp ? `<div class="t-temp">🌡 ${r.temp}</div>` : ''}
-      <div class="t-dif">
-        <span class="t-dif-lbl">Dificultad</span>
-        <div class="t-dif-dots">${dDots}</div>
-      </div>
-      <div class="t-total">
-        <div class="t-icon">⏱</div>
-        <div class="t-meta">
-          <span class="t-lbl" style="color:rgba(196,98,45,0.6)">Total</span>
-          <span class="t-unit" style="color:rgba(196,98,45,0.5)">minutos</span>
-        </div>
-        <div class="t-val">${total}<span style="font-size:13px;color:var(--tc);opacity:0.7"> min</span></div>
-      </div>
-    </div>
-
-    <!-- COSTOS (solo JL/CC/JA/JO/AD) -->
-    ${canCost ? `
-    <div class="section">
-      <div class="sec-hdr">
-        <span class="sec-num">FC</span>
-        <span class="sec-title">Costos & Food Cost</span>
-        <div class="sec-line"></div>
-      </div>
-      <div class="costos-grid">
-        <div class="cc-card">
-          <div class="cc-lbl">Costo lote</div>
-          <div class="cc-val">${r.costo_lote ? '$'+Number(r.costo_lote).toLocaleString('es-CL') : '—'}</div>
-          <div class="cc-sub">${r.q_lote} ${r.unidad}</div>
-        </div>
-        <div class="cc-card">
-          <div class="cc-lbl">Costo unitario</div>
-          <div class="cc-val">${r.costo_u ? '$'+Number(r.costo_u).toLocaleString('es-CL') : '—'}</div>
-          <div class="cc-sub">por ${r.unidad}</div>
-        </div>
-        <div class="cc-card">
-          <div class="cc-lbl">Precio carta</div>
-          <div class="cc-val">${r.precio_venta ? '$'+Number(r.precio_venta).toLocaleString('es-CL') : '—'}</div>
-          <div class="cc-sub">CLP neto</div>
-        </div>
-        <div class="cc-card fc">
-          <div class="cc-lbl">Food Cost</div>
-          <div class="cc-val">${fc ? fc+'%' : '—'}</div>
-          ${fc ? `<div><span class="semaforo ${fcColor}">● ${fcColor==='verde'?'OK':fcColor==='amarillo'?'Revisar':'Alerta'}</span></div>` : '<div class="cc-sub">Sin datos</div>'}
-        </div>
-      </div>
-    </div>` : ''}
-
-    <!-- TABS -->
-    <div class="dtabs">
-      <button class="dtab on" data-tab="ing" onclick="switchTab('ing',this)">Ingredientes</button>
-      <button class="dtab" data-tab="proc" onclick="switchTab('proc',this)">Procedimiento</button>
-      ${r.perfect_serve ? `<button class="dtab" data-tab="serve" onclick="switchTab('serve',this)">Perfect Serve</button>` : ''}
-      ${hasNotas ? `<button class="dtab" data-tab="notas" onclick="switchTab('notas',this)">Notas</button>` : ''}
-    </div>
-
-    <!-- TAB: INGREDIENTES -->
-    <div class="tab-panel on" id="tp-ing">
-      <div class="ing-list">
-        ${r.ingredientes.length === 0
-          ? `<div style="padding:20px;text-align:center;color:var(--t3);font-size:11px;letter-spacing:1px;text-transform:uppercase">Sin ingredientes registrados</div>`
-          : r.ingredientes.map(i => {
-            // costoLinea = costo total ya calculado en el sheet; fallback a precio*qty
-            const cl = i.costoLinea || (i.costo && i.qty ? i.costo * i.qty : null);
-            return `<div class="ing-row ${i.esSub ? 'ing-sub' : ''}">
-              <div class="ing-name">${i.esSub ? '↳ ' : ''}${i.n}</div>
-              <div class="ing-qty-wrap">
-                <span class="ing-qty">${i.qty}</span>
-                <span class="ing-um">${i.um}</span>
-              </div>
-              ${canCost ? `<div class="ing-costo">${cl ? '$'+Math.round(cl).toLocaleString('es-CL') : '—'}</div>` : ''}
-            </div>`;
-          }).join('')}
-        ${canCost && r.ingredientes.length > 0 ? `<div class="ing-total-row">
-          <span class="ing-total-lbl">Total ingredientes</span>
-          <span class="ing-total-val">$${Math.round(r.ingredientes.reduce((s,i)=>s+(i.costoLinea||(i.costo||0)*i.qty),0)).toLocaleString('es-CL')}</span>
-        </div>` : ''}
-      </div>
-    </div>
-
-    <!-- TAB: PROCEDIMIENTO -->
-    <div class="tab-panel" id="tp-proc">
-      <div class="proc-steps">
-        ${r.proc.map((p,i) => `
-          <div class="proc-step">
-            <div class="proc-num">${String(i+1).padStart(2,'0')}</div>
-            <div>
-              ${p.t ? `<div class="proc-step-title">${p.t}</div>` : ''}
-              <div class="proc-step-txt">${p.b}</div>
-            </div>
-          </div>`).join('')}
-      </div>
-    </div>
-
-    <!-- TAB: PERFECT SERVE -->
-    ${r.perfect_serve ? `
-    <div class="tab-panel" id="tp-serve">
-      <div class="ps-box">
-        <div class="ps-lbl">⭑ Instrucción de servicio</div>
-        <div class="ps-txt">${r.perfect_serve}</div>
-      </div>
-    </div>` : ''}
-
-    <!-- TAB: NOTAS -->
-    ${hasNotas ? `
-    <div class="tab-panel" id="tp-notas">
-      ${r.notas_generales ? `
-        <div class="nota-gen">
-          <div class="nota-gen-lbl">Nota general</div>
-          <div class="nota-gen-txt">${r.notas_generales}</div>
-        </div>` : ''}
-      ${r.ingredientes.filter(i=>i.nota).length > 0 ? `
-        <div class="notas-sust-lbl">Sustituciones posibles</div>
-        <div class="notas-sust-list">
-          ${r.ingredientes.filter(i=>i.nota).map(i=>`
-            <div class="nota-sust-row">
-              <div class="nota-sust-ing">⇄ ${i.n}</div>
-              <div class="nota-sust-txt">${i.nota}</div>
-            </div>`).join('')}
-        </div>` : ''}
-    </div>` : ''}
-
-    <div style="height:40px"></div>
-  `;
-}
-
-function switchTab(tab, el) {
-  document.querySelectorAll('.dtab').forEach(b => b.classList.remove('on'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
-  el.classList.add('on');
-  const tp = document.getElementById('tp-'+tab);
-  if (tp) tp.classList.add('on');
+  if(descObj!==null&&pct===0) msg+=` Desc. máx sin superar FC 25%: <strong>${descObj.toFixed(1)}%</strong>.`;
+  document.getElementById('dc-breakeven').innerHTML=msg;
 }
 </script>
 </body>
