@@ -1404,14 +1404,16 @@ function renderRecipe(r) {
           <button class="btn-del" onclick="confirmDelete('${r.id}','${r.nombre.replace(/'/g,"\\'")}')">🗑 Eliminar</button>
         </div>`:''}
       </div>
-      <div class="hero-foto">
-        ${r.url
-          ?`<img src="${r.url}" alt="${r.nombre}"
-               onclick="openFoto('${r.url.replace(/'/g,"\\'")}','${r.nombre.replace(/'/g,"\\'")})')"
-               onerror="this.style.cursor='default';this.parentElement.innerHTML='<div class=hero-foto-ph><div class=hero-foto-ph-icon>📷</div><div class=hero-foto-ph-txt>Foto pendiente</div></div>'">`
-          :`<div class="hero-foto-ph"><div class="hero-foto-ph-icon">📷</div><div class="hero-foto-ph-txt">Foto pendiente</div></div>`}
+      <div style="display:flex;flex-direction:column">
+        <div class="hero-foto">
+          ${r.url
+            ?`<img src="${r.url}" alt="${r.nombre}"
+                 onclick="openFoto('${r.url.replace(/'/g,"\\'")}','${r.nombre.replace(/'/g,"\\'")})')"
+                 onerror="this.style.cursor='default';this.parentElement.innerHTML='<div class=hero-foto-ph><div class=hero-foto-ph-icon>📷</div><div class=hero-foto-ph-txt>Foto pendiente</div></div>'">`
+            :`<div class="hero-foto-ph"><div class="hero-foto-ph-icon">📷</div><div class="hero-foto-ph-txt">Foto pendiente</div></div>`}
+        </div>
+        ${r.url_video?`<button class="hero-video-btn" style="width:100%;margin-top:6px;justify-content:center" onclick="openVideo('${r.url_video.replace(/'/g,"\\'")}','${r.nombre.replace(/'/g,"\\'")}')">▶ Ver video</button>`:''}
       </div>
-      ${r.url_video?`<button class="hero-video-btn" style="width:100%;margin-top:6px;justify-content:center" onclick="openVideo('${r.url_video.replace(/'/g,"\\'")}','${r.nombre.replace(/'/g,"\\'")}')">▶ Ver video</button>`:''}
       </div>
     </div>
     <div class="t-bar">
