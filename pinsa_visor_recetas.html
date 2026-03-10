@@ -639,37 +639,59 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
               <div class="sim-panel" style="position:sticky;top:20px">
                 <div class="sim-panel-title"><span>Resultado</span></div>
                 <div id="simResult">
-                  <div class="sim-result-row"><span class="sim-result-lbl">Costo ingredientes</span><span class="sim-result-val" id="sr-costo">$0</span></div>
-                  <div class="sim-result-row"><span class="sim-result-lbl">Q lote / salida</span><span class="sim-result-val" id="sr-qsal">—</span></div>
-                  <div class="sim-result-row" style="border-top:1px solid var(--b2);margin-top:6px;padding-top:6px">
-                    <span class="sim-result-lbl">Costo unitario</span><span class="sim-result-val" id="sr-cu">—</span>
+
+                  <!-- COSTO -->
+                  <div style="margin-bottom:14px">
+                    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Costo</div>
+                    <div class="sim-result-row">
+                      <span class="sim-result-lbl">Costo ingredientes</span>
+                      <span class="sim-result-val" id="sr-costo">$0</span>
+                    </div>
                   </div>
+
                   <div id="sim-bloque-comercial">
-                    <!-- Precio sugerido readonly -->
-                    <div class="sim-result-row" style="background:var(--p4);border-radius:5px;padding:8px;margin:8px 0 4px">
-                      <span class="sim-result-lbl" style="color:var(--t2)">Precio sugerido neto<br><span style="font-size:9px;color:var(--t3)">(FC 25%)</span></span>
-                      <span class="sim-result-val" id="sr-pobj" style="color:var(--tc)">—</span>
+                    <!-- PRECIO SUGERIDO -->
+                    <div style="margin-bottom:14px;padding:10px;background:var(--p4);border-radius:7px;border:1px solid var(--b1)">
+                      <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Precio sugerido (FC 25%)</div>
+                      <div class="sim-result-row" style="margin-bottom:4px">
+                        <span class="sim-result-lbl">Neto</span>
+                        <span class="sim-result-val" id="sr-pobj" style="color:var(--tc)">—</span>
+                      </div>
+                      <div class="sim-result-row">
+                        <span class="sim-result-lbl">Con IVA 19%</span>
+                        <span class="sim-result-val" id="sr-pobj-iva" style="color:var(--t2)">—</span>
+                      </div>
                     </div>
-                    <div class="sim-result-row" style="background:var(--p4);border-radius:5px;padding:8px;margin-bottom:10px">
-                      <span class="sim-result-lbl" style="color:var(--t2)">Con IVA 19%</span>
-                      <span class="sim-result-val" id="sr-pobj-iva" style="color:var(--t2)">—</span>
+
+                    <!-- TU DECIDES -->
+                    <div style="margin-bottom:14px">
+                      <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Tú decides</div>
+                      <div class="sim-field" style="margin-bottom:10px">
+                        <div class="sim-lbl" style="color:var(--t2);margin-bottom:5px">Precio de venta final (CLP)</div>
+                        <input class="sim-input" type="number" id="simPrecio" placeholder="0" oninput="calcSim()"
+                          style="font-size:22px;font-weight:700;color:var(--tc);border-color:var(--tc-border);text-align:right;padding:10px 12px;letter-spacing:-0.5px">
+                      </div>
+                      <div style="padding:10px 12px;background:var(--p4);border-radius:7px;border:1px solid var(--b1)">
+                        <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:6px">Margen de venta</div>
+                        <div id="sr-mg" style="font-family:'Inter',sans-serif;font-size:26px;font-weight:300;letter-spacing:-1.5px;color:var(--t3)">—</div>
+                        <div id="sr-fc-sub" style="font-size:10px;color:var(--t3);margin-top:2px"></div>
+                      </div>
                     </div>
-                    <!-- Precio final editable -->
-                    <div class="sim-field">
-                      <div class="sim-lbl" style="color:var(--t1)">Precio de venta final (CLP)</div>
-                      <input class="sim-input" type="number" id="simPrecio" placeholder="0" oninput="calcSim()" style="font-size:15px;font-weight:600;color:var(--tc);border-color:var(--tc-border)">
-                    </div>
-                    <div class="sim-result-row"><span class="sim-result-lbl">Margen $</span><span class="sim-result-val" id="sr-mg">—</span></div>
-                    <div class="sim-result-row"><span class="sim-result-lbl">Food Cost %</span><span class="sim-result-val" id="sr-fc">—</span></div>
-                    <div class="sim-result-row"><span class="sim-result-lbl">Precio mínimo (FC 30%)</span><span class="sim-result-val" id="sr-pmin">—</span></div>
                   </div>
+
                   <!-- Solo costo (PREPARACION) -->
                   <div id="sim-bloque-solo-costo" style="display:none">
-                    <div style="font-size:10px;color:var(--t3);margin:8px 0;line-height:1.5">Solo costo — PREPARACION no tiene precio de venta directo.</div>
+                    <div style="font-size:10px;color:var(--t3);margin:8px 0;line-height:1.5;padding:10px;background:var(--p4);border-radius:6px">
+                      PREPARACION — solo costo, sin precio de venta directo.
+                    </div>
                   </div>
                 </div>
-                <div id="sr-semaforo" style="margin-top:10px"></div>
-                <div style="margin-top:16px;border-top:1px solid var(--b1);padding-top:14px">
+
+                <!-- SEMÁFORO -->
+                <div id="sr-semaforo" style="margin-top:6px;margin-bottom:14px"></div>
+
+                <!-- ESTADO + GUARDAR -->
+                <div style="border-top:1px solid var(--b1);padding-top:14px">
                   <div class="sim-lbl" style="margin-bottom:6px">Estado al guardar</div>
                   <select class="sim-estado-select" id="simEstado">
                     <option value="SIMULACION">SIMULACION</option>
@@ -1467,7 +1489,9 @@ function addSimIng() {
         onblur="setTimeout(()=>hideAutocomplete(${id}),150)">
       <div class="sim-autocomplete-list" id="si-ac-${id}"></div>
     </div>
-    <input class="sim-input" type="number" placeholder="0" id="si-q-${id}" min="0" step="any" oninput="updateTotal(${id});calcSim()">
+    <input class="sim-input" type="number" placeholder="0" id="si-q-${id}" min="0" step="any"
+      oninput="updateTotal(${id});calcSim()"
+      onkeydown="if(event.key==='Enter'){event.preventDefault();const next=document.getElementById('si-q-${id+1}');if(next)next.focus();else addSimIng();}">
     <input class="sim-input" id="si-u-${id}" readonly style="background:var(--p5);color:var(--t2);cursor:default;font-size:11px;text-align:center" placeholder="—">
     <input class="sim-input" type="number" placeholder="0" id="si-c-${id}" min="0" step="any" oninput="updateTotal(${id});calcSim()" style="font-size:11px">
     <span id="si-t-${id}" class="sim-total-cell">—</span>
@@ -1594,15 +1618,19 @@ function calcSim() {
   const fmt=v=>v?'$'+Math.round(v).toLocaleString('es-CL'):'—';
   const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   set('sr-costo','$'+Math.round(totalCosto).toLocaleString('es-CL'));
-  set('sr-qsal',`${qLote} lote · ${Number((qLote*rend).toFixed(1))} sal`);
-  set('sr-cu',cu>0?'$'+Math.round(cu).toLocaleString('es-CL'):'—');
   set('sr-pobj',fmt(pobj));
   set('sr-pobj-iva',pobjIva?'$'+pobjIva.toLocaleString('es-CL'):'—');
-  set('sr-fc',fc!==null?fc.toFixed(1)+'%':'—');
-  set('sr-mg',margin!==null?fmt(margin):'—');
-  set('sr-pmin',fmt(pmin));
+
+  // Margen grande
   const mgEl=document.getElementById('sr-mg');
-  if(mgEl) mgEl.style.color=margin!==null?(margin>0?'var(--green)':'var(--red)'):'var(--t2)';
+  if(mgEl){
+    mgEl.textContent=margin!==null?fmt(margin):'—';
+    mgEl.style.color=margin!==null?(margin>0?'var(--green)':'var(--red)'):'var(--t3)';
+  }
+  // FC% come sottotitolo del margen
+  const fcSub=document.getElementById('sr-fc-sub');
+  if(fcSub) fcSub.textContent=fc!==null?`Food Cost ${fc.toFixed(1)}%`:'';
+
   const sem=document.getElementById('sr-semaforo');
   if(sem) sem.innerHTML=fc!==null
     ?`<span class="semaforo ${fcColor}">● Food Cost ${fcColor==='verde'?'OK ✓':fcColor==='amarillo'?'Revisar':'Alto ⚠'}: ${fc.toFixed(1)}%</span>`:'';
