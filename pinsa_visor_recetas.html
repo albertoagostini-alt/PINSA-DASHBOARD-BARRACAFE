@@ -391,7 +391,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
       <div class="h-logo" id="hLogo">
         <span style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:4px;color:var(--tc)">PINSA.</span>
       </div>
-      <div class="h-badge">Visor Recetas V7</div>
+      <div class="h-badge">Visor Recetas V9</div>
     </div>
     <nav class="h-nav">
       <button class="h-nav-btn on" id="btn-recetas" onclick="setSection('recetas',this)">Recetas</button>
@@ -1612,6 +1612,8 @@ function calcQLote() {  const peso=parseFloat(document.getElementById('simPesoLo
 }
 
 function populateDescSelect() {
+  const sel=document.getElementById('descSelect');
+  if(!sel) return;
   const recipes=getVisibleRecipes().filter(r=>r.precio_venta);
   sel.innerHTML='<option value="">Selecciona receta...</option>'+
     recipes.sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'))
@@ -1639,42 +1641,6 @@ function onTipoChange() {
   if(bloqCom) bloqCom.style.display=(isOferta||isPrepCC)?'none':'';
   if(bloqSC) bloqSC.style.display=isPrepCC?'':'none';
 
-  // OFERTA: popola resultado
-  if(isOferta) {
-    const fmt=v=>v?'$'+Math.round(v).toLocaleString('es-CL'):'—';
-    const pFinal=parseFloat(document.getElementById('simPrecioOferta')?.value)||0;
-    const sep=totalPventaSeparado; // somma prezzi individuali
-    // Prodotto più caro (per analisi "compro solo il più caro")
-    let maxPV=0, maxNombre='';
-    document.querySelectorAll('[id^="sr-s-"]').forEach(sel=>{
-      const opt=sel.options[sel.selectedIndex];
-      const pv=parseFloat(opt?.dataset?.pv)||0;
-      const q=parseFloat(document.getElementById(`sr-q-${sel.id.replace('sr-s-','')}`)?.value)||1;
-      if(pv*q>maxPV){ maxPV=pv*q; maxNombre=opt?.text?.split(' · ')[0]||''; }
-    });
-    window._ofertaMaxPV=maxPV;
-    window._ofertaMaxNombre=maxNombre;
-    // Margen oferta
-    const mgEl=document.getElementById('sr-of-margen');
-    const fcEl=document.getElementById('sr-of-fc');
-    if(mgEl){
-      if(pFinal>0&&totalCosto>0){
-        const mgPct=(pFinal-totalCosto)/pFinal*100;
-        const fc=totalCosto/pFinal*100;
-        mgEl.textContent=mgPct.toFixed(1)+'%';
-        mgEl.style.color=mgPct>=70?'var(--green)':mgPct>=50?'var(--yellow)':'var(--red)';
-        if(fcEl) fcEl.textContent='Food Cost '+fc.toFixed(1)+'%';
-      } else { mgEl.textContent='—'; mgEl.style.color='var(--t3)'; if(fcEl) fcEl.textContent=''; }
-    }
-    // Oferta vs Separado
-    const desc=pFinal>0&&sep>0?sep-pFinal:null;
-    const descPct=desc&&sep>0?(desc/sep*100):null;
-    document.getElementById('sr-of-psep').textContent=fmt(sep);
-    document.getElementById('sr-of-desc').textContent=desc>0?`-${fmt(desc)} (${descPct.toFixed(0)}%)`:'—';
-    document.getElementById('sr-of-ahorro').textContent=desc>0?fmt(desc):'—';
-    window._ofertaData={totalCosto, totalPventaSeparado:sep, pBundle:pFinal};
-    calcOfertaVolumen();
-  }
   checkTipoSeccion();
   calcSim();
 }
@@ -2016,6 +1982,43 @@ function calcSim() {
   const sem=document.getElementById('sr-semaforo');
   if(sem) sem.innerHTML=fc!==null
     ?`<span class="semaforo ${fcColor}">● Food Cost ${fcColor==='verde'?'OK ✓':fcColor==='amarillo'?'Revisar':'Alto ⚠'}: ${fc.toFixed(1)}%</span>`:'';
+
+  // OFERTA: actualizar RESULTADO (se llama desde calcSim para que simPrecioOferta y sr-q-* disparen el update)
+  if(isOferta) {
+    const fmt=v=>v?'$'+Math.round(v).toLocaleString('es-CL'):'—';
+    const pFinalOf=parseFloat(document.getElementById('simPrecioOferta')?.value)||0;
+    // Recalcular totalPventaSeparado desde los selects (ya calculado arriba en isOferta block)
+    let sep=0, maxPV=0, maxNombre='';
+    document.querySelectorAll('[id^="sr-s-"]').forEach(sel=>{
+      const opt=sel.options[sel.selectedIndex];
+      const pv=parseFloat(opt?.dataset?.pv)||0;
+      const q=parseFloat(document.getElementById(`sr-q-${sel.id.replace('sr-s-','')}`)?.value)||1;
+      sep+=pv*q;
+      if(pv*q>maxPV){ maxPV=pv*q; maxNombre=opt?.text?.split(' · ')[0]||''; }
+    });
+    window._ofertaMaxPV=maxPV;
+    window._ofertaMaxNombre=maxNombre;
+    // Margen oferta
+    const mgOfEl=document.getElementById('sr-of-margen');
+    const fcOfEl=document.getElementById('sr-of-fc');
+    if(mgOfEl){
+      if(pFinalOf>0&&totalCosto>0){
+        const mgPct=(pFinalOf-totalCosto)/pFinalOf*100;
+        const fcOf=totalCosto/pFinalOf*100;
+        mgOfEl.textContent=mgPct.toFixed(1)+'%';
+        mgOfEl.style.color=mgPct>=70?'var(--green)':mgPct>=50?'var(--yellow)':'var(--red)';
+        if(fcOfEl) fcOfEl.textContent='Food Cost '+fcOf.toFixed(1)+'%';
+      } else { mgOfEl.textContent='—'; mgOfEl.style.color='var(--t3)'; if(fcOfEl) fcOfEl.textContent=''; }
+    }
+    // Oferta vs Separado
+    const desc=pFinalOf>0&&sep>0?sep-pFinalOf:null;
+    const descPct=desc&&sep>0?(desc/sep*100):null;
+    document.getElementById('sr-of-psep').textContent=fmt(sep);
+    document.getElementById('sr-of-desc').textContent=desc>0?`-${fmt(desc)} (${descPct.toFixed(0)}%)`:'—';
+    document.getElementById('sr-of-ahorro').textContent=desc>0?fmt(desc):'—';
+    window._ofertaData={totalCosto, totalPventaSeparado:sep, pBundle:pFinalOf};
+    calcOfertaVolumen();
+  }
 }
 
 // ══════════════════════════════════════════════
