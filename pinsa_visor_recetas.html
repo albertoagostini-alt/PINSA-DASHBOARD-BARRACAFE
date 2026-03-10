@@ -1397,8 +1397,7 @@ function renderRecipe(r) {
         <div class="hero-badges">
           <span class="badge ${estadoBadgeClass}">${r.estado}</span>
           <span class="badge tipo">${r.tipo}</span>
-          ${r.formato?`<span class="badge fmt">${r.formato}</span>`:''}
-          ${r.url_video?`<button class="hero-video-btn" onclick="openVideo('${r.url_video.replace(/'/g,"\\'")}','${r.nombre.replace(/'/g,"\\'")}')">▶ Ver video</button>`:''}
+          ${r.formato?`<span class="badge fmt">${r.formato}`+'</span>':''}
         </div>
         ${canEdit_?`<div class="hero-actions">
           <button class="btn-edit" onclick="editRecipe('${r.id}')">✏ Editar</button>
@@ -1411,7 +1410,7 @@ function renderRecipe(r) {
                onclick="openFoto('${r.url.replace(/'/g,"\\'")}','${r.nombre.replace(/'/g,"\\'")})')"
                onerror="this.style.cursor='default';this.parentElement.innerHTML='<div class=hero-foto-ph><div class=hero-foto-ph-icon>📷</div><div class=hero-foto-ph-txt>Foto pendiente</div></div>'">`
           :`<div class="hero-foto-ph"><div class="hero-foto-ph-icon">📷</div><div class="hero-foto-ph-txt">Foto pendiente</div></div>`}
-        ${r.url_video?`<a class="hero-video" onclick="openVideo('${r.url_video}','${r.nombre}')" style="cursor:pointer">▶ Ver video</a>`:''}
+        ${r.url_video?`<button class="hero-video-btn" style="width:100%;margin-top:6px;justify-content:center" onclick="openVideo('${r.url_video.replace(/'/g,"\\'")}','${r.nombre.replace(/'/g,"\\'")}')">▶ Ver video</button>`:''}
       </div>
     </div>
     <div class="t-bar">
@@ -1450,9 +1449,9 @@ function renderRecipe(r) {
     </div>`:''}
     <div class="dtabs">
       <button class="dtab on" data-tab="ing" onclick="switchTab('ing',this)">Ingredientes</button>
-      ${hasProc?`<button class="dtab" data-tab="proc" onclick="switchTab('proc',this)">Procedimiento</button>`:''}
-      ${r.perfect_serve?`<button class="dtab" data-tab="serve" onclick="switchTab('serve',this)">Perfect Serve</button>`:''}
-      ${hasNotas?`<button class="dtab" data-tab="notas" onclick="switchTab('notas',this)">Notas</button>`:''}
+      ${hasProc?`<button class="dtab" data-tab="proc" onclick="switchTab('proc',this)">Procedimiento</button>`:'<button class="dtab" data-tab="proc" onclick="switchTab(\'proc\',this)">Procedimiento</button>'}
+      <button class="dtab" data-tab="serve" onclick="switchTab('serve',this)">Extras</button>
+      <button class="dtab" data-tab="notas" onclick="switchTab('notas',this)">Notas</button>
     </div>
     <div class="tab-panel on" id="tp-ing">
       <div class="ing-list">
@@ -1474,17 +1473,22 @@ function renderRecipe(r) {
     </div>
     <div class="tab-panel" id="tp-proc">
       <div class="proc-steps">
-        ${r.proc.map((p,i)=>`
+        ${r.proc.length>0?r.proc.map((p,i)=>`
           <div class="proc-step">
             <div class="proc-num">${String(i+1).padStart(2,'0')}</div>
             <div>${p.t?`<div class="proc-step-title">${p.t}</div>`:''}
               <div class="proc-step-txt">${p.b}</div>
             </div>
-          </div>`).join('')}
+          </div>`).join('')
+          :'<div style="padding:20px;text-align:center;color:var(--t3);font-size:11px;letter-spacing:1px;text-transform:uppercase">Sin procedimiento registrado</div>'}
       </div>
     </div>
-    ${r.perfect_serve?`<div class="tab-panel" id="tp-serve"><div class="ps-box"><div class="ps-lbl">⭑ Instrucción de servicio</div><div class="ps-txt">${r.perfect_serve}</div></div></div>`:''}
-    ${hasNotas?`<div class="tab-panel" id="tp-notas">
+    <div class="tab-panel" id="tp-serve">
+      ${r.perfect_serve
+        ?`<div class="ps-box"><div class="ps-lbl">⭑ Instrucción de servicio</div><div class="ps-txt">${r.perfect_serve}</div></div>`
+        :'<div style="padding:20px;text-align:center;color:var(--t3);font-size:11px;letter-spacing:1px;text-transform:uppercase">Sin extras registrados</div>'}
+    </div>
+    <div class="tab-panel" id="tp-notas">
       ${r.notas_generales?`<div class="nota-gen"><div class="nota-gen-lbl">Nota general</div><div class="nota-gen-txt">${r.notas_generales}</div></div>`:''}
       ${r.ingredientes.filter(i=>i.nota).length>0?`
         <div class="notas-sust-lbl">Sustituciones posibles</div>
@@ -1492,7 +1496,10 @@ function renderRecipe(r) {
           ${r.ingredientes.filter(i=>i.nota).map(i=>`
             <div class="nota-sust-row"><div class="nota-sust-ing">⇄ ${i.n}</div><div class="nota-sust-txt">${i.nota}</div></div>`).join('')}
         </div>`:''}
-    </div>`:''}
+      ${!r.notas_generales&&r.ingredientes.filter(i=>i.nota).length===0
+        ?'<div style="padding:20px;text-align:center;color:var(--t3);font-size:11px;letter-spacing:1px;text-transform:uppercase">Sin notas registradas</div>'
+        :''}
+    </div>
     <div style="height:40px"></div>
   `;
 }
