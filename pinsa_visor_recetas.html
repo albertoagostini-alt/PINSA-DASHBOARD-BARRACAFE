@@ -1382,6 +1382,9 @@ function renderRecipe(r) {
   const fcColor=fc?(fc<25?'verde':fc<30?'amarillo':'rojo'):null;
   const dDots=[1,2,3].map(i=>`<div class="t-dif-dot ${i<=r.dificultad?'on':''} "></div>`).join('');
   const hasNotas=!!(r.notas_generales&&r.notas_generales.trim())||r.ingredientes.some(i=>i.nota);
+  const hasIng=r.ingredientes.length>0;
+  const hasProc=!!(r.procedimiento&&r.procedimiento.trim());
+  const isPrep=r.tipo==='PREPARACION';
 
   const estadoBadgeClass=r.estado==='ACTIVA'||r.estado==='ACTIVA_SIN_DATA'?'ok':r.estado==='SIMULACION'?'sim':r.estado==='ARCHIVADA'?'arch':'pend';
 
@@ -1439,7 +1442,7 @@ function renderRecipe(r) {
     <div class="section">
       <div class="sec-hdr"><span class="sec-num">FC</span><span class="sec-title">Costos & Food Cost</span><div class="sec-line"></div></div>
       <div class="costos-grid">
-        <div class="cc-card"><div class="cc-lbl">Costo lote</div><div class="cc-val">${r.costo_lote?'$'+Number(r.costo_lote).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">${r.q_lote} ${r.unidad}</div></div>
+        ${isPrep?`<div class="cc-card"><div class="cc-lbl">Costo lote</div><div class="cc-val">${r.costo_lote?'$'+Number(r.costo_lote).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">${r.q_lote} ${r.unidad}</div></div>`:''}
         <div class="cc-card"><div class="cc-lbl">Costo unitario</div><div class="cc-val">${r.costo_u?'$'+Number(r.costo_u).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">por ${r.unidad}</div></div>
         <div class="cc-card"><div class="cc-lbl">Precio carta</div><div class="cc-val">${r.precio_venta?'$'+Number(r.precio_venta).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">CLP neto</div></div>
         <div class="cc-card fc"><div class="cc-lbl">Food Cost</div><div class="cc-val">${fc?fc+'%':'—'}</div>${fc?`<div><span class="semaforo ${fcColor}">● ${fcColor==='verde'?'OK':fcColor==='amarillo'?'Revisar':'Alerta'}</span></div>`:'\ <div class="cc-sub">Sin datos</div>'}</div>
@@ -1447,7 +1450,7 @@ function renderRecipe(r) {
     </div>`:''}
     <div class="dtabs">
       <button class="dtab on" data-tab="ing" onclick="switchTab('ing',this)">Ingredientes</button>
-      <button class="dtab" data-tab="proc" onclick="switchTab('proc',this)">Procedimiento</button>
+      ${hasProc?`<button class="dtab" data-tab="proc" onclick="switchTab('proc',this)">Procedimiento</button>`:''}
       ${r.perfect_serve?`<button class="dtab" data-tab="serve" onclick="switchTab('serve',this)">Perfect Serve</button>`:''}
       ${hasNotas?`<button class="dtab" data-tab="notas" onclick="switchTab('notas',this)">Notas</button>`:''}
     </div>
