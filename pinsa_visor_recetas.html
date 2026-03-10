@@ -1474,22 +1474,17 @@ function populateSimFamilias() {
     FAMILIAS_PARAM.map(f=>`<option value="${f}">${f.replace(/_/g,' ')}</option>`).join('');
 }
 function calcPesoLote() {
-  // Soma automatica ingredienti in Gr/CC per il peso lote
-  let total=0;
-  let hasGr=false;
+  // Solo aggiorna il campo visivo — calcSim fa tutto il resto
+  let total=0, hasGr=false;
   simIngredients.forEach(ing=>{
     const q=parseFloat(document.getElementById(`si-q-${ing.id}`)?.value)||0;
     const u=(document.getElementById(`si-u-${ing.id}`)?.value||'').toLowerCase();
-    if(q>0 && (u==='gr'||u==='cc'||u==='g'||u==='ml')){
-      total+=q;
-      hasGr=true;
-    }
+    if(q>0&&(u==='gr'||u==='cc'||u==='g'||u==='ml')){total+=q;hasGr=true;}
   });
   const pesoEl=document.getElementById('simPesoLote');
-  if(pesoEl && hasGr && !pesoEl._manual) {
+  if(pesoEl&&hasGr&&!pesoEl._manual){
     pesoEl.value=Math.round(total);
-    pesoEl.style.color='var(--t3)'; // grigio = calcolato auto
-    calcQLote();
+    pesoEl.style.color='var(--t3)';
   }
 }
 
@@ -1760,13 +1755,35 @@ function calcSim() {
   set('sr-pobj',fmt(pobj));
   set('sr-pobj-iva',pobjIva?'$'+pobjIva.toLocaleString('es-CL'):'—');
 
-  // PREPARACION: aggiorna peso automatico e blocco costo unitario
-  if(isPrepCC) { calcPesoLote();
-    const qL=parseFloat(document.getElementById('simQLote')?.value)||1;
+  // PREPARACION: calcola peso auto e costo unitario
+  if(isPrepCC) {
+    // Calcola peso auto da ingredienti (senza chiamare calcSim ricorsivamente)
+    let pesoAuto=0;
+    simIngredients.forEach(ing=>{
+      const q=parseFloat(document.getElementById(`si-q-${ing.id}`)?.value)||0;
+      const u=(document.getElementById(`si-u-${ing.id}`)?.value||'').toLowerCase();
+      if(q>0&&(u==='gr'||u==='cc'||u==='g'||u==='ml')) pesoAuto+=q;
+    });
+    const pesoEl=document.getElementById('simPesoLote');
+    if(pesoEl&&pesoAuto>0&&!pesoEl._manual){
+      pesoEl.value=Math.round(pesoAuto);
+      pesoEl.style.color='var(--t3)';
+    }
+    const peso=parseFloat(document.getElementById('simPesoLote')?.value)||0;
+    const gramaje=parseFloat(document.getElementById('simGramajePorcion')?.value)||0;
+    // Unidades: da calcolo peso/gramaje se disponibili, altrimenti da campo manuale
+    let qL;
+    if(peso>0&&gramaje>0){
+      qL=Math.floor(peso/gramaje);
+      document.getElementById('simQLote').value=qL;
+      const hint=document.getElementById('sim-qlote-hint');
+      if(hint) hint.innerHTML=`→ <strong style="color:var(--t1)">${qL} unidades</strong><br>de ${gramaje}gr c/u`;
+    } else {
+      qL=parseFloat(document.getElementById('simQLote')?.value)||1;
+    }
     const cuPrep=qL>0?totalCosto/qL:0;
     set('sr-prep-unidades', qL+' unidades');
     set('sr-prep-cu', cuPrep>0?'$'+Math.round(cuPrep).toLocaleString('es-CL'):'—');
-    // Transfer: se già inserito, ricalcola margen
     calcPrepTransfer(cuPrep);
   }
 
