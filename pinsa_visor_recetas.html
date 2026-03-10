@@ -2146,9 +2146,9 @@ async function saveSim() {
   try {
     const action=editId?'editar':'guardar';
     const payload=editId?{action,id:editId,data}:{action,data};
-    // Apps Script WebApp — usa no-cors, la risposta non è leggibile ma la scrittura avviene
-    await fetch(WEBAPP_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload),headers:{'Content-Type':'text/plain'}});
-    const res={ok:true, id: editId || ('REC-PEND')};
+    const url=WEBAPP_URL+'?data='+encodeURIComponent(JSON.stringify(payload));
+    const r=await fetch(url,{method:'GET'});
+    const res=await r.json();
     if(res.ok){
       showToast(`✓ Receta "${nombre}" ${editId?'actualizada':'guardada'} (${res.id||editId})`,'ok');
       // Aggiorna locale
@@ -2301,7 +2301,8 @@ async function deleteRecipe(id) {
     return;
   }
   try {
-    await fetch(WEBAPP_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'eliminar',id}),headers:{'Content-Type':'text/plain'}});
+    const url=WEBAPP_URL+'?data='+encodeURIComponent(JSON.stringify({action:'eliminar',id}));
+    await fetch(url,{method:'GET'});
     RECIPES=RECIPES.filter(r=>r.id!==id);
     showToast('Receta eliminada','ok');
     if(current?.id===id){current=null;document.getElementById('recipeOut').style.display='none';document.getElementById('emptyState').style.display='';}
@@ -2323,7 +2324,8 @@ async function cambiarEstado(id, nuevoEstado) {
     return;
   }
   try {
-    await fetch(WEBAPP_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'editar',id,data:{estado:nuevoEstado}}),headers:{'Content-Type':'text/plain'}});
+    const url=WEBAPP_URL+'?data='+encodeURIComponent(JSON.stringify({action:'editar',id,data:{estado:nuevoEstado}}));
+    await fetch(url,{method:'GET'});
     r.estado=nuevoEstado;showToast(`Estado → ${nuevoEstado}`,'ok');renderMisRecetas();renderList('');
     if(current?.id===id) renderRecipe(r);
   } catch(e){showToast('Error de conexión','err');}
