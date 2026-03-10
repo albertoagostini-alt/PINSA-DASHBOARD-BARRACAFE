@@ -1463,8 +1463,7 @@ function calcQLote() {
   }
 }
 
-
-  const sel=document.getElementById('descSelect');
+function populateDescSelect() {
   const recipes=getVisibleRecipes().filter(r=>r.precio_venta);
   sel.innerHTML='<option value="">Selecciona receta...</option>'+
     recipes.sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'))
