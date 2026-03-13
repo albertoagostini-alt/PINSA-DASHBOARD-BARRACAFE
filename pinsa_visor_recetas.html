@@ -2263,9 +2263,11 @@ async function saveSim() {
     if(res.ok){
       showToast(`✓ Receta "${nombre}" ${editId?'actualizada':'guardada'} (${res.id||editId})`,'ok');
       resetSimForm();
-      setSection('recetas',document.getElementById('btn-recetas'));
-      // Ricarica CSV freschi dal server per mostrare dati aggiornati
-      setTimeout(()=>reloadRecipesFromCSV(), 3000);
+      // Prima ricarica i dati freschi, poi naviga a Recetas
+      setTimeout(async ()=>{
+        await reloadRecipesFromCSV();
+        setSection('recetas',document.getElementById('btn-recetas'));
+      }, 3000);
     } else {
       showToast('Error: '+(res.error||'desconocido'),'err');
     }
