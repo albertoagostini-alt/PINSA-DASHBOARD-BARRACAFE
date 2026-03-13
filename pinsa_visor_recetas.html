@@ -424,7 +424,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
     <div class="sec-panel on" id="panel-recetas">
       <div class="sidebar">
         <div class="sb-top">
-          <button onclick="reloadRecipesFromCSV().then(()=>showToast('Lista actualizada','ok'))" style="width:100%;margin-bottom:9px;padding:7px 12px;background:transparent;border:1px solid var(--b2);border-radius:6px;color:var(--t3);font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s" onmouseover="this.style.borderColor='var(--tc)';this.style.color='var(--tc)'" onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--t3)'">↻ Actualizar lista</button>
+          <button onclick="reloadRecipesFromCSV().then(()=>showToast('Lista actualizada','ok'))" style="width:100%;margin-top:10px;margin-bottom:9px;padding:7px 12px;background:transparent;border:1.5px solid #C4622D;border-radius:6px;color:#C4622D;font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s" onmouseover="this.style.background='rgba(196,98,45,0.12)'" onmouseout="this.style.background='transparent'">↻ Actualizar lista</button>
           <div class="sb-search">
             <span class="sb-search-icon">⌕</span>
             <input type="text" id="searchInput" placeholder="Buscar receta..." oninput="renderList(this.value)">
