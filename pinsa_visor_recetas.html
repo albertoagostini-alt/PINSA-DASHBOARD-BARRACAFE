@@ -2061,9 +2061,10 @@ function calcSim() {
   const mgEl=document.getElementById('sr-mg');
   const pFinal=parseFloat(document.getElementById('simPrecio')?.value)||0;
   if(mgEl){
-    if(pFinal>0 && totalCosto>0){
-      const mgPct=((pFinal-totalCosto)/pFinal*100);
+    if(pFinal>0 && cu>0){
+      const mgPct=((pFinal-cu)/pFinal*100);
       mgEl.textContent=mgPct.toFixed(1)+'%';
+      // Semaforo: margine netto. Verde ≥ 70%, Giallo ≥ 50%, Rosso < 50%
       mgEl.style.color=mgPct>=70?'var(--green)':mgPct>=50?'var(--yellow)':'var(--red)';
     } else {
       mgEl.textContent='—';
