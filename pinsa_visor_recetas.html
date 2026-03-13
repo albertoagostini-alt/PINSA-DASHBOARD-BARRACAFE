@@ -422,6 +422,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
     <div class="sec-panel on" id="panel-recetas">
       <div class="sidebar">
         <div class="sb-top">
+          <button onclick="reloadRecipesFromCSV().then(()=>showToast('Lista actualizada','ok'))" style="width:100%;margin-bottom:9px;padding:7px 12px;background:transparent;border:1px solid var(--b2);border-radius:6px;color:var(--t3);font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s" onmouseover="this.style.borderColor='var(--tc)';this.style.color='var(--tc)'" onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--t3)'">↻ Actualizar lista</button>
           <div class="sb-search">
             <span class="sb-search-icon">⌕</span>
             <input type="text" id="searchInput" placeholder="Buscar receta..." oninput="renderList(this.value)">
@@ -2258,29 +2259,10 @@ async function saveSim() {
     try { await fetch(url,{method:'GET',mode:'no-cors'}); } catch(_){}
     const res=await callWebApp(payload);
     if(res.ok){
-      const savedId = res.id || editId;
-      showToast(`✓ Receta "${nombre}" ${editId?'actualizada':'guardada'} (${savedId})`,'ok');
+      showToast(`✓ Receta "${nombre}" ${editId?'actualizada':'guardada'} (${res.id||editId})`,'ok');
       resetSimForm();
-      // Polling: aspetta che il CSV rifletta la modifica, max 40s
-      (async ()=>{
-        let found = false;
-        for(let i=0; i<20; i++){
-          await new Promise(r=>setTimeout(r,2000));
-          try {
-            const master = await fetchCSV(GID.MASTER, true);
-            const rows = master.filter(r=>r['ID_Receta']);
-            // Cerca la ricetta per ID o per nome se è nuova
-            const hit = savedId
-              ? rows.find(r=>(r['ID_Receta']||'').trim()===savedId.trim())
-              : rows.find(r=>(r['Nombre_Receta']||'').trim().toLowerCase()===nombre.toLowerCase());
-            if(hit){ found=true; break; }
-          } catch(_){}
-          if(i===4) showToast('Sincronizando con Google Sheets…','info');
-        }
-        await reloadRecipesFromCSV();
-        setSection('recetas',document.getElementById('btn-recetas'));
-        if(!found) showToast('Receta guardada (puede tardar unos segundos en aparecer)','info');
-      })();
+      setSection('recetas',document.getElementById('btn-recetas'));
+      showToast('Usa "↻ Actualizar lista" para ver los cambios','info');
     } else {
       showToast('Error: '+(res.error||'desconocido'),'err');
     }
