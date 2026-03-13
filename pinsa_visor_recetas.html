@@ -424,7 +424,6 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
     <div class="sec-panel on" id="panel-recetas">
       <div class="sidebar">
         <div class="sb-top">
-          <button onclick="reloadRecipesFromCSV().then(()=>showToast('Lista actualizada','ok'))" style="width:100%;margin-bottom:9px;padding:7px 12px;background:transparent;border:1.5px solid #C4622D;border-radius:6px;color:#C4622D;font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s" onmouseover="this.style.background='rgba(196,98,45,0.12)'" onmouseout="this.style.background='transparent'">↻ Actualizar lista</button>
           <div class="sb-search">
             <span class="sb-search-icon">⌕</span>
             <input type="text" id="searchInput" placeholder="Buscar receta..." oninput="renderList(this.value)">
@@ -439,6 +438,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
               <option value="todas">Todas las familias</option>
             </select>
           </div>
+          <button onclick="reloadRecipesFromCSV().then(()=>showToast('Lista actualizada','ok'))" style="width:100%;margin-top:8px;padding:6px 12px;background:transparent;border:1.5px solid #C4622D;border-radius:6px;color:#C4622D;font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s" onmouseover="this.style.background='rgba(196,98,45,0.12)'" onmouseout="this.style.background='transparent'">↻ Actualizar lista</button>
         </div>
         <div class="sb-list" id="sbList">
           <div class="empty"><div class="empty-icon">🍕</div><div class="empty-txt">Cargando...</div></div>
