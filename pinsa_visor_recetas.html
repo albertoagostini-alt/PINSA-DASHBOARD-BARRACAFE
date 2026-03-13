@@ -2296,8 +2296,10 @@ function editRecipe(id) {
   // Seccion: setta dopo onTipoChange (che potrebbe aggiornare le opzioni)
   const secVal=(r.seccion||'').trim();
   const secSel=document.getElementById('simSeccion');
-  const secOpt=Array.from(secSel.options).find(o=>o.value===secVal||o.text===secVal);
+  const secValUp=secVal.toUpperCase().replace(/_/g,' ');
+  const secOpt=Array.from(secSel.options).find(o=>o.value.toUpperCase()===secValUp||o.text.toUpperCase()===secValUp);
   if(secOpt) secSel.value=secOpt.value; else if(secSel.options.length>0) secSel.selectedIndex=0;
+  checkTipoSeccion();
   // Familia: prova a settare, se esiste l'opzione
   const famSel=document.getElementById('simFamilia');
   Array.from(famSel.options).forEach(o=>{if(o.value===r.familia)o.selected=true;});
