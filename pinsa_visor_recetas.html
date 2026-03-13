@@ -74,7 +74,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
 
 /* SIDEBAR */
 .sidebar{width:280px;flex-shrink:0;background:var(--p1);border-right:1px solid var(--b2);display:flex;flex-direction:column}
-.sb-top{padding:12px 12px 10px;border-bottom:1px solid var(--b1)}
+.sb-top{padding:14px 12px 10px;border-bottom:1px solid var(--b1)}
 .sb-search{position:relative;margin-bottom:9px}
 .sb-search input{width:100%;padding:8px 12px 8px 32px;background:var(--p3);border:1px solid var(--b1);border-radius:6px;color:var(--t1);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;transition:border-color 0.2s}
 .sb-search input:focus{border-color:var(--tc)}
@@ -116,7 +116,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
 
 /* HERO */
 .hero{display:flex;flex-direction:column;border-bottom:1px solid var(--b2)}
-.hero-info{padding:24px 28px 14px;display:flex;flex-direction:column;justify-content:flex-start;flex:1;min-height:180px}
+.hero-info{padding:24px 28px 14px;display:flex;flex-direction:column;justify-content:flex-start}
 .hero-bc{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:6px}
 .hero-bc span{color:var(--tc)}
 .hero-tipo{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--tc);font-weight:600;margin-bottom:5px}
@@ -424,7 +424,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
     <div class="sec-panel on" id="panel-recetas">
       <div class="sidebar">
         <div class="sb-top">
-          <button onclick="reloadRecipesFromCSV().then(()=>showToast('Lista actualizada','ok'))" style="width:100%;margin-top:10px;margin-bottom:9px;padding:7px 12px;background:transparent;border:1.5px solid #C4622D;border-radius:6px;color:#C4622D;font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s" onmouseover="this.style.background='rgba(196,98,45,0.12)'" onmouseout="this.style.background='transparent'">↻ Actualizar lista</button>
+          <button onclick="reloadRecipesFromCSV().then(()=>showToast('Lista actualizada','ok'))" style="width:100%;margin-bottom:9px;padding:7px 12px;background:transparent;border:1.5px solid #C4622D;border-radius:6px;color:#C4622D;font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s" onmouseover="this.style.background='rgba(196,98,45,0.12)'" onmouseout="this.style.background='transparent'">↻ Actualizar lista</button>
           <div class="sb-search">
             <span class="sb-search-icon">⌕</span>
             <input type="text" id="searchInput" placeholder="Buscar receta..." oninput="renderList(this.value)">
@@ -1139,7 +1139,7 @@ async function loadData() {
           costoLinea:cleanNum(d['Costo_linea'])||null,
           nota:(d['Notas']||'').trim(), esSub:d['Es_SubReceta']==='TRUE',
         };
-        if(ing.n) recipe.ingredientes.push(ing);
+        if(ing.n && ing.qty > 0) recipe.ingredientes.push(ing);
       });
     }
   } catch(e) { console.warn('DETALLE error:',e); }
@@ -2222,7 +2222,7 @@ async function reloadRecipesFromCSV() {
           costoLinea:cleanNum(d['Costo_linea'])||null,
           nota:(d['Notas']||'').trim(), esSub:d['Es_SubReceta']==='TRUE',
         };
-        if(ing.n) recipe.ingredientes.push(ing);
+        if(ing.n && ing.qty > 0) recipe.ingredientes.push(ing);
       });
     }
     renderList(''); renderMisRecetas(); populateDescSelect();
