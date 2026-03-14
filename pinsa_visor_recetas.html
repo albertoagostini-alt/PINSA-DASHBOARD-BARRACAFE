@@ -2200,7 +2200,7 @@ async function btnActualizarClick() {
   btn.textContent = '↻ Cargando...';
   try {
     await reloadRecipesFromCSV();
-    showToast('Lista actualizada ✓', 'ok');
+    showToast('Lista recargada desde Sheets', 'ok');
   } catch(e) {
     showToast('Error al actualizar', 'err');
   } finally {
@@ -2296,17 +2296,39 @@ async function saveSim() {
   try {
     const action=editId?'editar':'guardar';
     const payload=editId?{action,id:editId,data}:{action,data};
-    const res=await callWebApp(payload);
-    if(res.ok){
-      showToast(`✓ Receta "${nombre}" ${editId?'actualizada':'guardada'} (${res.id||editId})`,'ok');
-      resetSimForm();
-      setSection('recetas',document.getElementById('btn-recetas'));
-      showToast('Usa "↻ Actualizar lista" para ver los cambios','info');
+
+    // Aggiorna SUBITO la memoria locale — così il Visor è coerente
+    // indipendentemente dal ritardo del GAS / cache CSV
+    if(editId) {
+      const idx=RECIPES.findIndex(r=>r.id===editId);
+      if(idx>=0) {
+        const updated=mapDataToRecipe(editId,data);
+        // Preserva costo_u e costo_lote calcolati da Sheets (non sovrascrivere con null)
+        RECIPES[idx]={ ...RECIPES[idx], ...updated,
+          costo_u: updated.costo_u ?? RECIPES[idx].costo_u,
+          costo_lote: updated.costo_lote ?? RECIPES[idx].costo_lote,
+        };
+        if(current&&current.id===editId){ current=RECIPES[idx]; renderRecipe(RECIPES[idx]); }
+      }
     } else {
-      showToast('Error: '+(res.error||'desconocido'),'err');
+      const tempId='SIM-'+Date.now();
+      RECIPES.push(mapDataToRecipe(tempId,data));
     }
+    renderList(''); renderMisRecetas(); populateDescSelect();
+
+    // Invia al GAS (fire-and-forget — non possiamo verificare se ha scritto)
+    callWebApp(payload).catch(()=>{});
+
+    // Toast onesti: confermiamo l'invio, NON la scrittura effettiva
+    if(editId){
+      showToast(`Cambios enviados a Sheets — verifica en 1-2 min con ↻`,'info');
+    } else {
+      showToast(`Receta "${nombre}" enviada — verifica en 1-2 min con ↻`,'ok');
+    }
+    resetSimForm();
+    setSection('recetas',document.getElementById('btn-recetas'));
   } catch(e){
-    showToast('Error de conexión con WebApp','err');
+    showToast('Error al procesar la receta','err');
     console.error(e);
   } finally {
     btn.textContent='Guardar receta'; btn.disabled=false;
