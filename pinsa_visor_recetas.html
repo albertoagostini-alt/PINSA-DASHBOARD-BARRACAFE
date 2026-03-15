@@ -84,6 +84,8 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
 .sb-chips::-webkit-scrollbar{display:none}
 .chip{flex-shrink:0;padding:4px 11px;border-radius:20px;font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;background:var(--p3);border:1px solid var(--b1);color:var(--t3);cursor:pointer;transition:all 0.15s;white-space:nowrap}
 .chip.on{background:var(--tc-dim);border-color:var(--tc-border);color:var(--tc)}
+.chip-cc{border-color:rgba(155,107,158,0.3);color:#9B6B9E}
+.chip-cc.on{background:rgba(155,107,158,0.12);border-color:rgba(155,107,158,0.4);color:#9B6B9E}
 .sb-estado-wrap{margin-top:8px;padding-top:8px;border-top:1px solid var(--b1)}
 .sb-estado-label{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;padding-left:1px}
 .sb-estado-pills{display:flex;flex-wrap:wrap;gap:4px}
@@ -438,7 +440,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
       <div class="h-logo" id="hLogo">
         <span style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:4px;color:var(--tc)">PINSA.</span>
       </div>
-      <div class="h-badge">Visor Recetas V15</div>
+      <div class="h-badge">Visor Recetas V16</div>
     </div>
     <nav class="h-nav">
       <button class="h-nav-btn on" id="btn-recetas" onclick="setSection('recetas',this)">Recetas</button>
@@ -469,14 +471,16 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
             <span class="sb-search-icon">⌕</span>
             <input type="text" id="searchInput" placeholder="Buscar receta..." oninput="renderList(this.value)">
           </div>
+          <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t2);margin-bottom:6px;display:flex;align-items:center;gap:6px"><span style="flex:1;height:1px;background:var(--b2)"></span>Categoría<span style="flex:1;height:1px;background:var(--b2)"></span></div>
           <div class="sb-chips" id="chips-l1">
             <div class="chip on" onclick="setL1('todas',this)">Todas</div>
             <div class="chip" onclick="setL1('LIQUIDOS',this)">Líquidos</div>
             <div class="chip" onclick="setL1('SOLIDOS',this)">Sólidos</div>
+            <div class="chip chip-cc" onclick="setL1('CC',this)">CC</div>
           </div>
           <!-- Estado filter -->
           <div class="sb-estado-wrap">
-            <div class="sb-estado-label">Estado</div>
+            <div class="sb-estado-label" style="display:flex;align-items:center;gap:6px;color:var(--t2);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px"><span style="flex:1;height:1px;background:var(--b2)"></span>Estado<span style="flex:1;height:1px;background:var(--b2)"></span></div>
             <div class="sb-estado-pills">
               <div class="ep ep-todas on" onclick="setEstado('todas',this)">Todas</div>
               <div class="ep ep-activa" onclick="setEstado('ACTIVA',this)"><span class="ep-dot"></span>Activa</div>
@@ -1416,7 +1420,7 @@ function setL1(f,el){
   el.classList.add('on');buildL2();renderList('');
 }
 function buildL2(){
-  const pool=filterL1==='todas'?getVisibleRecipes():getVisibleRecipes().filter(r=>r.cat===filterL1);
+  const pool=filterL1==='todas'?getVisibleRecipes():filterL1==='CC'?getVisibleRecipes().filter(r=>r.tipo==='PREPARACION'):getVisibleRecipes().filter(r=>r.cat===filterL1);
   const familias=[...new Set(pool.map(r=>r.familia))].filter(Boolean).sort();
   const wrap=document.getElementById('familia-wrap');
   const sel=document.getElementById('familiaSelect');
@@ -1439,7 +1443,7 @@ function miniDots(n){return[1,2,3].map(i=>`<span style="display:inline-block;wid
 function renderList(q='') {
   const list=document.getElementById('sbList');
   const items=getVisibleRecipes().filter(r=>{
-    const m1=filterL1==='todas'||r.cat===filterL1;
+    const m1=filterL1==='todas'||(filterL1==='CC'?r.tipo==='PREPARACION':r.cat===filterL1);
     const m2=filterL2==='todas'||r.familia===filterL2;
     const m3=filterEstado==='todas'||r.estado===filterEstado;
     const ms=!q||r.nombre.toLowerCase().includes(q.toLowerCase());
@@ -1454,7 +1458,8 @@ function renderList(q='') {
       <div class="ri-name">${r.nombre}</div>
       <div class="ri-meta">
         <span class="tag">${r.familia}</span>
-        ${r.formato?`<span class="tag">${r.formato}`:''}</span>
+        ${r.tipo==='PREPARACION'?`<span class="tag" style="background:rgba(155,107,158,0.15);color:#9B6B9E;border:1px solid rgba(155,107,158,0.3)">CC</span>`:''}
+        ${r.formato&&r.tipo!=='PREPARACION'?`<span class="tag">${r.formato}</span>`:''}
         <span class="ri-right">
           ${miniDots(r.dificultad)}
           <span class="ri-mins">${r.t_prep+(r.t_coccion||0)}′</span>
