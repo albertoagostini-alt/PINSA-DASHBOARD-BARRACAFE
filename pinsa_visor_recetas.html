@@ -799,7 +799,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
                     </div>
                     <!-- Costo unitario grande -->
                     <div style="margin-bottom:7px;padding:8px 12px;background:var(--p4);border-radius:7px;border:1px solid var(--b1)">
-                      <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:4px">Costo por unidad (CC)</div>
+                      <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:4px">Costo por gr / cc / un</div>
                       <div id="sr-prep-cu" style="font-family:'Inter',sans-serif;font-size:24px;font-weight:300;letter-spacing:-1px;color:var(--t1);text-align:center">—</div>
                     </div>
                     <!-- Precio transfer -->
@@ -1047,7 +1047,7 @@ const GID = {
   BD_INSUMOS: '514178276',
 };
 // ⚠ Inserire la URL del WebApp deployato (Apps Script)
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzxsWlyTLw2dZIZTJB7W1iHa8wUY5wDnyh7k0_cXNS2bXdMEHgctqXA7PDac55L8Pzpfw/exec';
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzYdt568Qej08BdaTrrw2A7E6VzzWNxD5kbvgaUCK34Rxoguhy3csUWic60WDtigibOFQ/exec';
 
 // ══════════════════════════════════════════════
 // INSUMOS — cargado desde BD_INSUMOS (live)
@@ -1244,9 +1244,28 @@ async function loadData() {
 function cleanNum(v) {
   if(!v&&v!==0) return 0;
   let s=String(v).trim().replace(/[$\s]/g,'');
-  if(/^\d{1,3}(\.\d{3})+$/.test(s)) return parseFloat(s.replace(/\./g,''));
-  if(/,/.test(s)&&!/\./.test(s)) return parseFloat(s.replace(/,/g,''));
-  s=s.replace(/,/g,'');
+  // Formato con virgola E punto: "1.234,56" → 1234.56 (europeo/cileno)
+  if(/,/.test(s)&&/\./.test(s)) return parseFloat(s.replace(/\./g,'').replace(',','.'))||0;
+  // Solo virgola: "1234,56" → 1234.56 o "1.234" → migliaia
+  if(/,/.test(s)) return parseFloat(s.replace(',','.'))||0;
+  // Solo punto: distingue migliaia da decimale
+  // Se ha esattamente 3 cifre dopo il punto ED è > 999 → migliaia
+  // Es: "7.845" → se result > 999 probabilmente è migliaia → 7845
+  // Es: "2.287" → idem → 2287
+  // Es: "7.84" → 2 cifre decimali → 7.84
+  // Es: "2.4" → 1 cifra decimale → 2.4
+  const parts = s.split('.');
+  if(parts.length === 2) {
+    if(parts[1].length === 3) {
+      // Potrebbe essere migliaia o 3 decimali
+      // Euristica: se parte intera > 0 e risultato sarebbe > 99 → migliaia
+      const asDecimal = parseFloat(s);
+      const asMiles = parseFloat(parts[0]+parts[1]);
+      // Prezzi per UTM (gr/cc) sono sempre < $500 → se > 500 è migliaia
+      if(asMiles > 0 && asDecimal < 500) return asDecimal;
+      return asMiles;
+    }
+  }
   return parseFloat(s)||0;
 }
 
@@ -1600,7 +1619,7 @@ function renderRecipe(r) {
         ${isPrep?`
           <div class="cc-card"><div class="cc-lbl">Precio Transferencia</div><div class="cc-val">${r.precio_transfer?'$'+Number(r.precio_transfer).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">precio CC → BC</div></div>
           <div class="cc-card"><div class="cc-lbl">Costo Lote</div><div class="cc-val">${r.costo_lote?'$'+Number(r.costo_lote).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">${r.q_lote} ${r.unidad}</div></div>
-          ${(()=>{const pt=cleanNum(r.precio_transfer)||0;const cl=cleanNum(r.costo_lote)||0;if(pt>0&&cl>0){const mg=pt-cl;const mgPct=((mg/pt)*100).toFixed(1);const mgColor=mgPct>=20?'var(--green)':mgPct>=10?'var(--yellow)':'var(--red)';return `<div class="cc-card"><div class="cc-lbl">Margen Transferencia</div><div class="cc-val" style="color:${mgColor}">${mgPct}%</div><div class="cc-sub">$${Math.round(mg).toLocaleString('es-CL')} neto</div></div>`;}return `<div class="cc-card"><div class="cc-lbl">Margen Transferencia</div><div class="cc-val">—</div><div class="cc-sub">sin precio transfer</div></div>`;})()}
+          ${(()=>{const pt=cleanNum(r.precio_transfer)||0;const cu=cleanNum(r.costo_u)||0;const ql=parseFloat(r.q_lote)||1;if(pt>0&&cu>0){const mgUnit=pt-cu;const mgLote=Math.round(mgUnit*ql);const mgPct=((mgUnit/pt)*100).toFixed(1);const mgColor=mgPct>=20?'var(--green)':mgPct>=10?'var(--yellow)':'var(--red)';return `<div class="cc-card"><div class="cc-lbl">Margen Transferencia</div><div class="cc-val" style="color:${mgColor}">${mgPct}%</div><div class="cc-sub">$${mgLote.toLocaleString('es-CL')} lote</div></div>`;}return `<div class="cc-card"><div class="cc-lbl">Margen Transferencia</div><div class="cc-val">—</div><div class="cc-sub">sin precio transfer</div></div>`;})()}
           <div class="cc-card"><div class="cc-lbl">Costo por ${r.unidad||'UTM'}</div><div class="cc-val">${r.costo_u?'$'+Number(r.costo_u).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">por ${r.unidad||'unidad'}</div></div>
         `:`
           <div class="cc-card"><div class="cc-lbl">Precio bruto</div><div class="cc-val">${r.precio_venta?'$'+Number(r.precio_venta).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">con IVA 19%</div></div>
@@ -1759,11 +1778,11 @@ function calcPrepTransfer(cuOverride) {
   const transferEl=document.getElementById('sr-prep-transfer');
   const margenEl=document.getElementById('sr-prep-margen');
   if(!transferEl||!margenEl) return;
-  const transfer=parseFloat(transferEl.value)||0;
+  const transfer=cleanNum(transferEl.value)||0;
   // Get costo unitario from DOM if not passed
   let cu=cuOverride;
+  const qL=parseFloat(document.getElementById('simQLote')?.value)||1;
   if(cu===undefined){
-    const qL=parseFloat(document.getElementById('simQLote')?.value)||1;
     let totalC=0;
     simIngredients.forEach(ing=>{
       const q=parseFloat(document.getElementById(`si-q-${ing.id}`)?.value)||0;
@@ -1773,10 +1792,12 @@ function calcPrepTransfer(cuOverride) {
     cu=qL>0?totalC/qL:0;
   }
   if(transfer>0 && cu>0){
-    const mg=transfer-cu;
-    const mgPct=(mg/transfer*100);
-    margenEl.textContent='$'+Math.round(mg).toLocaleString('es-CL')+' · '+mgPct.toFixed(1)+'%';
-    margenEl.style.color=mgPct>=20?'var(--green)':mgPct>=10?'var(--yellow)':'var(--red)';
+    const mgUnit=transfer-cu;           // margine per gr/cc/un
+    const mgLote=Math.round(mgUnit*qL); // margine sul lote intero
+    const mgPct=(mgUnit/transfer*100);
+    const mgColor=mgPct>=20?'var(--green)':mgPct>=10?'var(--yellow)':'var(--red)';
+    margenEl.textContent='$'+mgLote.toLocaleString('es-CL')+' · '+mgPct.toFixed(1)+'%';
+    margenEl.style.color=mgColor;
   } else {
     margenEl.textContent='—';
     margenEl.style.color='var(--t3)';
