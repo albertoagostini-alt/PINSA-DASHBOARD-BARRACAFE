@@ -612,7 +612,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
                   </div>
                   <div class="sim-field" id="sim-unidad-wrap">
                     <div class="sim-lbl">Unidad de salida</div>
-                    <select class="sim-input" id="simUnidad">
+                    <select class="sim-input" id="simUnidad" onchange="onUnidadChange()">
                       <option value="unidad" selected>unidad</option>
                       <option value="gr">gr</option>
                       <option value="cc">cc</option>
@@ -642,8 +642,8 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
                       <div class="sim-lbl" style="display:flex;justify-content:space-between">Peso total del lote (gr) <span onclick="const e=document.getElementById('simPesoLote');e._manual=false;e.style.color='var(--t3)';calcPesoLote();" style="cursor:pointer;color:var(--tc);font-size:9px">↺ auto</span></div>
                       <input class="sim-input" type="number" id="simPesoLote" placeholder="Auto (Gr+CC)" min="0" step="any" oninput="this._manual=true;this.style.color='var(--t1)';calcQLote()" title="Se calcula automáticamente sumando Gr y CC. Edita para ajustar.">
                     </div>
-                    <div class="sim-field" style="margin:0">
-                      <div class="sim-lbl">Gramaje por porción (gr)</div>
+                    <div class="sim-field" style="margin:0" id="sim-gramaje-wrap">
+                      <div class="sim-lbl" id="sim-gramaje-lbl">Gramaje por porción (gr)</div>
                       <input class="sim-input" type="number" id="simGramajePorcion" placeholder="ej. 30" min="0" step="any" oninput="calcQLote()">
                     </div>
                   </div>
@@ -1597,12 +1597,17 @@ function renderRecipe(r) {
     <div class="section">
       <div class="sec-hdr"><span class="sec-num">FC</span><span class="sec-title">Costos & Food Cost</span><div class="sec-line"></div></div>
       <div class="costos-grid">
-        ${isPrep?`<div class="cc-card"><div class="cc-lbl">Costo lote</div><div class="cc-val">${r.costo_lote?'$'+Number(r.costo_lote).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">${r.q_lote} ${r.unidad}</div></div>`:''}
-        ${(isPrep&&r.rendimiento&&r.rendimiento<0.999)?`<div class="cc-card"><div class="cc-lbl">Rendimiento</div><div class="cc-val">${Math.round(r.rendimiento*100)}%</div><div class="cc-sub">${Math.round((1-r.rendimiento)*100)}% merma</div></div>`:''}
-        <div class="cc-card"><div class="cc-lbl">Precio bruto</div><div class="cc-val">${r.precio_venta?'$'+Number(r.precio_venta).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">con IVA 19%</div></div>
-        <div class="cc-card"><div class="cc-lbl">Precio neto</div><div class="cc-val">${pvNeto?'$'+Math.round(pvNeto).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">CLP neto</div></div>
-        <div class="cc-card"><div class="cc-lbl">Costo unitario</div><div class="cc-val">${r.costo_u?'$'+Number(r.costo_u).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">por ${r.unidad}</div></div>
-        <div class="cc-card fc" style="border-top-color:${fcColor==='verde'?'var(--green)':fcColor==='amarillo'?'var(--yellow)':fcColor==='rojo'?'var(--red)':'var(--b2)'}"><div class="cc-lbl">Costo unitario neto</div><div class="cc-val">${fc?fc+'%':'—'}</div>${fc?`<div><span class="semaforo ${fcColor}">● ${fcColor==='verde'?'OK':fcColor==='amarillo'?'Revisar':'Alerta'}</span></div>`:'<div class="cc-sub">Sin datos</div>'}</div>
+        ${isPrep?`
+          <div class="cc-card"><div class="cc-lbl">Precio Transferencia</div><div class="cc-val">${r.precio_transfer?'$'+Number(r.precio_transfer).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">precio CC → BC</div></div>
+          <div class="cc-card"><div class="cc-lbl">Costo Lote</div><div class="cc-val">${r.costo_lote?'$'+Number(r.costo_lote).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">${r.q_lote} ${r.unidad}</div></div>
+          ${(()=>{const pt=parseFloat(r.precio_transfer)||0;const cl=parseFloat(r.costo_lote)||0;if(pt>0&&cl>0){const mg=pt-cl;const mgPct=((mg/pt)*100).toFixed(1);const mgColor=mgPct>=20?'var(--green)':mgPct>=10?'var(--yellow)':'var(--red)';return `<div class="cc-card"><div class="cc-lbl">Margen Transferencia</div><div class="cc-val" style="color:${mgColor}">${mgPct}%</div><div class="cc-sub">$${Math.round(mg).toLocaleString('es-CL')} neto</div></div>`;}return `<div class="cc-card"><div class="cc-lbl">Margen Transferencia</div><div class="cc-val">—</div><div class="cc-sub">sin precio transfer</div></div>`;})()}
+          <div class="cc-card"><div class="cc-lbl">Costo por ${r.unidad||'UTM'}</div><div class="cc-val">${r.costo_u?'$'+Number(r.costo_u).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">por ${r.unidad||'unidad'}</div></div>
+        `:`
+          <div class="cc-card"><div class="cc-lbl">Precio bruto</div><div class="cc-val">${r.precio_venta?'$'+Number(r.precio_venta).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">con IVA 19%</div></div>
+          <div class="cc-card"><div class="cc-lbl">Precio neto</div><div class="cc-val">${pvNeto?'$'+Math.round(pvNeto).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">CLP neto</div></div>
+          <div class="cc-card"><div class="cc-lbl">Costo unitario</div><div class="cc-val">${r.costo_u?'$'+Number(r.costo_u).toLocaleString('es-CL'):'—'}</div><div class="cc-sub">por ${r.unidad}</div></div>
+          <div class="cc-card fc" style="border-top-color:${fcColor==='verde'?'var(--green)':fcColor==='amarillo'?'var(--yellow)':fcColor==='rojo'?'var(--red)':'var(--b2)'}"><div class="cc-lbl">Food Cost %</div><div class="cc-val">${fc?fc+'%':'—'}</div>${fc?`<div><span class="semaforo ${fcColor}">● ${fcColor==='verde'?'OK':fcColor==='amarillo'?'Revisar':'Alerta'}</span></div>`:'<div class="cc-sub">Sin datos</div>'}</div>
+        `}
       </div>
     </div>`:''}
     <div class="dtabs">
@@ -1776,6 +1781,38 @@ function calcPrepTransfer(cuOverride) {
     margenEl.textContent='—';
     margenEl.style.color='var(--t3)';
   }
+}
+
+// ── V3.3: Blocca Gramaje por Porción per gr/cc/unidad, libera per porcion ──
+function onUnidadChange() {
+  const unidad = document.getElementById('simUnidad')?.value || 'unidad';
+  const inputGramaje = document.getElementById('simGramajePorcion');
+  const wrapGramaje  = document.getElementById('sim-gramaje-wrap');
+  const lblGramaje   = document.getElementById('sim-gramaje-lbl');
+  if (!inputGramaje) return;
+
+  if (unidad === 'porcion') {
+    // Libero — operatore inserisce il gramaggio della porzione
+    inputGramaje.value       = '';
+    inputGramaje.disabled    = false;
+    inputGramaje.placeholder = 'ej. 150';
+    inputGramaje.style.color = 'var(--t1)';
+    inputGramaje.style.opacity = '1';
+    if (lblGramaje) lblGramaje.textContent = 'Gramaje por porción (gr)';
+    if (wrapGramaje) wrapGramaje.style.opacity = '1';
+  } else {
+    // Bloccato = 1 per gr, cc, unidad
+    inputGramaje.value       = '1';
+    inputGramaje.disabled    = true;
+    inputGramaje.style.color = 'var(--t3)';
+    inputGramaje.style.opacity = '0.5';
+    const label = unidad === 'gr' ? 'Gramaje fijo = 1 gr (UTM base)' :
+                  unidad === 'cc' ? 'Gramaje fijo = 1 cc (UTM base)' :
+                                   'Gramaje fijo = 1 unidad';
+    if (lblGramaje) lblGramaje.textContent = label;
+    if (wrapGramaje) wrapGramaje.style.opacity = '0.6';
+  }
+  calcQLote();
 }
 
 function calcQLote() {  const peso=parseFloat(document.getElementById('simPesoLote')?.value)||0;
@@ -2499,6 +2536,7 @@ function editRecipe(id) {
   document.getElementById('simCategoria').value=r.cat||'LIQUIDOS'; onCategoriaChange();
   document.getElementById('simFormato').value=r.formato||'';
   document.getElementById('simUnidad').value=r.unidad||'unidad';
+  onUnidadChange(); // V3.3: aggiorna stato gramaje in base a unidad caricata
   document.getElementById('simQLote').value=r.q_lote||1;
   const rendEl=document.getElementById('simRendimiento');
   if(rendEl) rendEl.value=r.rendimiento||1;
