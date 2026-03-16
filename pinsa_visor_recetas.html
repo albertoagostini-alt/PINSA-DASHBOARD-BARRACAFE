@@ -84,7 +84,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
 .sb-chips::-webkit-scrollbar{display:none}
 .chip{flex-shrink:0;padding:4px 11px;border-radius:20px;font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;background:var(--p3);border:1px solid var(--b1);color:var(--t3);cursor:pointer;transition:all 0.15s;white-space:nowrap}
 .chip.on{background:var(--tc-dim);border-color:var(--tc-border);color:var(--tc)}
-.chip-cc{border-color:rgba(155,107,158,0.3);color:#9B6B9E}
+.chip-cc{border-color:var(--b1);color:var(--t3)}
 .chip-cc.on{background:rgba(155,107,158,0.12);border-color:rgba(155,107,158,0.4);color:#9B6B9E}
 .sb-estado-wrap{margin-top:8px;padding-top:8px;border-top:1px solid var(--b1)}
 .sb-estado-label{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;padding-left:1px}
@@ -800,7 +800,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
                     </div>
                     <!-- Costo unitario grande -->
                     <div style="margin-bottom:7px;padding:8px 12px;background:var(--p4);border-radius:7px;border:1px solid var(--b1)">
-                      <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:4px">Costo por gr / cc / un</div>
+                      <div id="sr-prep-cu-label" style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:4px">Costo por gr / cc / un</div>
                       <div id="sr-prep-cu" style="font-family:'Inter',sans-serif;font-size:24px;font-weight:300;letter-spacing:-1px;color:var(--t1);text-align:center">—</div>
                     </div>
                     <!-- Precio transfer -->
@@ -1429,6 +1429,13 @@ function setSection(s, el) {
   const colRes=document.getElementById('sim-col-resultado');
   if(colRes) colRes.style.display=s==='simulador'?'flex':'none';
   if(s==='simulador') { renderMisRecetas(); onCategoriaChange(); }
+  // FIX 3: reset scroll — evita che il pannello si incastri sotto l header
+  const shell=document.querySelector('.shell');
+  if(shell) shell.scrollTop=0;
+  const detail=document.querySelector('.detail');
+  if(detail) detail.scrollTop=0;
+  const sb=document.querySelector('.sb-list');
+  if(sb) sb.scrollTop=0;
 }
 
 // ══════════════════════════════════════════════
@@ -2219,6 +2226,9 @@ function calcSim() {
     const cuSub=qLSub>0?totalCosto/qLSub:0;
     set('sr-prep-unidades','—');
     set('sr-prep-cu', cuSub>0?'$'+cuSub.toFixed(2):'—');
+    // Aggiorna label con unità selezionata
+    const cuLabelSubEl=document.getElementById('sr-prep-cu-label');
+    if(cuLabelSubEl){const uSelSub=document.getElementById('simUnidad')?.value||'unidad';cuLabelSubEl.textContent='Costo por '+uSelSub.toUpperCase();}
   }
 
   // PREPARACION: calcola peso auto e costo unitario
@@ -2250,6 +2260,9 @@ function calcSim() {
     const cuPrep=qL>0?totalCosto/(qL*rend):0;
     set('sr-prep-unidades', qL);
     set('sr-prep-cu', cuPrep>0?'$'+Math.round(cuPrep).toLocaleString('es-CL'):'—');
+    // Aggiorna label con unità selezionata
+    const cuLabelEl=document.getElementById('sr-prep-cu-label');
+    if(cuLabelEl){const uSel=document.getElementById('simUnidad')?.value||'gr';cuLabelEl.textContent='Costo por '+uSel.toUpperCase();}
     calcPrepTransfer(cuPrep);
   }
 
