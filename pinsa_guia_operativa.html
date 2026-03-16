@@ -411,6 +411,7 @@
   .freq-badge.semanal { background: rgba(200,137,58,0.15); color: var(--ambra); }
   .freq-badge.mensual { background: rgba(74,143,168,0.15); color: var(--azzurro); }
   .freq-badge.cuando { background: rgba(196,98,45,0.15); color: var(--orange); }
+  .freq-badge.siempre { background: rgba(184,84,80,0.18); color: var(--rosso); font-weight: 600; }
 
   /* EMPTY STATE */
   .empty-state {
@@ -452,9 +453,9 @@
 <!-- HEADER -->
 <div class="header">
   <div class="logo-p">P</div>
-  <div class=\"header-text\">
+  <div class="header-text">
     <h1>Guía Operativa PINSA</h1>
-    <p>Sistema de gestión · Bodega · Recetas · Cocina Central</p>
+    <p>Sistema de gestión · Bodega · Recetas · Cocina Central &nbsp;·&nbsp; <span style="color:var(--verde)">Actualizado 15/03/2026</span></p>
   </div>
 </div>
 
@@ -745,6 +746,145 @@
 
   </div>
 </div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN: COCINA CENTRAL -->
+<!-- ══════════════════════════════════════════ -->
+<div class="section-divider">
+  <div class="section-title">🧑‍🍳 Cocina Central</div>
+</div>
+
+<!-- CARD: REGISTRAR PRODUCCION -->
+<div class="op-card" data-roles="cc jb" id="card-produccion-cc">
+  <div class="op-header" onclick="toggleCard('card-produccion-cc')">
+    <div class="op-icon orange">🍳</div>
+    <div class="op-meta">
+      <div class="op-title">Registrar lote producido</div>
+      <div class="op-subtitle">Anotar cada preparación completada en PRODUCCION_CC</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body">
+
+    <span class="freq-badge diario">📅 Cada vez que se completa un lote</span>
+
+    <div class="when-box">
+      <div class="when-icon">📋</div>
+      <div class="when-text">
+        Cada vez que terminas de producir una preparación — salsa, base, masa — debes registrarla en <strong>CONTROL_MAESTRO_2026</strong> → hoja <code>Produccion_CC</code>. Este registro es la fuente de verdad del inventario de CC y la base del bono semanal.
+      </div>
+    </div>
+
+    <div class="steps-label">Pasos</div>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Abre PRODUCCION_CC</div>
+        <div class="step-desc">En <strong>CONTROL_MAESTRO_2026</strong>, ir a la hoja <code>Produccion_CC</code>. Ir a la primera fila vacía al final.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Selecciona la receta</div>
+        <div class="step-desc"><strong>Col D (Nombre_Receta)</strong> — Dropdown con todas las PREPARACIONES. Escribe las primeras letras para filtrar. El código REC-XXXX se completa automáticamente en col C.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Completa los campos manuales</div>
+        <div class="step-desc">
+          <strong>Col A</strong> — ID_Produccion: formato <code>PC-2026-001</code> (número correlativo)<br>
+          <strong>Col B</strong> — Fecha: fecha de producción<br>
+          <strong>Col E</strong> — Tipo de Registro: <code>Producido</code> / <code>Planificado</code> / <code>Cancelado</code><br>
+          <strong>Col F</strong> — Q_lotes_plan: cuántos lotes planificabas producir<br>
+          <strong>Col G</strong> — Q_lotes_real: cuántos lotes produjiste realmente<br>
+          <strong>Col I</strong> — Q_salida_real_gr: gramos reales obtenidos al final
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Verifica los campos automáticos</div>
+        <div class="step-desc">Las columnas H (Q teórica), J (Merma gr), K (Merma %), L (Costo teórico), M (Costo total), N (Rendimiento) se calculan solos. <strong>Si Costo aparece $0 o PENDIENTE</strong> → falta costo en RECETAS_MASTER, avisar al JO.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Marca el estado final</div>
+        <div class="step-desc"><strong>Col Q (Estado)</strong>: <code>OK</code> si todo normal · <code>Merma Alta</code> si perdiste más del 6% · <code>Sin Costo</code> si falta precio · <code>Cancelado</code> si no se completó.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <div class="step-title">Avisa al Jefe de Bodega</div>
+        <div class="step-desc">Cuando el lote está registrado y físicamente listo, avisa al JB para que registre la <strong>Entrada_CC</strong> en Movimientos_BC. <strong>Sin ese paso el producto no existe en el inventario de BC.</strong></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CARD: REGLA FLUJO CC -->
+<div class="op-card" data-roles="cc jb jl" id="card-flujo-cc" style="border-top:2px solid var(--rosso)">
+  <div class="op-header" onclick="toggleCard('card-flujo-cc')">
+    <div class="op-icon rosso">🚦</div>
+    <div class="op-meta">
+      <div class="op-title">Regla de flujo CC → BC → Local</div>
+      <div class="op-subtitle">El único camino válido para que las preparaciones lleguen a los locales</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body" style="display:block">
+
+    <span class="freq-badge siempre">🔴 Regla siempre — sin excepciones</span>
+
+    <div style="display:flex;flex-direction:column;gap:8px;margin:16px 0">
+
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(90,158,122,0.08);border:1px solid rgba(90,158,122,0.2);border-radius:8px">
+        <div style="font-size:20px">1️⃣</div>
+        <div style="font-size:13px;color:var(--testo);line-height:1.5"><strong>CC produce y registra</strong> → fila en PRODUCCION_CC con Q_salida_real_gr</div>
+      </div>
+
+      <div style="text-align:center;color:var(--testo-dim);font-size:18px">↓</div>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(200,137,58,0.08);border:1px solid rgba(200,137,58,0.2);border-radius:8px">
+        <div style="font-size:20px">2️⃣</div>
+        <div style="font-size:13px;color:var(--testo);line-height:1.5"><strong>JB recibe y registra</strong> → <code>Entrada_CC</code> en Movimientos_BC. Solo si existe la fila en PRODUCCION_CC.</div>
+      </div>
+
+      <div style="text-align:center;color:var(--testo-dim);font-size:18px">↓</div>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(74,143,168,0.08);border:1px solid rgba(74,143,168,0.2);border-radius:8px">
+        <div style="font-size:20px">3️⃣</div>
+        <div style="font-size:13px;color:var(--testo);line-height:1.5"><strong>BC entrega al local</strong> → <code>Entrega BLocal</code> normal. El producto ahora está en el inventario de BLocal.</div>
+      </div>
+
+    </div>
+
+    <div style="background:rgba(184,84,80,0.08);border:1px solid rgba(184,84,80,0.3);border-radius:8px;padding:14px;margin-top:4px">
+      <div style="font-size:11px;font-weight:600;color:var(--rosso);letter-spacing:1px;margin-bottom:8px">❌ LO QUE NO DEBE PASAR</div>
+      <div style="font-size:12px;color:var(--testo-dim);line-height:1.7">
+        • CC entrega directo a BLocal sin pasar por BC<br>
+        • CC entrega directo a una sección sin registro<br>
+        • JB registra Entrada_CC sin que exista la fila en PRODUCCION_CC<br><br>
+        <strong style="color:var(--testo)">Si el flujo se salta, el inventario miente y el bono no se puede calcular.</strong>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 
 <!-- ══════════════════════════════════════════ -->
 <!-- SECCIÓN: CANDELARIA -->
@@ -1337,7 +1477,7 @@
         <div style="width:36px;height:36px;border-radius:50%;background:rgba(74,143,168,0.15);border:1.5px solid var(--azzurro);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📊</div>
         <div>
           <div style="font-size:13px;font-weight:600;color:var(--testo);margin-bottom:3px">Los números hablan</div>
-          <div style="font-size:12px;color:var(--testo-dim);line-height:1.5">El dashboard muestra food cost, merma y cumplimiento en tiempo real. Estos números son tu trabajo visible — para ti, para el equipo, para Alberto.</div>
+          <div style="font-size:12px;color:var(--testo-dim);line-height:1.5">El dashboard muestra food cost, merma y cumplimiento en tiempo real. Estos números son tu trabajo visible — para ti, para el equipo, para PINSA.</div>
         </div>
       </div>
 
@@ -1416,145 +1556,7 @@
 
     <!-- FRASE FINAL -->
     <div style="background:rgba(196,98,45,0.06);border-left:3px solid var(--orange);border-radius:0 8px 8px 0;padding:14px 16px;margin-top:16px">
-      <div style="font-size:13px;color:var(--testo);line-height:1.7;font-style:italic">"Este sistema no es de Alberto. Es nuestro. Cada número que ingresamos construye una imagen real de cómo trabajamos — y esa imagen es la que decide si ganamos el bono o no. El sistema solo refleja lo que hacemos."</div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════ -->
-<!-- SECCIÓN: COCINA CENTRAL -->
-<!-- ══════════════════════════════════════════ -->
-<div class="section-divider">
-  <div class="section-title">🧑‍🍳 Cocina Central</div>
-</div>
-
-<!-- CARD: REGISTRAR PRODUCCION -->
-<div class="op-card" data-roles="cc jb" id="card-produccion-cc">
-  <div class="op-header" onclick="toggleCard('card-produccion-cc')">
-    <div class="op-icon orange">🍳</div>
-    <div class="op-meta">
-      <div class="op-title">Registrar lote producido</div>
-      <div class="op-subtitle">Anotar cada preparación completada en PRODUCCION_CC</div>
-    </div>
-    <div class="op-chevron">▾</div>
-  </div>
-  <div class="op-body">
-
-    <span class="freq-badge diario">📅 Cada vez que se completa un lote</span>
-
-    <div class="when-box">
-      <div class="when-icon">📋</div>
-      <div class="when-text">
-        Cada vez que terminas de producir una preparación — salsa, base, masa — debes registrarla en <strong>CONTROL_MAESTRO_2026</strong> → hoja <code>Produccion_CC</code>. Este registro es la fuente de verdad del inventario de CC y la base del bono semanal.
-      </div>
-    </div>
-
-    <div class="steps-label">Pasos</div>
-
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-content">
-        <div class="step-title">Abre PRODUCCION_CC</div>
-        <div class="step-desc">En <strong>CONTROL_MAESTRO_2026</strong>, ir a la hoja <code>Produccion_CC</code>. Ir a la primera fila vacía al final.</div>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-content">
-        <div class="step-title">Selecciona la receta</div>
-        <div class="step-desc"><strong>Col D (Nombre_Receta)</strong> — Dropdown con todas las PREPARACIONES. Escribe las primeras letras para filtrar. El código REC-XXXX se completa automáticamente en col C.</div>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-content">
-        <div class="step-title">Completa los campos manuales</div>
-        <div class="step-desc">
-          <strong>Col A</strong> — ID_Produccion: formato <code>PC-2026-001</code> (número correlativo)<br>
-          <strong>Col B</strong> — Fecha: fecha de producción<br>
-          <strong>Col E</strong> — Tipo de Registro: <code>Producido</code> / <code>Planificado</code> / <code>Cancelado</code><br>
-          <strong>Col F</strong> — Q_lotes_plan: cuántos lotes planificabas producir<br>
-          <strong>Col G</strong> — Q_lotes_real: cuántos lotes produjiste realmente<br>
-          <strong>Col I</strong> — Q_salida_real_gr: gramos reales obtenidos al final
-        </div>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-content">
-        <div class="step-title">Verifica los campos automáticos</div>
-        <div class="step-desc">Las columnas H (Q teórica), J (Merma gr), K (Merma %), L (Costo teórico), M (Costo total), N (Rendimiento) se calculan solos. <strong>Si Costo aparece $0 o PENDIENTE</strong> → falta costo en RECETAS_MASTER, avisar al JO.</div>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">5</div>
-      <div class="step-content">
-        <div class="step-title">Marca el estado final</div>
-        <div class="step-desc"><strong>Col Q (Estado)</strong>: <code>OK</code> si todo normal · <code>Merma Alta</code> si perdiste más del 6% · <code>Sin Costo</code> si falta precio · <code>Cancelado</code> si no se completó.</div>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">6</div>
-      <div class="step-content">
-        <div class="step-title">Avisa al Jefe de Bodega</div>
-        <div class="step-desc">Cuando el lote está registrado y físicamente listo, avisa al JB para que registre la <strong>Entrada_CC</strong> en Movimientos_BC. <strong>Sin ese paso el producto no existe en el inventario de BC.</strong></div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- CARD: REGLA FLUJO CC -->
-<div class="op-card" data-roles="cc jb jl" id="card-flujo-cc">
-  <div class="op-header" onclick="toggleCard('card-flujo-cc')">
-    <div class="op-icon rosso">🚦</div>
-    <div class="op-meta">
-      <div class="op-title">Regla de flujo CC → BC → Local</div>
-      <div class="op-subtitle">El único camino válido para que las preparaciones lleguen a los locales</div>
-    </div>
-    <div class="op-chevron">▾</div>
-  </div>
-  <div class="op-body">
-
-    <span class="freq-badge cuando">⚠️ Regla no negociable — siempre</span>
-
-    <div style="display:flex;flex-direction:column;gap:8px;margin:16px 0">
-
-      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(90,158,122,0.08);border:1px solid rgba(90,158,122,0.2);border-radius:8px">
-        <div style="font-size:20px">1️⃣</div>
-        <div style="font-size:13px;color:var(--testo);line-height:1.5"><strong>CC produce y registra</strong> → fila en PRODUCCION_CC con Q_salida_real_gr</div>
-      </div>
-
-      <div style="text-align:center;color:var(--testo-dim);font-size:18px">↓</div>
-
-      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(200,137,58,0.08);border:1px solid rgba(200,137,58,0.2);border-radius:8px">
-        <div style="font-size:20px">2️⃣</div>
-        <div style="font-size:13px;color:var(--testo);line-height:1.5"><strong>JB recibe y registra</strong> → <code>Entrada_CC</code> en Movimientos_BC. Solo si existe la fila en PRODUCCION_CC.</div>
-      </div>
-
-      <div style="text-align:center;color:var(--testo-dim);font-size:18px">↓</div>
-
-      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(74,143,168,0.08);border:1px solid rgba(74,143,168,0.2);border-radius:8px">
-        <div style="font-size:20px">3️⃣</div>
-        <div style="font-size:13px;color:var(--testo);line-height:1.5"><strong>BC entrega al local</strong> → <code>Entrega BLocal</code> normal. El producto ahora está en el inventario de BLocal.</div>
-      </div>
-
-    </div>
-
-    <div style="background:rgba(184,84,80,0.08);border:1px solid rgba(184,84,80,0.3);border-radius:8px;padding:14px;margin-top:4px">
-      <div style="font-size:11px;font-weight:600;color:var(--rosso);letter-spacing:1px;margin-bottom:8px">❌ LO QUE NO DEBE PASAR</div>
-      <div style="font-size:12px;color:var(--testo-dim);line-height:1.7">
-        • CC entrega directo a BLocal sin pasar por BC<br>
-        • CC entrega directo a una sección sin registro<br>
-        • JB registra Entrada_CC sin que exista la fila en PRODUCCION_CC<br><br>
-        <strong style="color:var(--testo)">Si el flujo se salta, el inventario miente y el bono no se puede calcular.</strong>
-      </div>
+      <div style="font-size:13px;color:var(--testo);line-height:1.7;font-style:italic">"Este sistema no es de PINSA. Es nuestro. Cada número que ingresamos construye una imagen real de cómo trabajamos — y esa imagen es la que decide si ganamos el bono o no. El sistema solo refleja lo que hacemos."</div>
     </div>
 
   </div>
@@ -1567,7 +1569,7 @@
 
 <!-- FOOTER -->
 <div class="footer">
-  PINSA Superfoods & Wellness · Guía Operativa V3.0 · 15/03/2026
+  PINSA Superfoods & Wellness · Guía Operativa V3.1 · 15/03/2026
 </div>
 
 <script>
