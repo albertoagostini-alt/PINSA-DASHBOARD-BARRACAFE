@@ -439,11 +439,95 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* ANCHOR NAV */
+  .anchor-nav {
+    display: none;
+    overflow-x: auto;
+    gap: 6px;
+    padding: 10px 16px 12px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    scrollbar-width: none;
+  }
+  .anchor-nav::-webkit-scrollbar { display: none; }
+  .anchor-nav.visible { display: flex; }
+
+  .anchor-btn {
+    flex-shrink: 0;
+    padding: 5px 13px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--testo-dim);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .anchor-btn:hover { border-color: var(--orange); color: var(--testo); }
+  .anchor-btn.active-section { background: rgba(196,98,45,0.15); border-color: var(--orange); color: var(--orange); }
+
+  /* QUICK REFERENCE CARD */
+  .quick-ref {
+    display: none;
+    margin: 12px 16px 4px;
+    background: linear-gradient(135deg, rgba(196,98,45,0.08) 0%, rgba(196,98,45,0.04) 100%);
+    border: 1px solid rgba(196,98,45,0.3);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .quick-ref.visible { display: block; }
+
+  .quick-ref-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--orange);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .quick-ref-tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .quick-task {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--testo);
+  }
+
+  .quick-task-num {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--orange);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+  }
+
   /* Mobile tweaks */
   @media (min-width: 600px) {
     .header { padding: 18px 28px; }
     .role-section, .section-divider { padding-left: 24px; padding-right: 24px; }
     .op-card { margin-left: 24px; margin-right: 24px; }
+    .quick-ref { margin-left: 24px; margin-right: 24px; }
+    .anchor-nav { padding-left: 24px; padding-right: 24px; }
     body { max-width: 680px; margin: 0 auto; }
   }
 </style>
@@ -471,10 +555,28 @@
   </div>
 </div>
 
+<!-- ANCHOR NAV -->
+<div class="anchor-nav" id="anchor-nav">
+  <button class="anchor-btn" onclick="scrollToSection('sec-bodega')">📦 Bodega</button>
+  <button class="anchor-btn" onclick="scrollToSection('sec-cc')">🧑‍🍳 Cocina Central</button>
+  <button class="anchor-btn" onclick="scrollToSection('sec-candelaria')">🏪 Candelaria</button>
+  <button class="anchor-btn" onclick="scrollToSection('sec-secciones')">⚙️ Secciones</button>
+  <button class="anchor-btn" onclick="scrollToSection('sec-scripts')">🔧 Scripts</button>
+  <button class="anchor-btn" onclick="scrollToSection('sec-visor')">📖 Visor</button>
+  <button class="anchor-btn" onclick="scrollToSection('sec-porque')">💡 Por qué</button>
+  <button class="anchor-btn" onclick="scrollToSection('sec-errores')">🚨 Errores</button>
+</div>
+
+<!-- QUICK REFERENCE CARD -->
+<div class="quick-ref" id="quick-ref">
+  <div class="quick-ref-title">⚡ Tus tareas principales hoy</div>
+  <div class="quick-ref-tasks" id="quick-ref-tasks"></div>
+</div>
+
 <!-- ══════════════════════════════════════════ -->
 <!-- SECCIÓN: BODEGA CENTRAL -->
 <!-- ══════════════════════════════════════════ -->
-<div class="section-divider">
+<div class="section-divider" id="sec-bodega">
   <div class="section-title">📦 Bodega Central</div>
 </div>
 
@@ -750,7 +852,7 @@
 <!-- ══════════════════════════════════════════ -->
 <!-- SECCIÓN: COCINA CENTRAL -->
 <!-- ══════════════════════════════════════════ -->
-<div class="section-divider">
+<div class="section-divider" id="sec-cc">
   <div class="section-title">🧑‍🍳 Cocina Central</div>
 </div>
 
@@ -889,7 +991,7 @@
 <!-- ══════════════════════════════════════════ -->
 <!-- SECCIÓN: CANDELARIA -->
 <!-- ══════════════════════════════════════════ -->
-<div class="section-divider">
+<div class="section-divider" id="sec-candelaria">
   <div class="section-title">🏪 Candelaria</div>
 </div>
 
@@ -1069,7 +1171,7 @@
 <!-- ══════════════════════════════════════════ -->
 <!-- SECCIÓN: SECCIONES OPERATIVAS -->
 <!-- ══════════════════════════════════════════ -->
-<div class="section-divider">
+<div class="section-divider" id="sec-secciones">
   <div class="section-title">🧑‍🍳 Secciones Operativas</div>
 </div>
 
@@ -1177,7 +1279,7 @@
 <!-- ══════════════════════════════════════════ -->
 <!-- SECCIÓN: SCRIPTS — CUÁNDO EJECUTARLOS -->
 <!-- ══════════════════════════════════════════ -->
-<div class="section-divider">
+<div class="section-divider" id="sec-scripts">
   <div class="section-title">⚙️ Scripts — Cuándo y Cómo</div>
 </div>
 
@@ -1233,7 +1335,7 @@
 <!-- ══════════════════════════════════════════ -->
 <!-- SECCIÓN: VISOR DE RECETAS -->
 <!-- ══════════════════════════════════════════ -->
-<div class="section-divider">
+<div class="section-divider" id="sec-visor">
   <div class="section-title">📖 Visor de Recetas</div>
 </div>
 
@@ -1431,7 +1533,7 @@
 <!-- ══════════════════════════════════════════ -->
 <!-- SECCIÓN: POR QUÉ IMPORTA -->
 <!-- ══════════════════════════════════════════ -->
-<div class="section-divider" style="margin-top:32px">
+<div class="section-divider" id="sec-porque" style="margin-top:32px">
   <div class="section-title">💡 Por qué importa — El sistema somos todos</div>
 </div>
 
@@ -1567,13 +1669,181 @@
   No hay operaciones disponibles para este rol en esta sección.
 </div>
 
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN: QUÉ HACER SI ALGO FALLA -->
+<!-- ══════════════════════════════════════════ -->
+<div class="section-divider" id="sec-errores">
+  <div class="section-title">🚨 Qué hacer si algo falla</div>
+</div>
+
+<div class="op-card" data-roles="all jb jl op cc" id="card-errores">
+  <div class="op-header" onclick="toggleCard('card-errores')">
+    <div class="op-icon rosso">🚨</div>
+    <div class="op-meta">
+      <div class="op-title">Errores frecuentes y cómo resolverlos</div>
+      <div class="op-subtitle">El script no responde · el sheet no actualiza · veo un error raro</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body">
+
+    <span class="freq-badge siempre">🔴 Consultar antes de llamar</span>
+
+    <!-- ERROR 1 -->
+    <div style="margin-top:16px;margin-bottom:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--testo-dim)">Errores de Script</div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+
+      <div style="background:var(--surface2);border-radius:8px;padding:13px 14px;border-left:3px solid var(--rosso)">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">❌ El script se ejecutó pero no pasó nada</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.6">
+          1. Revisar la hoja de origen — ¿los campos obligatorios están completos?<br>
+          2. Verificar que el SKU está activo en BD_INSUMOS (col AG = <code>SI</code>).<br>
+          3. Cerrar el sheet, esperar 30 segundos, volver a abrir y reintentar.<br>
+          4. Si persiste: avisar al JO con captura de pantalla del error.
+        </div>
+      </div>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:13px 14px;border-left:3px solid var(--rosso)">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">❌ Ejecuté el script dos veces por error</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.6">
+          No corrijas solo. Avisar inmediatamente al JO con el ID de la fila duplicada. El sistema puede tener registros dobles que distorsionan el inventario — se necesita borrar manualmente con permisos de admin.
+        </div>
+      </div>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:13px 14px;border-left:3px solid var(--ambra)">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">⚠️ El script pide autorización / dice "no autorizado"</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.6">
+          El deploy de la WebApp está configurado como <strong style="color:var(--testo)">"Anyone with Google account"</strong> en lugar de <strong style="color:var(--verde)">"Anyone"</strong>. Solo el JO puede corregirlo desde Apps Script → Deploy → Manage deployments.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ERROR 2 -->
+    <div style="margin-bottom:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--testo-dim)">Errores de Datos</div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+
+      <div style="background:var(--surface2);border-radius:8px;padding:13px 14px;border-left:3px solid var(--rosso)">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">❌ El stock en el dashboard no cuadra con la realidad</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.6">
+          1. Verificar que todos los movimientos del día están registrados en <code>Movimientos_BC</code> o <code>Movimientos_BLocal</code>.<br>
+          2. Revisar si hay filas con campos vacíos (fecha, SKU, cantidad) que no están sumando.<br>
+          3. Si el error persiste después de verificar, avisar al JO — no hacer ajustes manuales sin autorización.
+        </div>
+      </div>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:13px 14px;border-left:3px solid var(--ambra)">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">⚠️ Una receta aparece con Costo $0 o "PENDIENTE"</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.6">
+          Falta precio en algún insumo de <code>RECETAS_MASTER</code> o <code>BD_INSUMOS</code>. No es un error crítico operativo — la receta funciona igual. Avisar al JO para que actualice el precio. No editar RECETAS_MASTER directamente.
+        </div>
+      </div>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:13px 14px;border-left:3px solid var(--ambra)">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">⚠️ Guardé una receta en el Visor pero no aparece en la lista</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.6">
+          El sistema tiene un retraso de publicación de 1–2 minutos. Esperar y presionar <strong>↻ Actualizar lista</strong>. Si después de 5 minutos no aparece: verificar en <code>RECETAS_MASTER</code> que la fila existe. En Mac/Safari, cambiar a Chrome.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ERROR 3 -->
+    <div style="margin-bottom:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--testo-dim)">Errores de Flujo CC</div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+
+      <div style="background:var(--surface2);border-radius:8px;padding:13px 14px;border-left:3px solid var(--rosso)">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">❌ El lote está físicamente en BC pero no aparece en Inventario_BC</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.6">
+          El Chef CC produjo pero no se registró la <strong style="color:var(--testo)">Entrada_CC</strong> en <code>Movimientos_BC</code>. Verificar que existe la fila en <code>PRODUCCION_CC</code> primero. Si existe, el JB debe registrar la entrada. Si no existe, el Chef CC debe registrar primero.
+        </div>
+      </div>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:13px 14px;border-left:3px solid var(--ambra)">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">⚠️ El SKU de una PREPARACION no aparece en BD_INSUMOS</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.6">
+          El GAS V3.2 crea el SKU automáticamente al guardar una receta PREPARACION en el Visor. Si no se creó, verificar que el deploy es <strong style="color:var(--verde)">"Anyone"</strong> (no "Anyone with Google account"). Avisar al JO.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="alert info">
+      <div class="alert-icon">ℹ️</div>
+      <div><strong>Regla de oro:</strong> ante cualquier duda — <strong>no corrijas solo</strong>. Toma captura de pantalla, anota el ID de la fila o el nombre de la receta, y avisa al JO. Una corrección incorrecta puede ser peor que el error original.</div>
+    </div>
+
+  </div>
+</div>
+
 <!-- FOOTER -->
 <div class="footer">
-  PINSA Superfoods & Wellness · Guía Operativa V3.1 · 15/03/2026
+  PINSA Superfoods & Wellness · Guía Operativa V3.2 · 15/03/2026
 </div>
 
 <script>
   let currentRole = 'all';
+
+  // ── QUICK REFERENCE per ruolo ──────────────────────────────
+  const quickRefData = {
+    jb: {
+      label: 'Jefe Bodega',
+      tasks: [
+        'Registrar cada entrada y salida en Movimientos_BC',
+        'Ejecutar script antes de enviar despacho a BLocal',
+        'Confirmar lotes CC recibidos → Entrada_CC en Movimientos_BC'
+      ]
+    },
+    jl: {
+      label: 'Jefe Local',
+      tasks: [
+        'Confirmar recepción de cada entrega desde BCentral',
+        'Supervisar que secciones registren mermas al momento',
+        'Revisar Movimientos_BLocal: filas ENVIADO sin confirmar'
+      ]
+    },
+    op: {
+      label: 'Operador',
+      tasks: [
+        'Registrar merma en MERMA_DIARIA cuando ocurra — no acumular',
+        'Usar el Visor de Recetas para consultar ingredientes y proceso',
+        'Avisar al Jefe de Local ante cualquier diferencia de stock'
+      ]
+    },
+    cc: {
+      label: 'Cocina Central',
+      tasks: [
+        'Registrar cada lote en PRODUCCION_CC con Q_salida_real_gr',
+        'Seguir siempre el flujo CC → BC → Local sin atajos',
+        'Avisar al JB cuando el lote esté físicamente listo para retirar'
+      ]
+    }
+  };
+
+  function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      const offset = 100;
+      const top = el.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  }
+
+  function updateAnchorHighlight() {
+    const sections = ['sec-bodega','sec-cc','sec-candelaria','sec-secciones','sec-scripts','sec-visor','sec-porque','sec-errores'];
+    const btns = document.querySelectorAll('.anchor-btn');
+    let active = 0;
+    sections.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < 160) active = i;
+    });
+    btns.forEach((b, i) => b.classList.toggle('active-section', i === active));
+  }
+
+  window.addEventListener('scroll', updateAnchorHighlight, { passive: true });
 
   function toggleCard(id) {
     const card = document.getElementById(id);
@@ -1588,6 +1858,26 @@
       p.classList.toggle('active', p.dataset.role === role);
     });
 
+    // Show/hide anchor nav
+    const anchorNav = document.getElementById('anchor-nav');
+    anchorNav.classList.toggle('visible', role !== 'all');
+
+    // Quick reference
+    const qr = document.getElementById('quick-ref');
+    const qrTasks = document.getElementById('quick-ref-tasks');
+    if (role !== 'all' && quickRefData[role]) {
+      const data = quickRefData[role];
+      qrTasks.innerHTML = data.tasks.map((t, i) => `
+        <div class="quick-task">
+          <div class="quick-task-num">${i+1}</div>
+          <span>${t}</span>
+        </div>
+      `).join('');
+      qr.classList.add('visible');
+    } else {
+      qr.classList.remove('visible');
+    }
+
     // Show/hide cards
     const cards = document.querySelectorAll('.op-card');
     let visibleCount = 0;
@@ -1598,7 +1888,7 @@
         visibleCount++;
       } else {
         const roles = card.dataset.roles || '';
-        const visible = roles.includes(role);
+        const visible = roles === 'all' || roles.includes(role);
         card.classList.toggle('hidden', !visible);
         if (visible) visibleCount++;
       }
