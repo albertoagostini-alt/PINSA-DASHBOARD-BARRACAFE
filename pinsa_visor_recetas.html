@@ -1258,12 +1258,18 @@ function cleanNum(v) {
   const parts = s.split('.');
   if(parts.length === 2) {
     if(parts[1].length === 3) {
-      // Potrebbe essere migliaia o 3 decimali
-      // Euristica: se parte intera > 0 e risultato sarebbe > 99 → migliaia
+      // Potrebbe essere migliaia (4.990 → 4990) o 3 decimali reali
+      // Euristica migliorata:
+      // - Se parte intera è 0 (es: "0.879") → decimale
+      // - Se parte decimale finisce in 0 (es: "4.990", "3.500") → quasi certamente migliaia
+      // - Se parte intera >= 1 e parte decimale NON finisce in 0 → potrebbe essere decimale
+      //   ma solo se asDecimal < 10 (prezzi decimali reali tipo 7.845 gr/cc)
       const asDecimal = parseFloat(s);
-      const asMiles = parseFloat(parts[0]+parts[1]);
-      // Prezzi per UTM (gr/cc) sono sempre < $500 → se > 500 è migliaia
-      if(asMiles > 0 && asDecimal < 500) return asDecimal;
+      const asMiles = parseFloat(parts[0] + parts[1]);
+      if(parts[0] === '0') return asDecimal; // "0.879" → decimale
+      if(parts[1].endsWith('0')) return asMiles; // "4.990", "3.500" → migliaia
+      // Senza zero finale: "7.845" o "2.287" → se < 10 è decimale (costo/gr), altrimenti migliaia
+      if(asDecimal < 10) return asDecimal;
       return asMiles;
     }
   }
