@@ -1888,7 +1888,7 @@ function onTipoChange() {
   document.getElementById('sim-bloque-subrecetas').style.display=isOferta?'':'none';
   // Q lote solo per PREPARACION
   const qlWrap=document.getElementById('sim-qlote-wrap');
-  if(qlWrap) qlWrap.style.display=isPrepCC?'':'none';
+  if(qlWrap) qlWrap.style.display=(isPrepCC||isSubreceta)?'':'none'; // SUBRECETA mostra Q lote
   // Panel comercial / solo-costo nel pannello risultato
   const bloqOf=document.getElementById('sim-bloque-oferta');
   const bloqCom=document.getElementById('sim-bloque-comercial');
@@ -1908,6 +1908,14 @@ function onTipoChange() {
 
   checkTipoSeccion();
   onCategoriaChange();
+  // SUBRECETA: forza unità gr/cc/unidad (non oz)
+  if(isSubreceta) {
+    const uSel=document.getElementById('simUnidad');
+    if(uSel) {
+      uSel.innerHTML='<option value="gr">gr</option><option value="cc">cc</option><option value="unidad">unidad</option>';
+      uSel.value='gr';
+    }
+  }
   calcSim();
 }
 
@@ -1919,8 +1927,8 @@ function checkTipoSeccion() {
   const barras=['Barra Cafe','Barra Jugos','Barra Helados','Barra Alimentos','Pasteleria'];
   const bad=(tipo==='PREPARACION'&&barras.includes(sec))
            ||(tipo==='ENSAMBLE'&&sec==='Cocina Central')
-           ||(tipo==='SIMPLE'&&sec==='Cocina Central')
-           ||(tipo==='SUBRECETA'&&sec==='Cocina Central');
+           ||(tipo==='SIMPLE'&&sec==='Cocina Central');
+           // SUBRECETA: nessun warning — può essere prodotta in qualsiasi sezione
   warn.style.display=bad?'':'none';
 }
 
@@ -1929,8 +1937,9 @@ function onCategoriaChange() {
   const formatoWrap=document.getElementById('sim-formato-wrap');
   const unidadSel=document.getElementById('simUnidad');
   const isLiq=cat==='LIQUIDOS';
-  // Formato OZ: solo para LIQUIDOS
-  if(formatoWrap) formatoWrap.style.display=isLiq?'':'none';
+  // Formato OZ: solo para LIQUIDOS y no para SUBRECETA
+  const isSubSim=document.getElementById('simTipo')?.value==='SUBRECETA';
+  if(formatoWrap) formatoWrap.style.display=(isLiq&&!isSubSim)?'':'none';
   // Unidad de salida: opciones según categoría
   if(unidadSel) {
     const cur=unidadSel.value;
@@ -1941,6 +1950,7 @@ function onCategoriaChange() {
         '<option value="unidad">unidad</option>';
     } else {
       const isPrepCC2=document.getElementById('simTipo')?.value==='PREPARACION';
+      const isSubSim2=document.getElementById('simTipo')?.value==='SUBRECETA';
       unidadSel.innerHTML=
         '<option value="unidad">unidad</option>'+
         '<option value="gr">gr</option>'+
