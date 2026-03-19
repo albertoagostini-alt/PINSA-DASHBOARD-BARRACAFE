@@ -259,7 +259,8 @@ function getDias(merma){
   return names.map((nombre,i)=>{
     const f=new Date(sw); f.setDate(sw.getDate()+i);
     if(f>now) return {nombre,estado:'empty'};
-    const row=merma?.find(r=>{ const fv=r['Fecha']||r['fecha']||''; return fv.includes(f.getDate())&&fv.includes(f.getFullYear()); });
+    const fechaStr=`${f.getDate()}-${mn[f.getMonth()]}-${f.getFullYear()}`;
+    const row=merma?.find(r=>{ const fv=(r['Fecha']||r['fecha']||'').trim(); return fv===fechaStr; });
     if(!row) return {nombre,estado:'empty'};
     const p=parsePct(row['Merma %']||row['Merma%']||'0');
     const v=parseNum(row['Venta $']||row['Venta$']||'0');
