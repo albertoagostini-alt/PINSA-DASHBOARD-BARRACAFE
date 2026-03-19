@@ -152,14 +152,15 @@ var MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Sept
 
 // ══ CONFIG ══
 // ⚠ Reemplazar GID_PRODUCCION_CC y GID_RENDIMIENTOS_CC con los GID reales del Sheets
-var BASE='https://docs.google.com/spreadsheets/d/e/2PACX-1vRKfymDMvJd6XSSnfxuq2entJff2QwmEyKyvRRiiYVqNlwEA_rY7GXv0xVGC4k6746-EVAuLodfS9nt/pub?gid=';
+var BASE='https://docs.google.com/spreadsheets/d/e/2PACX-1vTA720mxsWo7QJpueayRUN8tYfTPoBgY9NJsLtqUnoOzwaoeo5bX7_UXArrECBgw-uSfiFEYMPmRzld/pub?gid=';
+var BASE_MAESTRO='https://docs.google.com/spreadsheets/d/e/2PACX-1vRKfymDMvJd6XSSnfxuq2entJff2QwmEyKyvRRiiYVqNlwEA_rY7GXv0xVGC4k6746-EVAuLodfS9nt/pub?gid=';
 var CSV={
-  P: BASE+'58421555&single=true&output=csv',         // PARAMETROS
-  I: BASE+'1137336805&single=true&output=csv',        // Inventario_BC
-  M: BASE+'1643758434&single=true&output=csv',        // RECETAS_MASTER (para nombres)
-  CC:BASE+'1354138916&single=true&output=csv',         // Produccion_CC
-  RD:BASE+'2013935344&single=true&output=csv',         // Rendimientos_CC
-  IC:BASE+'24792961&single=true&output=csv'            // Inventario_CC
+  P: BASE_MAESTRO+'58421555&single=true&output=csv',   // PARAMETROS (MAESTRO)
+  I: BASE_MAESTRO+'514178276&single=true&output=csv',  // BD_INSUMOS (MAESTRO)
+  M: BASE_MAESTRO+'514178276&single=true&output=csv',  // BD_INSUMOS placeholder
+  CC:BASE+'1386446971&single=true&output=csv',         // Produccion_CC (COCINA)
+  RD:BASE+'434148128&single=true&output=csv',          // Rendimiento_CC (COCINA)
+  IC:BASE+'1681575673&single=true&output=csv'          // Plan_Semanal_CC (COCINA)
 };
 
 function parseCSV(txt){
