@@ -1066,7 +1066,7 @@ async function loadBDInsumos() {
       .map(r => ({
         n: (r['Descripcion']||'').trim(),
         u: (r['UTM']||'').trim(),
-        p: cleanNum(r['Precio por Gr CC UN Neto'])||0
+        p: (r['UTM']||'').trim().toLowerCase()==='unidad' ? cleanNum(r['Valor Unidad Neto'])||0 : cleanNum(r['Precio por Gr CC UN Neto'])||0
       }))
       .filter(r => r.n)
       .sort((a,b) => a.n.localeCompare(b.n, 'es'));
