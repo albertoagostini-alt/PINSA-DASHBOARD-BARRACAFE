@@ -170,6 +170,8 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
 .hero-foto-ph-txt{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)}
 .hero-actions{display:flex;gap:6px;margin-top:12px}
 .btn-edit{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:5px;background:transparent;border:1.5px solid #C4622D;color:#C4622D;font-size:10px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px}
+.btn-dup{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:5px;background:transparent;border:1.5px solid var(--b3);color:var(--t2);font-size:10px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px}
+.btn-dup:hover{border-color:var(--tc);color:var(--tc);background:rgba(196,98,45,0.08)}
 .btn-edit:hover{background:rgba(196,98,45,0.12)}
 .btn-del{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:5px;background:#B85450;border:1.5px solid #B85450;color:#ffffff;font-size:10px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px}
 .btn-del:hover{background:#a04845}
@@ -1653,6 +1655,7 @@ function renderRecipe(r) {
     </div></div>
     <div class="hero-bottom-bar">
       ${canEdit_?`
+        <button class="btn-dup" onclick="duplicateRecipe('${r.id}')">⧉ Duplicar</button>
         <button class="btn-edit" onclick="editRecipe('${r.id}')">✏ Editar</button>
         <button class="btn-del" onclick="confirmDelete('${r.id}','${r.nombre.replace(/'/g,"\\'")}')">🗑 Eliminar</button>
       `:''}
@@ -2748,6 +2751,23 @@ function editRecipe(id) {
 function cancelEdit() {
   resetSimForm();
   showToast('Edición cancelada','info');
+}
+function duplicateRecipe(id) {
+  const r=RECIPES.find(x=>x.id===id);
+  if(!r){showToast('Receta no encontrada','err');return;}
+  // Crea copia in memoria con nome modificato
+  const copia={...r,
+    id:'SIM-'+Date.now(),
+    nombre:r.nombre+' (copia)',
+    estado:'SIMULACION',
+    ingredientes:[...r.ingredientes.map(i=>({...i}))],
+    proc:[...(r.proc||[]).map(p=>({...p}))]
+  };
+  RECIPES.push(copia);
+  // Apre Editar sulla copia
+  setSection('simulador',document.getElementById('btn-simulador'));
+  setTimeout(()=>editRecipe(copia.id),50);
+  showToast('Duplicada — cambia el nombre y guarda','info');
 }
 
 function resetSimForm() {
