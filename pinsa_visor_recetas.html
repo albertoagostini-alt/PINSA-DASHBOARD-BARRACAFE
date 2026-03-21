@@ -2378,13 +2378,27 @@ function calcSim() {
 // RACCOGLIERE DATI FORM
 // ══════════════════════════════════════════════
 function collectFormData() {
-  const ingredientes=simIngredients.map(ing=>{
-    const n=(document.getElementById(`si-n-${ing.id}`)?.value||'').trim();
-    const q=parseFloat(document.getElementById(`si-q-${ing.id}`)?.value)||0;
-    const um=document.getElementById(`si-u-${ing.id}`)?.value||'g';
-    const c=parseFloat(document.getElementById(`si-c-${ing.id}`)?.value)||0;
-    return {descripcion:n, q_lote:q, um, precio_actual:c, es_subreceta:false, notas:''};
-  }).filter(i=>i.descripcion);
+  const tipo_form=document.getElementById('simTipo').value;
+  let ingredientes=[];
+  if(tipo_form==='OFERTA'){
+    // Componentes bundle: sr-s-N = ID receta, sr-q-N = cantidad
+    document.querySelectorAll('[id^="sr-s-"]').forEach(sel=>{
+      const id=sel.id.replace('sr-s-','');
+      const rid=sel.value; if(!rid) return;
+      const rec=RECIPES.find(r=>r.id===rid); if(!rec) return;
+      const q=parseFloat(document.getElementById(`sr-q-${id}`)?.value)||1;
+      const cu=rec.costo_u||0;
+      ingredientes.push({descripcion:rec.nombre, q_lote:q, um:'unidad', precio_actual:cu, es_subreceta:true, notas:rid});
+    });
+  } else {
+    ingredientes=simIngredients.map(ing=>{
+      const n=(document.getElementById(`si-n-${ing.id}`)?.value||'').trim();
+      const q=parseFloat(document.getElementById(`si-q-${ing.id}`)?.value)||0;
+      const um=document.getElementById(`si-u-${ing.id}`)?.value||'g';
+      const c=parseFloat(document.getElementById(`si-c-${ing.id}`)?.value)||0;
+      return {descripcion:n, q_lote:q, um, precio_actual:c, es_subreceta:false, notas:''};
+    }).filter(i=>i.descripcion);
+  }
   const pasos=simProcSteps.map(s=>{
     const t=(document.getElementById(`sp-t-${s.id}`)?.value||'').trim();
     const b=(document.getElementById(`sp-b-${s.id}`)?.value||'').trim();
@@ -2631,17 +2645,37 @@ function editRecipe(id) {
   // Estado
   buildEstadoOptions();
   document.getElementById('simEstado').value=r.estado; updateEstadoHint();
-  // Reset + popola ingredienti
+  // Reset + popola ingredienti / componentes bundle
   document.getElementById('simIngList').innerHTML='';
   simIngCounter=0; simIngredients=[];
-  r.ingredientes.forEach(ing=>{
-    addSimIng();
-    const lastId=simIngCounter;
-    document.getElementById(`si-n-${lastId}`).value=ing.n;
-    document.getElementById(`si-q-${lastId}`).value=ing.qty;
-    document.getElementById(`si-u-${lastId}`).value=ing.um||'g';
-    const dbMatch=INSUMOS_DB.find(x=>x.n.toLowerCase()===ing.n.toLowerCase());document.getElementById(`si-c-${lastId}`).value=dbMatch?dbMatch.p:(ing.costo||'');
-  });
+  document.getElementById('simSubRecList').innerHTML='';
+  subRecCounter=0;
+  if(r.tipo==='OFERTA'){
+    // Ripopola componenti bundle: nota contiene ID_Receta
+    r.ingredientes.forEach(ing=>{
+      addSubRec();
+      const lastId=subRecCounter;
+      const rid=ing.nota||''; // ID_Receta salvato in notas
+      const sel=document.getElementById(`sr-s-${lastId}`);
+      if(sel&&rid){
+        // Cerca opzione per ID o per nome
+        const opt=Array.from(sel.options).find(o=>o.value===rid)||Array.from(sel.options).find(o=>o.text.startsWith(ing.n));
+        if(opt){sel.value=opt.value;onSubRecChange(lastId);}
+      }
+      const qEl=document.getElementById(`sr-q-${lastId}`);
+      if(qEl) qEl.value=ing.qty||1;
+      updateSubTotal(lastId);
+    });
+  } else {
+    r.ingredientes.forEach(ing=>{
+      addSimIng();
+      const lastId=simIngCounter;
+      document.getElementById(`si-n-${lastId}`).value=ing.n;
+      document.getElementById(`si-q-${lastId}`).value=ing.qty;
+      document.getElementById(`si-u-${lastId}`).value=ing.um||'g';
+      const dbMatch=INSUMOS_DB.find(x=>x.n.toLowerCase()===ing.n.toLowerCase());document.getElementById(`si-c-${lastId}`).value=dbMatch?dbMatch.p:(ing.costo||'');
+    });
+  }
   // Reset + popola passi
   document.getElementById('simProcList').innerHTML='';
   simProcCounter=0; simProcSteps=[];
