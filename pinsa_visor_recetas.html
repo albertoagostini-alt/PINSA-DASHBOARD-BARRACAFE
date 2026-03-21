@@ -1874,25 +1874,26 @@ function calcPrepTransfer(cuOverride) {
   }
 }
 
-// ── V3.3: Blocca Gramaje por Porción per gr/cc/unidad, libera per porcion ──
+// ── V3.3+: Gramaje libero per SUBRECETA, bloccato per PREPARACION ──
 function onUnidadChange() {
   const unidad = document.getElementById('simUnidad')?.value || 'unidad';
+  const tipo = document.getElementById('simTipo')?.value || '';
+  const isSubreceta = tipo === 'SUBRECETA';
   const inputGramaje = document.getElementById('simGramajePorcion');
   const wrapGramaje  = document.getElementById('sim-gramaje-wrap');
   const lblGramaje   = document.getElementById('sim-gramaje-lbl');
   if (!inputGramaje) return;
 
-  if (unidad === 'porcion') {
-    // Libero — operatore inserisce il gramaggio della porzione
-    inputGramaje.value       = '';
+  if (isSubreceta || unidad === 'porcion') {
+    // SUBRECETA: gramaje sempre libero — l'operatore definisce la porzione
     inputGramaje.disabled    = false;
-    inputGramaje.placeholder = 'ej. 150';
+    inputGramaje.placeholder = isSubreceta ? 'ej. 45' : 'ej. 150';
     inputGramaje.style.color = 'var(--t1)';
     inputGramaje.style.opacity = '1';
-    if (lblGramaje) lblGramaje.textContent = 'Gramaje por porción (gr)';
+    if (lblGramaje) lblGramaje.textContent = 'Gramaje por porción (' + unidad + ')';
     if (wrapGramaje) wrapGramaje.style.opacity = '1';
   } else {
-    // Bloccato = 1 per gr, cc, unidad
+    // PREPARACION: bloccato = 1 (UTM base = 1gr/cc)
     inputGramaje.value       = '1';
     inputGramaje.disabled    = true;
     inputGramaje.style.color = 'var(--t3)';
@@ -2827,6 +2828,8 @@ function resetSimForm() {
   if(transferEl) transferEl.value='';
   const hintEl=document.getElementById('sim-qlote-hint');
   if(hintEl) hintEl.innerHTML='';
+  const gramajeEl=document.getElementById('simGramajePorcion');
+  if(gramajeEl) gramajeEl.value='';
   // Reset unidad → riattiva blocco gramaje
   const unidadEl=document.getElementById('simUnidad');
   if(unidadEl){unidadEl.value='unidad'; onUnidadChange();}
