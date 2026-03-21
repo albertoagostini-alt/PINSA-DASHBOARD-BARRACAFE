@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PINSA · Guía Recetas</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0F0F0F; --s1:#181818; --s2:#202020; --s3:#2A2A2A;
+  --border:#333; --border2:rgba(255,255,255,0.06);
+  --t1:#E8E2DC; --t2:#9A9490; --t3:#5A5450;
+  --tc:#C4622D; --tc2:rgba(196,98,45,0.12); --tc3:rgba(196,98,45,0.25);
+  --green:#5A9E7A; --green2:rgba(90,158,122,0.12);
+  --amber:#C8893A; --amber2:rgba(200,137,58,0.12);
+  --blue:#4A8FA8; --blue2:rgba(74,143,168,0.12);
+  --red:#B85450;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;min-height:100vh}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:100;background:rgba(15,15,15,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:14px}
+.logo{width:34px;height:34px;background:var(--tc);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:white;letter-spacing:-1px;flex-shrink:0}
+.header-info h1{font-size:15px;font-weight:600;color:var(--t1);letter-spacing:0.01em}
+.header-info p{font-size:11px;color:var(--t3);letter-spacing:0.05em;text-transform:uppercase;margin-top:1px}
+.header-badge{margin-left:auto;font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:4px;background:var(--tc2);color:var(--tc);border:1px solid var(--tc3)}
+
+/* HERO */
+.hero{padding:48px 24px 32px;max-width:760px;margin:0 auto;text-align:center}
+.hero-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--t3);margin-bottom:12px}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:400;color:var(--t1);line-height:1.15;margin-bottom:12px}
+.hero-title em{color:var(--tc);font-style:italic}
+.hero-sub{font-size:13px;color:var(--t2);max-width:480px;margin:0 auto;line-height:1.7}
+
+/* ARCHITETTURA */
+.arch{max-width:760px;margin:0 auto 40px;padding:0 24px}
+.arch-box{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:24px;position:relative;overflow:hidden}
+.arch-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--tc),transparent)}
+.arch-title{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--t3);margin-bottom:20px}
+.arch-flow{display:flex;flex-direction:column;gap:0}
+.arch-level{display:flex;align-items:stretch;gap:0}
+.arch-connector{width:40px;display:flex;flex-direction:column;align-items:center;gap:0;flex-shrink:0}
+.arch-line{width:1px;background:var(--border);flex:1;min-height:12px}
+.arch-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin:2px 0}
+.arch-card{flex:1;margin:4px 0;padding:14px 16px;border-radius:8px;border:1px solid;position:relative}
+.arch-card.livello-3{border-color:rgba(196,98,45,0.35);background:rgba(196,98,45,0.07)}
+.arch-card.livello-2{border-color:rgba(200,137,58,0.35);background:rgba(200,137,58,0.07)}
+.arch-card.livello-1{border-color:rgba(90,158,122,0.35);background:rgba(90,158,122,0.07)}
+.arch-card-tag{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.lvl3 .arch-card-tag{color:var(--tc)}
+.lvl2 .arch-card-tag{color:var(--amber)}
+.lvl1 .arch-card-tag{color:var(--green)}
+.arch-card-name{font-size:14px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.arch-card-desc{font-size:11px;color:var(--t2);line-height:1.5}
+.arch-card-meta{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.meta-pill{font-size:9px;font-weight:500;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:3px;background:var(--s3);color:var(--t3)}
+
+/* ESEMPIO */
+.example-bar{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin:16px 0 0;display:flex;align-items:center;gap:10px}
+.ex-icon{font-size:16px;flex-shrink:0}
+.ex-text{font-size:12px;color:var(--t2);line-height:1.5}
+.ex-text strong{color:var(--amber);font-weight:600}
+
+/* SEZIONI */
+.section{max-width:760px;margin:0 auto 32px;padding:0 24px}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.section-num{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;flex-shrink:0}
+.s1 .section-num{background:rgba(90,158,122,0.15);color:var(--green);border:1px solid rgba(90,158,122,0.3)}
+.s2 .section-num{background:rgba(200,137,58,0.15);color:var(--amber);border:1px solid rgba(200,137,58,0.3)}
+.s3 .section-num{background:rgba(196,98,45,0.15);color:var(--tc);border:1px solid rgba(196,98,45,0.3)}
+.section-title-wrap h2{font-size:17px;font-weight:600;color:var(--t1)}
+.section-title-wrap p{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:2px}
+.step-row{display:flex;gap:0;align-items:stretch}
+.step-spine{width:48px;display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.step-spine-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:'DM Mono',monospace;flex-shrink:0;z-index:1}
+.s1 .step-spine-num{background:rgba(90,158,122,0.15);color:var(--green);border:1px solid rgba(90,158,122,0.3)}
+.s2 .step-spine-num{background:rgba(200,137,58,0.15);color:var(--amber);border:1px solid rgba(200,137,58,0.3)}
+.s3 .step-spine-num{background:rgba(196,98,45,0.15);color:var(--tc);border:1px solid rgba(196,98,45,0.3)}
+.step-spine-line{width:1px;background:var(--border2);flex:1;margin:4px 0}
+.step-body{flex:1;padding:4px 0 20px 4px}
+.step-label{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:4px}
+.step-text{font-size:12px;color:var(--t2);line-height:1.65}
+.step-text code{font-family:'DM Mono',monospace;background:var(--s3);color:var(--green);padding:1px 6px;border-radius:3px;font-size:11px}
+.step-text strong{color:var(--t1);font-weight:600}
+
+/* FIELD BOX */
+.fields{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-top:10px;display:flex;flex-direction:column;gap:10px}
+.field-row{display:flex;align-items:baseline;gap:10px}
+.field-name{font-family:'DM Mono',monospace;font-size:11px;color:var(--t3);width:200px;flex-shrink:0}
+.field-val{font-size:12px;color:var(--t1);flex:1;line-height:1.5}
+.field-val em{color:var(--amber);font-style:normal}
+.field-val .auto{color:var(--green);font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase}
+.field-divider{height:1px;background:var(--border2);margin:2px 0}
+
+/* ALERT */
+.alert{border-radius:7px;padding:10px 14px;font-size:12px;line-height:1.6;display:flex;gap:10px;align-items:flex-start;margin-top:10px}
+.alert-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.alert.ok{background:var(--green2);border:1px solid rgba(90,158,122,0.25);color:#7DC4A0}
+.alert.warn{background:var(--amber2);border:1px solid rgba(200,137,58,0.25);color:#D4A060}
+.alert.info{background:var(--blue2);border:1px solid rgba(74,143,168,0.25);color:#7ABCD4}
+
+/* RESULT CARD */
+.result-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:8px}
+.result-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border2)}
+.result-row:last-child{border-bottom:none;padding-bottom:0}
+.result-label{font-size:12px;color:var(--t2)}
+.result-value{font-size:13px;font-weight:600;color:var(--t1);font-family:'DM Mono',monospace}
+.result-value.highlight{color:var(--tc)}
+.result-value.green{color:var(--green)}
+
+/* DIVIDER */
+.divider{max-width:760px;margin:8px auto 32px;padding:0 24px}
+.divider hr{border:none;border-top:1px solid var(--border)}
+
+/* FOOTER */
+footer{max-width:760px;margin:40px auto 0;padding:24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.footer-logo{display:flex;align-items:center;gap:10px}
+.footer-logo .logo{width:26px;height:26px;font-size:13px}
+.footer-brand{font-size:11px;color:var(--t3);letter-spacing:1px;text-transform:uppercase}
+.footer-note{font-size:11px;color:var(--t3)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">P</div>
+  <div class="header-info">
+    <h1>PINSA · Sistema Operativo</h1>
+    <p>Visor de Recetas · Guía de Registro</p>
+  </div>
+  <div class="header-badge">V67 · 2026</div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Guía de Registro</div>
+  <h1 class="hero-title">Cómo crear un <em>Producto</em><br>con Subreceta y Preparación</h1>
+  <p class="hero-sub">El sistema tiene 3 niveles de receta. Cada uno se crea en orden, del más interno al más externo. Esta guía te lleva paso a paso.</p>
+</div>
+
+<!-- ARQUITECTURA -->
+<div class="arch">
+  <div class="arch-box">
+    <div class="arch-title">Arquitectura · 3 niveles</div>
+    <div class="arch-flow">
+
+      <!-- NIVEL 1 -->
+      <div class="arch-level lvl1">
+        <div class="arch-connector">
+          <div class="arch-dot" style="background:var(--green);margin-top:18px"></div>
+          <div class="arch-line"></div>
+        </div>
+        <div class="arch-card livello-1">
+          <div class="arch-card-tag">Nivel 1 · Primero en crear</div>
+          <div class="arch-card-name">PREPARACION</div>
+          <div class="arch-card-desc">Cocina Central produce en lote. Ingredientes reales, peso en gramos o cc. El costo/gr se calcula automáticamente.</div>
+          <div class="arch-card-meta">
+            <span class="meta-pill">Tipo: PREPARACION</span>
+            <span class="meta-pill">Sección: Cocina Central</span>
+            <span class="meta-pill">Unidad: gr / cc</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONECTOR -->
+      <div style="display:flex;padding-left:36px;padding-right:8px">
+        <div style="width:1px;height:16px;background:var(--border);margin-left:3px;margin-right:auto"></div>
+        <div style="font-size:10px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;align-self:center;padding-left:8px">se convierte en insumo de ↓</div>
+      </div>
+
+      <!-- NIVEL 2 -->
+      <div class="arch-level lvl2">
+        <div class="arch-connector">
+          <div class="arch-line"></div>
+          <div class="arch-dot" style="background:var(--amber);margin-top:18px"></div>
+          <div class="arch-line"></div>
+        </div>
+        <div class="arch-card livello-2">
+          <div class="arch-card-tag">Nivel 2 · Segundo en crear</div>
+          <div class="arch-card-name">SUBRECETA</div>
+          <div class="arch-card-desc">Porción lista para ensamblar. Usa la PREPARACION como ingrediente. Define el gramaje por porción → el sistema calcula las unidades producidas.</div>
+          <div class="arch-card-meta">
+            <span class="meta-pill">Tipo: SUBRECETA</span>
+            <span class="meta-pill">Sección: cualquiera</span>
+            <span class="meta-pill">Unidad: gr / cc / unidad</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONECTOR -->
+      <div style="display:flex;padding-left:36px;padding-right:8px">
+        <div style="width:1px;height:16px;background:var(--border);margin-left:3px;margin-right:auto"></div>
+        <div style="font-size:10px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;align-self:center;padding-left:8px">se ensambla en ↓</div>
+      </div>
+
+      <!-- NIVEL 3 -->
+      <div class="arch-level lvl3">
+        <div class="arch-connector">
+          <div class="arch-line"></div>
+          <div class="arch-dot" style="background:var(--tc);margin-top:18px"></div>
+        </div>
+        <div class="arch-card livello-3">
+          <div class="arch-card-tag">Nivel 3 · Tercero en crear</div>
+          <div class="arch-card-name">PRODUCTO FINAL</div>
+          <div class="arch-card-desc">Lo que el cliente compra. Combina subrecetas + insumos directos. Tiene precio de venta y food cost visible.</div>
+          <div class="arch-card-meta">
+            <span class="meta-pill">Tipo: ENSAMBLE</span>
+            <span class="meta-pill">Sección: Barra</span>
+            <span class="meta-pill">Unidad: unidad</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="example-bar" style="margin-top:20px">
+      <div class="ex-icon">☕</div>
+      <div class="ex-text">
+        <strong>Ejemplo en esta guía:</strong> COLD BREW VAINILLA (producto) → usa BASE COLD BREW (subreceta) → que usa CAFÉ BLEND + AGUA (preparación)
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PASO 1 — PREPARACION -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section s1">
+  <div class="section-header">
+    <div class="section-num">01</div>
+    <div class="section-title-wrap">
+      <h2>Crear la PREPARACION</h2>
+      <p>Simulador → Nueva receta</p>
+    </div>
+  </div>
+
+  <div class="steps">
+
+    <div class="step-row">
+      <div class="step-spine"><div class="step-spine-num">1</div><div class="step-spine-line"></div></div>
+      <div class="step-body">
+        <div class="step-label">Abre el Simulador y selecciona el tipo</div>
+        <div class="step-text">En el Visor, ve a <strong>Simulador → + Nueva receta</strong>. Selecciona <code>PREPARACION (CC produce)</code> como tipo de receta.</div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine"><div class="step-spine-num">2</div><div class="step-spine-line"></div></div>
+      <div class="step-body">
+        <div class="step-label">Completa la ficha</div>
+        <div class="fields">
+          <div class="field-row"><span class="field-name">Nombre</span><span class="field-val"><em>BASE COLD BREW 1</em></span></div>
+          <div class="field-divider"></div>
+          <div class="field-row"><span class="field-name">Tipo de receta</span><span class="field-val">PREPARACION (CC produce)</span></div>
+          <div class="field-row"><span class="field-name">Sección</span><span class="field-val">Cocina Central <em>— o Barra Cafe si se produce ahí</em></span></div>
+          <div class="field-row"><span class="field-name">Familia</span><span class="field-val">PRODUCCION</span></div>
+          <div class="field-row"><span class="field-name">Categoría</span><span class="field-val">LIQUIDOS</span></div>
+          <div class="field-row"><span class="field-name">Unidad de salida</span><span class="field-val">cc <em>— o gr para sólidos</em></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine"><div class="step-spine-num">3</div><div class="step-spine-line"></div></div>
+      <div class="step-body">
+        <div class="step-label">Completa el bloque "Rendimiento del lote"</div>
+        <div class="step-text">Este bloque aparece solo para PREPARACION. El <strong>Peso del lote se calcula automático</strong> sumando los ingredientes — no escribas nada ahí.</div>
+        <div class="fields">
+          <div class="field-row"><span class="field-name">Peso total del lote</span><span class="field-val"><span class="auto">← automático</span> — se calcula al agregar ingredientes</span></div>
+          <div class="field-row"><span class="field-name">Gramaje por porción</span><span class="field-val"><em>Dejar vacío</em> si el lote entero es 1 unidad. Escribir ej. <em>45</em> si se divide en porciones.</span></div>
+          <div class="field-row"><span class="field-name">Rendimiento (merma)</span><span class="field-val"><em>1.00</em> sin merma · <em>0.85</em> = 15% merma por cocción</span></div>
+        </div>
+        <div class="alert warn">
+          <div class="alert-icon">⚠</div>
+          <div>El campo "Peso total del lote" es de solo lectura — se llena automático. No escribas un número ahí.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine"><div class="step-spine-num">4</div><div class="step-spine-line"></div></div>
+      <div class="step-body">
+        <div class="step-label">Agrega los ingredientes</div>
+        <div class="step-text">Escribe el nombre del insumo. El sistema busca en BD_INSUMOS y completa el precio automáticamente. Ajusta la cantidad.</div>
+        <div class="fields">
+          <div class="field-row"><span class="field-name">Café blend (molido)</span><span class="field-val">100 · Gr · $26.67/gr</span></div>
+          <div class="field-row"><span class="field-name">Agua</span><span class="field-val">1000 · cc · $10/cc</span></div>
+          <div class="field-row" style="margin-top:4px"><span class="field-name">Peso lote auto</span><span class="field-val auto">1100 cc ← calculado</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine"><div class="step-spine-num">5</div></div>
+      <div class="step-body">
+        <div class="step-label">Guarda la receta</div>
+        <div class="step-text">Presiona <strong>Guardar receta</strong>. El sistema crea un ID (ej. REC-0026), la registra en Recetas_Master y la agrega automáticamente a BD_INSUMOS como insumo disponible.</div>
+        <div class="alert ok">
+          <div class="alert-icon">✓</div>
+          <div>Después de guardar, la PREPARACION queda disponible como ingrediente para la SUBRECETA. No necesitas recargar la página.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"><hr></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PASO 2 — SUBRECETA -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section s2">
+  <div class="section-header">
+    <div class="section-num">02</div>
+    <div class="section-title-wrap">
+      <h2>Crear la SUBRECETA</h2>
+      <p>Simulador → Nueva receta</p>
+    </div>
+  </div>
+
+  <div class="steps">
+
+    <div class="step-row">
+      <div class="step-spine"><div class="step-spine-num">1</div><div class="step-spine-line"></div></div>
+      <div class="step-body">
+        <div class="step-label">Selecciona el tipo SUBRECETA</div>
+        <div class="step-text">En <strong>Simulador → + Nueva receta</strong>, selecciona <code>SUBRECETA (componente de otra receta)</code>.</div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine"><div class="step-spine-num">2</div><div class="step-spine-line"></div></div>
+      <div class="step-body">
+        <div class="step-label">Completa la ficha</div>
+        <div class="fields">
+          <div class="field-row"><span class="field-name">Nombre</span><span class="field-val"><em>BASE COLD BREW</em></span></div>
+          <div class="field-row"><span class="field-name">Tipo de receta</span><span class="field-val">SUBRECETA</span></div>
+          <div class="field-row"><span class="field-name">Sección</span><span class="field-val">Barra Cafe <em>— donde se produce físicamente</em></span></div>
+          <div class="field-row"><span class="field-name">Unidad de salida</span><span class="field-val">cc <em>— gr para sólidos / unidad si es pieza entera</em></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine"><div class="step-spine-num">3</div><div class="step-spine-line"></div></div>
+      <div class="step-body">
+        <div class="step-label">Define el gramaje por porción</div>
+        <div class="step-text">Este es el único campo que debes escribir en "Rendimiento del lote". El peso total y las unidades se calculan solos.</div>
+        <div class="fields">
+          <div class="field-row"><span class="field-name">Peso lote auto (cc)</span><span class="field-val"><span class="auto">← automático desde ingredientes</span></span></div>
+          <div class="field-row"><span class="field-name">Gramaje por porción (cc)</span><span class="field-val"><em>45</em> ← tú escribes esto</span></div>
+          <div class="field-row"><span class="field-name">Unidades producidas</span><span class="field-val"><span class="auto">← calculado: 1100cc ÷ 45cc = 24 porciones</span></span></div>
+        </div>
+        <div class="alert info">
+          <div class="alert-icon">💡</div>
+          <div>Piensa en la <strong>porción que entregas</strong>, no en el lote total. ¿Cuántos cc va en cada bebida? → Ese es el gramaje.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine"><div class="step-spine-num">4</div><div class="step-spine-line"></div></div>
+      <div class="step-body">
+        <div class="step-label">Agrega la PREPARACION como ingrediente</div>
+        <div class="step-text">En el bloque Ingredientes, busca la preparación que creaste en el Paso 1. El precio/gr aparece automáticamente desde BD_INSUMOS.</div>
+        <div class="fields">
+          <div class="field-row"><span class="field-name">BASE COLD BREW 1</span><span class="field-val">1100 · cc · $12.67/cc</span></div>
+          <div class="field-row" style="margin-top:4px"><span class="field-name">Costo total lote</span><span class="field-val auto">$13.937 ← calculado</span></div>
+          <div class="field-row"><span class="field-name">Costo por porción</span><span class="field-val" style="color:var(--tc);font-weight:600">$581 c/u ← lo que importa</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine"><div class="step-spine-num">5</div></div>
+      <div class="step-body">
+        <div class="step-label">Guarda la SUBRECETA</div>
+        <div class="step-text">Presiona <strong>Guardar receta</strong>. El sistema registra el costo por porción en BD_INSUMOS. Queda disponible inmediatamente para el producto final.</div>
+        <div class="alert ok">
+          <div class="alert-icon">✓</div>
+          <div>El costo guardado es <strong>costo por porción</strong> (ej. $581/unidad) — no por cc. Así el ensamble final lo usa como "1 unidad · $581".</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"><hr></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PASO 3 — PRODUCTO FINAL -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section s3">
+  <div class="section-header">
+    <div class="section-num">03</div>
+    <div class="section-title-wrap">
+      <h2>Crear el PRODUCTO FINAL</h2>
+      <p>Simulador → Nueva receta</p>
+    </div>
+  </div>
+
+  <div class="steps">
+
+    <div class="step-row">
+      <div class="step-spine"><div class="step-spine-num">1</div><div class="step-spine-line"></div></div>
+      <div class="step-body">
+        <div class="step-label">Selecciona el tipo ENSAMBLE</div>
+        <div class="step-text">En <strong>Simulador → + Nueva receta</strong>, selecciona <code>ENSAMBLE (en local)</code>. Este tipo activa el campo de precio de venta y calcula el food cost.</div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine"><div class="step-spine-num">2</div><div class="step-spine-line"></div></div>
+      <div class="step-body">
+        <div class="step-label">Completa la ficha</div>
+        <div class="fields">
+          <div class="field-row"><span class="field-name">Nombre</span><span class="field-val"><em>COLD BREW VAINILLA</em></span></div>
+          <div class="field-row"><span class="field-name">Tipo de receta</span><span class="field-val">ENSAMBLE</span></div>
+          <div class="field-row"><span class="field-name">Sección</span><span class="field-val">Barra Cafe</span></div>
+          <div class="field-row"><span class="field-name">Familia</span><span class="field-val">ICED_SUPER_LATTE</span></div>
+          <div class="field-row"><span class="field-name">Unidad de salida</span><span class="field-val">unidad</span></div>
+          <div class="field-row"><span class="field-name">Precio de venta bruto</span><span class="field-val"><em>$9.900</em> con IVA 19%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine"><div class="step-spine-num">3</div><div class="step-spine-line"></div></div>
+      <div class="step-body">
+        <div class="step-label">Define el precio de venta</div>
+        <div class="step-text">En la ficha, escribe el <strong>Precio de Venta Bruto</strong> (con IVA 19%). El sistema calcula el precio neto y el food cost en tiempo real mientras agregas ingredientes.</div>
+        <div class="fields">
+          <div class="field-row"><span class="field-name">Precio bruto (con IVA)</span><span class="field-val"><em>$9.900</em> ← tú escribes esto</span></div>
+          <div class="field-row"><span class="field-name">Precio neto (sin IVA)</span><span class="field-val"><span class="auto">$8.319 ← calculado automático</span></span></div>
+          <div class="field-row"><span class="field-name">Food Cost %</span><span class="field-val"><span class="auto">se actualiza en tiempo real</span></span></div>
+        </div>
+        <div class="alert info">
+          <div class="alert-icon">💡</div>
+          <div>Cambia el precio de venta en cualquier momento — el food cost y el margen se recalculan al instante. El sistema también te muestra el <strong>precio sugerido para FC 25%</strong> como referencia.</div>
+        </div>
+        <div class="result-card" style="margin-top:10px">
+          <div class="result-title">Cómo leer el panel de resultado</div>
+          <div class="result-row">
+            <span class="result-label">Food Cost &lt; 25%</span>
+            <span class="result-value green">● OK</span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">Food Cost 25–30%</span>
+            <span class="result-value" style="color:var(--amber)">● Revisar</span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">Food Cost &gt; 30%</span>
+            <span class="result-value" style="color:var(--red)">● Alto ⚠</span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">Precio sugerido (FC 25%)</span>
+            <span class="result-value">referencia mínima de precio</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine"><div class="step-spine-num">4</div><div class="step-spine-line"></div></div>
+      <div class="step-body">
+        <div class="step-label">Agrega la SUBRECETA + insumos directos</div>
+        <div class="step-text">Busca la subreceta creada en el Paso 2. El sistema la trata como "1 unidad" con su costo por porción. Agrega los demás insumos normalmente.</div>
+        <div class="fields">
+          <div class="field-row"><span class="field-name">BASE COLD BREW</span><span class="field-val">1 · unidad · $581</span></div>
+          <div class="field-row"><span class="field-name">Syrup de Vainilla</span><span class="field-val">30 · cc · $13.45/cc</span></div>
+          <div class="field-row"><span class="field-name">Hielo Cubo</span><span class="field-val">120 · Gr · $0.25/gr</span></div>
+          <div class="field-row"><span class="field-name">Vaso 16oz Transparente</span><span class="field-val">1 · unidad · $118</span></div>
+          <div class="field-row"><span class="field-name">Tapa Domo 16oz</span><span class="field-val">1 · unidad · $28</span></div>
+          <div class="field-row"><span class="field-name">Bombilla</span><span class="field-val">1 · unidad · $37</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine"><div class="step-spine-num">5</div><div class="step-spine-line"></div></div>
+      <div class="step-body">
+        <div class="step-label">Verifica el resultado en tiempo real</div>
+        <div class="step-text">El panel derecho muestra el food cost en tiempo real mientras agregas ingredientes. Ajusta el precio de venta hasta lograr el food cost objetivo.</div>
+        <div class="result-card">
+          <div class="result-title">Resultado · Ejemplo Cold Brew Vainilla</div>
+          <div class="result-row"><span class="result-label">Costo ingredientes</span><span class="result-value">$1.202</span></div>
+          <div class="result-row"><span class="result-label">Precio de venta bruto</span><span class="result-value">$9.900</span></div>
+          <div class="result-row"><span class="result-label">Precio neto (sin IVA)</span><span class="result-value">$8.319</span></div>
+          <div class="result-row"><span class="result-label">Food Cost %</span><span class="result-value green">14.4% ✓</span></div>
+          <div class="result-row"><span class="result-label">Precio sugerido (FC 25%)</span><span class="result-value">$4.808 bruto</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine"><div class="step-spine-num">6</div></div>
+      <div class="step-body">
+        <div class="step-label">Guarda y verifica</div>
+        <div class="step-text">Presiona <strong>Guardar receta</strong>. El producto aparece en la lista de Recetas con el food cost visible. Si el food cost aparece en <strong style="color:var(--red)">rojo</strong>, revisa el precio o los costos de ingredientes.</div>
+        <div class="alert warn">
+          <div class="alert-icon">⚠</div>
+          <div>Si un ingrediente muestra <strong>$0</strong>, significa que no tiene precio en BD_INSUMOS. Verifica con el Jefe de Abastecimiento.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">
+    <div class="logo">P</div>
+    <span class="footer-brand">PINSA · Sistema Operativo</span>
+  </div>
+  <span class="footer-note">Visor de Recetas V67 · 2026</span>
+</footer>
+
+</body>
+</html>
