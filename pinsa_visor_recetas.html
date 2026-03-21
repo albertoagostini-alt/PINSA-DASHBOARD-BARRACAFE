@@ -1907,6 +1907,10 @@ function onUnidadChange() {
   calcQLote();
 }
 
+function resetPesoLoteAuto() {
+  const e=document.getElementById('simPesoLote');
+  if(e){e._manual=false;e.style.color='var(--t3)';calcPesoLote();}
+}
 function adaptarBloqueSubreceta(isSubreceta) {
   const pesoEl    = document.getElementById('simPesoLote');
   const gramajeEl = document.getElementById('simGramajePorcion');
@@ -1959,7 +1963,7 @@ function adaptarBloqueSubreceta(isSubreceta) {
       pesoEl.placeholder   = 'Auto (Gr+CC)';
     }
     const pesoLblEl2 = pesoEl?.closest('.sim-field')?.querySelector('.sim-lbl');
-    if(pesoLblEl2) pesoLblEl2.innerHTML = 'Peso total del lote (gr) <span onclick="const e=document.getElementById('simPesoLote');e._manual=false;e.style.color='var(--t3)';calcPesoLote();" style="cursor:pointer;color:var(--tc);font-size:9px">↺ auto</span>';
+    if(pesoLblEl2) pesoLblEl2.innerHTML = 'Peso total del lote (gr) <span onclick="resetPesoLoteAuto()" style="cursor:pointer;color:var(--tc);font-size:9px">↺ auto</span>';
     if(gramajeEl) { gramajeEl.disabled = false; }
     if(qLoteEl)  { qLoteEl.readOnly=false; qLoteEl.style.color='var(--t1)'; qLoteEl.style.opacity='1'; qLoteEl.placeholder='1'; }
     if(rendWrap) rendWrap.style.display = '';
