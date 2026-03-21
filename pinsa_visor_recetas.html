@@ -2095,7 +2095,8 @@ function onTipoChange() {
     const uSel=document.getElementById('simUnidad');
     if(uSel) {
       uSel.innerHTML='<option value="gr">gr</option><option value="cc">cc</option><option value="unidad">unidad</option>';
-      uSel.value='gr';
+      // Non sovrascrivere se stiamo editando una ricetta esistente con unidad già impostata
+      if(!simEditMode) uSel.value='gr';
     }
   }
   calcSim();
@@ -2822,7 +2823,9 @@ function editRecipe(id) {
   document.getElementById('simFormato').value=r.formato||'';
   document.getElementById('simUnidad').value=r.unidad||'unidad';
   onUnidadChange(); // V3.3: aggiorna stato gramaje in base a unidad caricata
-  document.getElementById('simQLote').value=r.q_lote||1;
+  // simQLote può essere readonly per SUBRECETA — forziamo il valore
+  const qLEl=document.getElementById('simQLote');
+  if(qLEl){const wasRO=qLEl.readOnly;qLEl.readOnly=false;qLEl.value=r.q_lote||1;qLEl.readOnly=wasRO;}
   const rendEl=document.getElementById('simRendimiento');
   if(rendEl) rendEl.value=r.rendimiento||1;
   const ptEl=document.getElementById('sr-prep-transfer');
