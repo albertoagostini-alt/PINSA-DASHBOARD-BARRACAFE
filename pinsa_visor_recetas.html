@@ -1490,7 +1490,7 @@ function setL1(f,el){
   el.classList.add('on');buildL2();renderList('');
 }
 function buildL2(){
-  const pool=filterL1==='todas'?getVisibleRecipes():filterL1==='CC'?getVisibleRecipes().filter(r=>r.tipo==='PREPARACION'||r.tipo==='SUBRECETA'):getVisibleRecipes().filter(r=>r.cat===filterL1);
+  const pool=filterL1==='todas'?getVisibleRecipes():filterL1==='CC'?getVisibleRecipes().filter(r=>(r.seccion||'').toLowerCase().includes('cocina central')):getVisibleRecipes().filter(r=>r.cat===filterL1);
   const familias=[...new Set(pool.map(r=>r.familia))].filter(Boolean).sort();
   const wrap=document.getElementById('familia-wrap');
   const sel=document.getElementById('familiaSelect');
@@ -1525,7 +1525,7 @@ function miniDots(n){return[1,2,3].map(i=>`<span style="display:inline-block;wid
 function renderList(q='') {
   const list=document.getElementById('sbList');
   const items=getVisibleRecipes().filter(r=>{
-    const m1=filterL1==='todas'||(filterL1==='CC'?(r.tipo==='PREPARACION'||r.tipo==='SUBRECETA'):r.cat===filterL1);
+    const m1=filterL1==='todas'||(filterL1==='CC'?(r.seccion||'').toLowerCase().includes('cocina central'):r.cat===filterL1);
     const m2=filterL2==='todas'||r.familia===filterL2;
     const m3=filterEstado==='todas'||r.estado===filterEstado;
     const _fc=calcFC(r);
@@ -1907,23 +1907,125 @@ function onUnidadChange() {
   calcQLote();
 }
 
-function calcQLote() {
-  const peso=parseFloat(document.getElementById('simPesoLote')?.value)||0;
-  const gramaje=parseFloat(document.getElementById('simGramajePorcion')?.value)||0;
-  const hint=document.getElementById('sim-qlote-hint');
-  const unidad=document.getElementById('simUnidad')?.value||'gr';
-  if(peso>0 && gramaje>0) {
-    const unidades=Math.floor(peso/gramaje);
-    document.getElementById('simQLote').value=unidades;
-    if(hint) hint.innerHTML=`→ <strong style="color:var(--t1)">${unidades} porciones</strong><br>de ${gramaje}${unidad} c/u`;
-    calcSim();
-  } else if(peso>0 && gramaje===0) {
-    // Sin gramaje: 1 lote = 1 unidad (Caso A)
-    document.getElementById('simQLote').value=1;
-    if(hint) hint.innerHTML=`→ <strong style="color:var(--t1)">1 unidad</strong><br>lote completo`;
-    calcSim();
+function adaptarBloqueSubreceta(isSubreceta) {
+  const pesoEl    = document.getElementById('simPesoLote');
+  const gramajeEl = document.getElementById('simGramajePorcion');
+  const gramajeLbl= document.getElementById('sim-gramaje-lbl');
+  const qLoteEl   = document.getElementById('simQLote');
+  const rendWrap  = document.getElementById('simRendimiento')?.parentElement?.parentElement;
+  const unidad    = document.getElementById('simUnidad')?.value||'gr';
+
+  if(isSubreceta) {
+    // PESO LOTE — readonly, output automatico, visivamente disabilitato
+    if(pesoEl) {
+      pesoEl.readOnly   = true;
+      pesoEl.value      = '';
+      pesoEl.placeholder= '← se calcula con los ingredientes';
+      pesoEl.style.color   = 'var(--t3)';
+      pesoEl.style.opacity = '0.45';
+      pesoEl.style.cursor  = 'not-allowed';
+    }
+    // Label peso: unità dinamica
+    const pesoLblEl = pesoEl?.closest('.sim-field')?.querySelector('.sim-lbl');
+    if(pesoLblEl) pesoLblEl.textContent = 'Peso lote auto (' + unidad + ')';
+
+    // GRAMAJE — unico input attivo, con placeholder contestuale
+    if(gramajeLbl) gramajeLbl.textContent = 'Gramaje por porción (' + unidad + ')';
+    if(gramajeEl) {
+      gramajeEl.disabled    = false;
+      gramajeEl.style.opacity = '1';
+      gramajeEl.style.color   = 'var(--t1)';
+      gramajeEl.placeholder   = (unidad==='cc'?'ej. 45':unidad==='gr'?'ej. 30':'ej. 1');
+    }
+
+    // UNIDADES — readonly, output calcolato
+    if(qLoteEl) {
+      qLoteEl.readOnly      = true;
+      qLoteEl.style.color   = 'var(--t3)';
+      qLoteEl.style.opacity = '0.7';
+      qLoteEl.placeholder   = '— ingresa gramaje';
+    }
+
+    // RENDIMIENTO — visibile anche per subreceta
+    if(rendWrap) rendWrap.style.display = '';
+
   } else {
-    if(hint) hint.textContent='';
+    // PREPARACION — ripristina tutto
+    if(pesoEl) {
+      pesoEl.readOnly      = false;
+      pesoEl.style.color   = 'var(--t3)';
+      pesoEl.style.opacity = '1';
+      pesoEl.style.cursor  = '';
+      pesoEl.placeholder   = 'Auto (Gr+CC)';
+    }
+    const pesoLblEl2 = pesoEl?.closest('.sim-field')?.querySelector('.sim-lbl');
+    if(pesoLblEl2) pesoLblEl2.innerHTML = 'Peso total del lote (gr) <span onclick="const e=document.getElementById('simPesoLote');e._manual=false;e.style.color='var(--t3)';calcPesoLote();" style="cursor:pointer;color:var(--tc);font-size:9px">↺ auto</span>';
+    if(gramajeEl) { gramajeEl.disabled = false; }
+    if(qLoteEl)  { qLoteEl.readOnly=false; qLoteEl.style.color='var(--t1)'; qLoteEl.style.opacity='1'; qLoteEl.placeholder='1'; }
+    if(rendWrap) rendWrap.style.display = '';
+  }
+}
+
+function calcQLote() {
+  const tipo     = document.getElementById('simTipo')?.value||'';
+  const isSubreceta = tipo==='SUBRECETA';
+  const gramaje  = parseFloat(document.getElementById('simGramajePorcion')?.value)||0;
+  const unidad   = document.getElementById('simUnidad')?.value||'gr';
+  const pesoEl   = document.getElementById('simPesoLote');
+  const qLoteEl  = document.getElementById('simQLote');
+  const hint     = document.getElementById('sim-qlote-hint');
+
+  if(isSubreceta) {
+    // Peso = AUTO da ingredienti (stessa logica PREPARACION)
+    let pesoAuto = 0;
+    simIngredients.forEach(ing => {
+      const q = parseFloat(document.getElementById(`si-q-${ing.id}`)?.value)||0;
+      const u = (document.getElementById(`si-u-${ing.id}`)?.value||'').toLowerCase();
+      if(q > 0 && (u==='gr'||u==='g'||u==='cc'||u==='ml')) pesoAuto += q;
+    });
+    const rend = parseFloat(document.getElementById('simRendimiento')?.value)||1;
+    const pesoFinal = Math.round(pesoAuto * rend);
+
+    // Aggiorna peso (readonly)
+    if(pesoEl && pesoAuto > 0) {
+      pesoEl.value = pesoFinal;
+      pesoEl.style.color = 'var(--t3)';
+    } else if(pesoEl) {
+      pesoEl.value = '';
+    }
+
+    // Calcola unidades = peso / gramaje
+    if(pesoFinal > 0 && gramaje > 0) {
+      const unidades = Math.floor(pesoFinal / gramaje);
+      if(qLoteEl) {
+        qLoteEl.value = unidades;
+        qLoteEl.style.color = unidades > 0 ? 'var(--tc)' : 'var(--t3)';
+      }
+      if(hint) hint.innerHTML = `→ <strong style="color:var(--tc)">${unidades} porciones</strong> de ${gramaje}${unidad} · $<span id="hint-costo-sub">—</span> c/u`;
+    } else if(pesoFinal > 0 && gramaje === 0) {
+      if(qLoteEl) { qLoteEl.value = 1; qLoteEl.style.color = 'var(--t3)'; }
+      if(hint) hint.innerHTML = `→ <strong style="color:var(--t2)">1 unidad</strong> · lote completo`;
+    } else {
+      if(qLoteEl) { qLoteEl.value = ''; }
+      if(hint) hint.innerHTML = '<span style="color:var(--t3)">Agrega ingredientes para calcular</span>';
+    }
+    calcSim();
+
+  } else {
+    // PREPARACION: peso manual / gramaje → unidades
+    const peso = parseFloat(pesoEl?.value)||0;
+    if(peso > 0 && gramaje > 0) {
+      const unidades = Math.floor(peso / gramaje);
+      if(qLoteEl) qLoteEl.value = unidades;
+      if(hint) hint.innerHTML = `→ <strong style="color:var(--t1)">${unidades} porciones</strong><br>de ${gramaje}${unidad} c/u`;
+      calcSim();
+    } else if(peso > 0 && gramaje === 0) {
+      if(qLoteEl) qLoteEl.value = 1;
+      if(hint) hint.innerHTML = `→ <strong style="color:var(--t1)">1 unidad</strong><br>lote completo`;
+      calcSim();
+    } else {
+      if(hint) hint.textContent = '';
+    }
   }
 }
 
@@ -1960,9 +2062,10 @@ function onTipoChange() {
   // Blocco transfer visibile solo per PREPARACION, non SUBRECETA
   const bloqTransfer=document.getElementById('sim-bloque-transfer');
   if(bloqTransfer) bloqTransfer.style.display=isPrepCC?'':'none';
-  // SUBRECETA: nasconde blocco "Rendimiento del lote" (non rilevante per componenti)
+  // SUBRECETA: adatta il blocco lote — gramaje+unidades come input, peso come output
   const bloqRendLote=document.getElementById('sim-bloque-rendimiento-lote');
   if(bloqRendLote) bloqRendLote.style.display=isSubreceta?'none':'';
+  adaptarBloqueSubreceta(isSubreceta);
   // SUBRECETA: simPesoLote è sempre manuale (non auto da ingredienti), label adattata
   if(isSubreceta){
     const pesoLbl=document.querySelector('[for="simPesoLote"],.sim-lbl');
@@ -2315,6 +2418,8 @@ function calcSim() {
   // SUBRECETA: mostra costo/porción con dettaglio porzioni
   const isSubrecetaSim=document.getElementById('simTipo')?.value==='SUBRECETA';
   if(isSubrecetaSim) {
+    // Aggiorna peso auto e unidades prima di calcolare costo/porción
+    calcQLote();
     const qLSub=parseFloat(document.getElementById('simQLote')?.value)||1;
     const gramajeSub=parseFloat(document.getElementById('simGramajePorcion')?.value)||0;
     const cuSub=qLSub>0?totalCosto/qLSub:0;
