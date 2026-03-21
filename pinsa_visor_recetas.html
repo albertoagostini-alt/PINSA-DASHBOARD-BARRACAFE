@@ -2013,7 +2013,8 @@ function calcQLote() {
       if(qLoteEl) { qLoteEl.value = ''; }
       if(hint) hint.innerHTML = '<span style="color:var(--t3)">Agrega ingredientes para calcular</span>';
     }
-    calcSim();
+    // NON chiamare calcSim qui — causerebbe loop (calcSim→calcQLote→calcSim)
+    // calcSim aggiorna il display dopo aver chiamato calcQLote
 
   } else {
     // PREPARACION: peso manual / gramaje → unidades
@@ -2808,7 +2809,19 @@ function editRecipe(id) {
   const tipoSel=document.getElementById('simTipo');
   const tipoOpt=Array.from(tipoSel.options).find(o=>o.value===tipoVal||o.value.toUpperCase()===tipoVal);
   if(tipoOpt) tipoSel.value=tipoOpt.value; else tipoSel.value='ENSAMBLE';
+  // Salva unidad PRIMA di onTipoChange — che per SUBRECETA forzerebbe 'gr'
+  const _unidadSaved = r.unidad || 'unidad';
   onTipoChange();
+  // Ripristina unidad corretta dopo onTipoChange
+  const uSelEdit = document.getElementById('simUnidad');
+  if(uSelEdit && _unidadSaved) {
+    // Assicura che l'opzione esista nel select
+    if(!Array.from(uSelEdit.options).find(o=>o.value===_unidadSaved)) {
+      uSelEdit.innerHTML += `<option value="${_unidadSaved}">${_unidadSaved}</option>`;
+    }
+    uSelEdit.value = _unidadSaved;
+    onUnidadChange();
+  }
   // Seccion: setta dopo onTipoChange (che potrebbe aggiornare le opzioni)
   const secVal=(r.seccion||'').trim();
   const secSel=document.getElementById('simSeccion');
