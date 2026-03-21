@@ -1906,13 +1906,20 @@ function onUnidadChange() {
   calcQLote();
 }
 
-function calcQLote() {  const peso=parseFloat(document.getElementById('simPesoLote')?.value)||0;
+function calcQLote() {
+  const peso=parseFloat(document.getElementById('simPesoLote')?.value)||0;
   const gramaje=parseFloat(document.getElementById('simGramajePorcion')?.value)||0;
   const hint=document.getElementById('sim-qlote-hint');
+  const unidad=document.getElementById('simUnidad')?.value||'gr';
   if(peso>0 && gramaje>0) {
     const unidades=Math.floor(peso/gramaje);
     document.getElementById('simQLote').value=unidades;
-    if(hint) hint.innerHTML=`→ <strong style="color:var(--t1)">${unidades} unidades</strong><br>de ${gramaje}gr c/u`;
+    if(hint) hint.innerHTML=`→ <strong style="color:var(--t1)">${unidades} porciones</strong><br>de ${gramaje}${unidad} c/u`;
+    calcSim();
+  } else if(peso>0 && gramaje===0) {
+    // Sin gramaje: 1 lote = 1 unidad (Caso A)
+    document.getElementById('simQLote').value=1;
+    if(hint) hint.innerHTML=`→ <strong style="color:var(--t1)">1 unidad</strong><br>lote completo`;
     calcSim();
   } else {
     if(hint) hint.textContent='';
@@ -1955,6 +1962,21 @@ function onTipoChange() {
   // SUBRECETA: nasconde blocco "Rendimiento del lote" (non rilevante per componenti)
   const bloqRendLote=document.getElementById('sim-bloque-rendimiento-lote');
   if(bloqRendLote) bloqRendLote.style.display=isSubreceta?'none':'';
+  // SUBRECETA: simPesoLote è sempre manuale (non auto da ingredienti), label adattata
+  if(isSubreceta){
+    const pesoLbl=document.querySelector('[for="simPesoLote"],.sim-lbl');
+    const pesoEl=document.getElementById('simPesoLote');
+    const autoBtn=document.querySelector('[onclick*="calcPesoLote"]');
+    if(pesoEl){pesoEl.placeholder='ej. 1000';pesoEl._manual=true;}
+    if(autoBtn) autoBtn.style.display='none';
+    const gramLbl=document.getElementById('sim-gramaje-lbl');
+    if(gramLbl){const u=document.getElementById('simUnidad')?.value||'gr';gramLbl.textContent='Gramaje por porción ('+u+')';}
+  } else {
+    const autoBtn=document.querySelector('[onclick*="calcPesoLote"]');
+    if(autoBtn) autoBtn.style.display='';
+    const gramLbl=document.getElementById('sim-gramaje-lbl');
+    if(gramLbl) gramLbl.textContent='Gramaje por porción (gr)';
+  }
   const bloqCosto=document.getElementById('sim-bloque-costo');
   if(bloqCosto) bloqCosto.style.display=isOferta?'none':'';
 
@@ -2289,16 +2311,22 @@ function calcSim() {
   set('sr-pobj',fmt(pobj));
   set('sr-pobj-iva',pobjIva?'$'+pobjIva.toLocaleString('es-CL'):'—');
 
-  // SUBRECETA: mostra solo costo unitario (senza rendimiento ni unidades)
+  // SUBRECETA: mostra costo/porción con dettaglio porzioni
   const isSubrecetaSim=document.getElementById('simTipo')?.value==='SUBRECETA';
   if(isSubrecetaSim) {
     const qLSub=parseFloat(document.getElementById('simQLote')?.value)||1;
+    const gramajeSub=parseFloat(document.getElementById('simGramajePorcion')?.value)||0;
     const cuSub=qLSub>0?totalCosto/qLSub:0;
-    set('sr-prep-unidades','—');
-    set('sr-prep-cu', cuSub>0?'$'+cuSub.toFixed(2):'—');
-    // Aggiorna label con unità selezionata
+    const uSub=document.getElementById('simUnidad')?.value||'gr';
+    // Hint porzioni nel pannello risultato
+    const hintSub=document.getElementById('sim-qlote-hint');
+    if(gramajeSub>0&&qLSub>1){
+      if(hintSub) hintSub.innerHTML=`→ <strong style="color:var(--t1)">${qLSub} porciones</strong><br>de ${gramajeSub}${uSub} · <strong style="color:var(--tc)">$${Math.round(cuSub).toLocaleString('es-CL')}</strong> c/u`;
+    }
+    set('sr-prep-unidades', qLSub>1?qLSub+' porciones':'1 unidad');
+    set('sr-prep-cu', cuSub>0?'$'+Math.round(cuSub).toLocaleString('es-CL'):'—');
     const cuLabelSubEl=document.getElementById('sr-prep-cu-label');
-    if(cuLabelSubEl){const uSelSub=document.getElementById('simUnidad')?.value||'unidad';cuLabelSubEl.textContent='Costo por '+uSelSub.toUpperCase();}
+    if(cuLabelSubEl) cuLabelSubEl.textContent='Costo por porción';
   }
 
   // PREPARACION: calcola peso auto e costo unitario
