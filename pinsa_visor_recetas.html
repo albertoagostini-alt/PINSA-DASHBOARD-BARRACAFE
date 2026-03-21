@@ -2418,7 +2418,7 @@ function collectFormData() {
     dificultad:document.getElementById('simDificultad').value,
     tiempo_prep:parseInt(document.getElementById('simTPrep').value)||0,
     tiempo_coccion:0,
-    precio_venta:parseFloat(document.getElementById('simPrecio')?.value)||0,
+    precio_venta:(document.getElementById('simTipo').value==='OFERTA'?parseFloat(document.getElementById('simPrecioOferta')?.value)||0:parseFloat(document.getElementById('simPrecio')?.value)||0),
     url_foto:document.getElementById('simUrlFoto').value.trim(),
     url_video:document.getElementById('simUrlVideo').value.trim(),
     procedimiento:pasos.join(' | '),
@@ -2638,6 +2638,7 @@ function editRecipe(id) {
   document.getElementById('simDificultad').value=r.dificultad===3?'Alta':r.dificultad===2?'Media':'Baja';
   document.getElementById('simTPrep').value=r.t_prep||0;
   document.getElementById('simPrecio').value=r.precio_venta||'';
+  const ofPrEl=document.getElementById('simPrecioOferta');if(ofPrEl) ofPrEl.value=r.precio_venta||'';
   document.getElementById('simUrlFoto').value=r.url||''  ;
   document.getElementById('simUrlVideo').value=r.url_video||''  ;
   document.getElementById('simPerfectServe').value=r.perfect_serve||''  ;
