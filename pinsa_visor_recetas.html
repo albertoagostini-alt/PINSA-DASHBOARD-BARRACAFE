@@ -2121,9 +2121,31 @@ function onCategoriaChange() {
   const formatoWrap=document.getElementById('sim-formato-wrap');
   const unidadSel=document.getElementById('simUnidad');
   const isLiq=cat==='LIQUIDOS';
-  // Formato OZ: solo para LIQUIDOS y no para SUBRECETA
-  const isSubSim=document.getElementById('simTipo')?.value==='SUBRECETA';
-  if(formatoWrap) formatoWrap.style.display=(isLiq&&!isSubSim)?'':'none';
+  // Formato: visible para LIQUIDOS
+  const tipoSim=document.getElementById('simTipo')?.value||'';
+  const isSubSim=tipoSim==='SUBRECETA';
+  const isPrepSim=tipoSim==='PREPARACION';
+  if(formatoWrap) formatoWrap.style.display=isLiq?'':'none';
+  // Opciones Formato: OZ para ENSAMBLE/SIMPLE, cc/unidad/porcion para PREPARACION/SUBRECETA
+  const formatoSel=document.getElementById('simFormato');
+  if(formatoSel && isLiq) {
+    if(isPrepSim||isSubSim) {
+      formatoSel.innerHTML=
+        '<option value="">— Seleccionar —</option>'+
+        '<option value="cc">cc</option>'+
+        '<option value="unidad">unidad</option>'+
+        '<option value="porcion">porcion</option>';
+    } else {
+      formatoSel.innerHTML=
+        '<option value="Unidad">Unidad</option>'+
+        '<option value="2OZ">2OZ</option>'+
+        '<option value="8OZ">8OZ</option>'+
+        '<option value="9OZ">9OZ</option>'+
+        '<option value="12OZ">12OZ</option>'+
+        '<option value="16OZ">16OZ</option>'+
+        '<option value="20OZ">20OZ</option>';
+    }
+  }
   // Unidad de salida: opciones según categoría
   if(unidadSel) {
     const cur=unidadSel.value;
