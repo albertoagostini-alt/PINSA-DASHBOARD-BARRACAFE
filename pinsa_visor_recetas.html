@@ -2061,9 +2061,11 @@ function onTipoChange() {
   const bloqCom=document.getElementById('sim-bloque-comercial');
   const bloqSC=document.getElementById('sim-bloque-solo-costo');
   if(bloqOf) bloqOf.style.display=isOferta?'':'none';
-  // SUBRECETA: solo costo, niente pannello commerciale
   if(bloqCom) bloqCom.style.display=(isOferta||isPrepCC||isSubreceta)?'none':'';
   if(bloqSC) bloqSC.style.display=(isPrepCC||isSubreceta)?'':'none';
+  // FORMATO: visibile solo per ENSAMBLE e SIMPLE — non per prep/sub/oferta
+  const formatoWrapTipo=document.getElementById('sim-formato-wrap');
+  if(formatoWrapTipo) formatoWrapTipo.style.display=(!isPrepCC&&!isSubreceta&&!isOferta)?'':'none';
   // Blocco transfer visibile solo per PREPARACION, non SUBRECETA
   const bloqTransfer=document.getElementById('sim-bloque-transfer');
   if(bloqTransfer) bloqTransfer.style.display=isPrepCC?'':'none';
@@ -2121,42 +2123,39 @@ function onCategoriaChange() {
   const formatoWrap=document.getElementById('sim-formato-wrap');
   const unidadSel=document.getElementById('simUnidad');
   const isLiq=cat==='LIQUIDOS';
-  // Formato: visible para LIQUIDOS
+  // Formato OZ: solo para ENSAMBLE/SIMPLE LIQUIDOS — gestionado por onTipoChange
   const tipoSim=document.getElementById('simTipo')?.value||'';
   const isSubSim=tipoSim==='SUBRECETA';
   const isPrepSim=tipoSim==='PREPARACION';
-  if(formatoWrap) formatoWrap.style.display=isLiq?'':'none';
-  // Opciones Formato: OZ para ENSAMBLE/SIMPLE, cc/unidad/porcion para PREPARACION/SUBRECETA
+  const isOfertaSim=tipoSim==='OFERTA';
+  const showFormato=isLiq&&!isPrepSim&&!isSubSim&&!isOfertaSim;
+  if(formatoWrap) formatoWrap.style.display=showFormato?'':'none';
+  // Opciones Formato OZ solo para ENSAMBLE/SIMPLE
   const formatoSel=document.getElementById('simFormato');
-  if(formatoSel && isLiq) {
-    if(isPrepSim||isSubSim) {
-      formatoSel.innerHTML=
-        '<option value="">— Seleccionar —</option>'+
-        '<option value="cc">cc</option>'+
-        '<option value="unidad">unidad</option>'+
-        '<option value="porcion">porcion</option>';
-    } else {
-      formatoSel.innerHTML=
-        '<option value="Unidad">Unidad</option>'+
-        '<option value="2OZ">2OZ</option>'+
-        '<option value="8OZ">8OZ</option>'+
-        '<option value="9OZ">9OZ</option>'+
-        '<option value="12OZ">12OZ</option>'+
-        '<option value="16OZ">16OZ</option>'+
-        '<option value="20OZ">20OZ</option>';
-    }
+  if(formatoSel && showFormato) {
+    formatoSel.innerHTML=
+      '<option value="Unidad">Unidad</option>'+
+      '<option value="2OZ">2OZ</option>'+
+      '<option value="8OZ">8OZ</option>'+
+      '<option value="9OZ">9OZ</option>'+
+      '<option value="12OZ">12OZ</option>'+
+      '<option value="16OZ">16OZ</option>'+
+      '<option value="20OZ">20OZ</option>';
   }
   // Unidad de salida: opciones según categoría
   if(unidadSel) {
     const cur=unidadSel.value;
     if(isLiq) {
+      // LIQUIDOS: cc + unidad. oz solo para ENSAMBLE/SIMPLE
+      const tipoLiq=document.getElementById('simTipo')?.value||'';
+      const isVenta=['ENSAMBLE','SIMPLE'].includes(tipoLiq);
       unidadSel.innerHTML=
         '<option value="">— Seleccionar —</option>'+
         '<option value="cc">cc</option>'+
-        '<option value="oz">oz</option>'+
+        (isVenta?'<option value="oz">oz</option>':'')+
         '<option value="unidad">unidad</option>';
     } else {
-      // SOLIDOS: gr + unidad (no cc)
+      // SOLIDOS: gr + unidad. porcion para PREPARACION/SUBRECETA
       const tipoSol=document.getElementById('simTipo')?.value||'';
       const isPrepCC2=tipoSol==='PREPARACION';
       const isSubSol=tipoSol==='SUBRECETA';
