@@ -2991,6 +2991,12 @@ function duplicateRecipe(id) {
   setSection('simulador',document.getElementById('btn-simulador'));
   setTimeout(()=>{
     editRecipe(copia.id);
+    // FIX V91: reset editMode dopo editRecipe — la copia è una NUOVA ricetta,
+    // non un update di un ID esistente nel foglio.
+    // saveSim deve inviare action:'guardar', non action:'editar'.
+    simEditMode=false;
+    document.getElementById('simEditId').dataset.id='';
+    document.getElementById('simSaveBtn').textContent='Guardar receta';
     // Focus sul campo Nome ricetta per cambiarlo subito
     setTimeout(()=>{
       const nm=document.getElementById('simNombre');
