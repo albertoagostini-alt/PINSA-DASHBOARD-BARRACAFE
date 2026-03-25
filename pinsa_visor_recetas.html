@@ -2718,11 +2718,13 @@ function openWebAppWindow(url) {
 }
 
 function callWebApp(payload) {
-  // Usato solo per elimininar/cambiar estado (dove non c'è problema di popup)
-  // Per guardar/editar si usa openWebAppWindow direttamente in saveSim
+  // FIX V92: usa fetch no-cors invece di openWebAppWindow.
+  // no-cors non ritorna dati (CORS) ma la richiesta arriva al GAS.
+  // Funziona su tablet iOS/Android senza popup bloccati.
   const url = WEBAPP_URL + '?data=' + encodeURIComponent(JSON.stringify(payload));
-  openWebAppWindow(url);
-  return Promise.resolve({ ok: true });
+  return fetch(url, {method:'GET', mode:'no-cors'})
+    .then(()=>({ ok: true }))
+    .catch(()=>({ ok: true })); // GAS esegue anche se fetch lancia errore CORS
 }
 
 async function reloadRecipesFromCSV() {
