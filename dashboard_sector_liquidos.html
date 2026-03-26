@@ -386,7 +386,7 @@ function renderDashboard(secciones){
     const mrg=parsePct(sem['Margen % Semanal']||'0');
     const cPct=diasCV===0?0:(1-mrg);
     const cumMerma=sem['Cumple Merma']==='TRUE'||sem['Cumple Merma']==='true'||mPct<=CONFIG.objetivo_merma_semanal;
-    const cumCosto=sem['Cumple Costo']==='TRUE'||sem['Cumple Costo']==='true'||(cPct>0&&cPct<=CONFIG.costo_medio);
+    const cumCosto=sem['Cumple Costo']==='TRUE'||sem['Cumple Costo']==='true'||(cPct>=0&&cPct<=CONFIG.costo_medio&&diasCV>0);
     const bMerma=parseNum(sem['Bono Merma $']||'0');
     const bCosto=parseNum(sem['Bono Costo $']||'0');
     const ventaSem=parseNum(sem['Venta Semanal $']||'0');
