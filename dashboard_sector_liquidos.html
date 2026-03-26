@@ -412,13 +412,13 @@ function renderDashboard(secciones){
     msgCuerpo=' Ambas secciones cumpliendo. Mantengan el estándar hasta el domingo.';
   } else if(!allMerma){
     const f=sd.find(s=>s.ok&&!s.cumMerma);
-    bonoSector=sd.filter(s=>s.ok&&s.cumMerma&&s.cumCosto).reduce((sum,s)=>sum+s.bono,0);
+    bonoSector=0;
     msgClase='warn'; msgIcon='<span class="mi-badge mi-yellow">!</span>'; bonoClase='amarillo'; bonoTexto='EN RIESGO';
     msgTitulo=`${f?.nombre||'Una sección'} tiene merma alta.`;
     msgCuerpo=' El sector necesita bajar la merma antes del domingo.';
   } else if(!allCosto){
     const f=sd.find(s=>s.ok&&!s.cumCosto);
-    bonoSector=sd.filter(s=>s.ok&&s.cumMerma&&s.cumCosto).reduce((sum,s)=>sum+s.bono,0);
+    bonoSector=0;
     msgClase='warn'; msgIcon='<span class="mi-badge mi-yellow">i</span>'; bonoClase='amarillo'; bonoTexto='EN RIESGO';
     msgTitulo=`${f?.nombre||'Una sección'} tiene costo alto.`;
     msgCuerpo=' Revisen pedidos y porciones hoy.';
@@ -466,7 +466,7 @@ function renderDashboard(secciones){
       </div>
       <div class="progress-footer">
         <span>$0</span>
-        <span>${bonoSector>=CONFIG.bono_potencial?'¡Bono completo! 🏆':bonoSector===0?'Sin bono aún':`Faltan $${(CONFIG.bono_potencial-bonoSector).toLocaleString('es-CL')}`}</span>
+        <span>${allCumplen&&bonoSector>=CONFIG.bono_potencial?'¡Bono completo! 🏆':bonoSector===0?'Sin bono aún':`Faltan $${(CONFIG.bono_potencial-bonoSector).toLocaleString('es-CL')}`}</span>
         <span>$${CONFIG.bono_potencial.toLocaleString('es-CL')}</span>
       </div>
     </div>
