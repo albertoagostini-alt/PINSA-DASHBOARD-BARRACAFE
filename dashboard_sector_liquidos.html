@@ -232,11 +232,21 @@ document.getElementById('tname').textContent = CONFIG.topbar_name;
 
 function parseCSV(text) {
   const lines = text.trim().split('\n');
-  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,''));
+  function splitLine(line) {
+    const r=[]; let c=''; let q=false;
+    for(let i=0;i<line.length;i++){
+      const ch=line[i];
+      if(ch==='"'){q=!q;}
+      else if(ch===','&&!q){r.push(c.trim());c='';}
+      else{c+=ch;}
+    }
+    r.push(c.trim()); return r;
+  }
+  const headers = splitLine(lines[0]).map(h=>h.replace(/^"|"$/g,'').trim());
   return lines.slice(1).map(line => {
-    const vals = line.match(/(".*?"|[^,]+|(?<=,)(?=,)|^(?=,)|(?<=,)$)/g) || [];
+    const vals = splitLine(line);
     const obj = {};
-    headers.forEach((h,i) => { obj[h] = (vals[i]||'').replace(/^"|"$/g,'').trim(); });
+    headers.forEach((h,i)=>{ obj[h]=(vals[i]||'').replace(/^"|"$/g,'').trim(); });
     return obj;
   });
 }
