@@ -395,11 +395,6 @@ function renderDashboard(secciones){
     bonoClase='cero'; bonoTexto='SIN DATOS';
     msgClase='warn'; msgIcon='<span class="mi-badge mi-gray">—</span>'; msgTitulo='Semana recién iniciada.';
     msgCuerpo=' Registra ventas y mermas en ambas secciones.';
-  } else if(!cumpVenta){
-    bonoClase='cero'; bonoTexto='BONO BLOQUEADO';
-    msgClase='bad'; msgIcon='<span class="mi-badge mi-red">!</span>';
-    msgTitulo='Venta del sector bajo el mínimo semanal.';
-    msgCuerpo=` Necesitan $${(CONFIG.venta_minima_sector-ventaSector).toLocaleString('es-CL')} más para activar el bono.`;
   } else if(allCumplen){
     bonoSector=CONFIG.bono_potencial;
     bonoClase='verde'; bonoTexto='¡BONO ACTIVO!';
@@ -505,12 +500,14 @@ function renderDashboard(secciones){
 
   html+=`</div>
     <div class="regla-sector">📋 Regla del sector: <strong>ambas secciones deben cumplir</strong> para activar el bono — el equipo gana o pierde junto</div>
-    <div class="regla-sector" style="border-top:none;padding-top:0;">
-      💰 Venta sector esta semana: <strong>$${ventaSector.toLocaleString('es-CL')}</strong>
-      ${cumpVenta
-        ? '<span style="color:var(--green);margin-left:8px;">✓ Mínimo alcanzado</span>'
-        : `<span style="color:var(--red);margin-left:8px;">✗ Mínimo $${CONFIG.venta_minima_sector.toLocaleString('es-CL')} — faltan $${(CONFIG.venta_minima_sector-ventaSector).toLocaleString('es-CL')}</span>`
-      }
+    <div style="padding:10px 20px 14px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;">
+        <span style="font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);">Venta semanal del sector</span>
+        <span style="font-size:11px;color:var(--t2);">$${ventaSector.toLocaleString('es-CL')} <span style="color:var(--t3);">/ $${CONFIG.venta_minima_sector.toLocaleString('es-CL')}</span></span>
+      </div>
+      <div style="height:6px;background:var(--bg3);border-radius:4px;overflow:hidden;">
+        <div style="height:100%;border-radius:4px;transition:width .6s ease;width:${Math.min((ventaSector/CONFIG.venta_minima_sector)*100,100).toFixed(1)}%;background:${cumpVenta?'var(--green)':ventaSector/CONFIG.venta_minima_sector>=0.7?'var(--yellow)':'var(--red)'};"></div>
+      </div>
     </div>
     <div class="bono-msg ${msgClase}">
       <div class="bono-msg-icon">${msgIcon}</div>
