@@ -232,11 +232,21 @@ document.getElementById('tname').textContent = CONFIG.topbar_name;
 
 function parseCSV(text) {
   const lines = text.trim().split('\n');
-  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,''));
+  function splitLine(line) {
+    const r=[]; let c=''; let q=false;
+    for(let i=0;i<line.length;i++){
+      const ch=line[i];
+      if(ch==='"'){q=!q;}
+      else if(ch===','&&!q){r.push(c.trim());c='';}
+      else{c+=ch;}
+    }
+    r.push(c.trim()); return r;
+  }
+  const headers = splitLine(lines[0]).map(h=>h.replace(/^"|"$/g,'').trim());
   return lines.slice(1).map(line => {
-    const vals = line.match(/(".*?"|[^,]+|(?<=,)(?=,)|^(?=,)|(?<=,)$)/g) || [];
+    const vals = splitLine(line);
     const obj = {};
-    headers.forEach((h,i) => { obj[h] = (vals[i]||'').replace(/^"|"$/g,'').trim(); });
+    headers.forEach((h,i)=>{ obj[h]=(vals[i]||'').replace(/^"|"$/g,'').trim(); });
     return obj;
   });
 }
@@ -386,7 +396,8 @@ function renderDashboard(secciones){
     const mrg=parsePct(sem['Margen % Semanal']||'0');
     const cPct=diasCV===0?0:(1-mrg);
     const _cumMermaCSV=sem['Cumple Merma'];
-    const cumMerma=_cumMermaCSV==='TRUE'||_cumMermaCSV==='true'||(_cumMermaCSV===''||_cumMermaCSV===undefined||_cumMermaCSV===null?mPct<=CONFIG.objetivo_merma_semanal:false);
+    const cumMerma=_cumMermaCSV==='TRUE'||_cumMermaCSV==='true'||
+      (!_cumMermaCSV&&diasCV>0&&mPct<=CONFIG.objetivo_merma_semanal);
     const cumCosto=sem['Cumple Costo']==='TRUE'||sem['Cumple Costo']==='true'||(cPct>=0&&cPct<=CONFIG.costo_medio&&diasCV>0);
     const bMerma=parseNum(sem['Bono Merma $']||'0');
     const bCosto=parseNum(sem['Bono Costo $']||'0');
