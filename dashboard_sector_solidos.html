@@ -375,13 +375,14 @@ function renderDashboard(secciones){
     const sem=getSem(sec.data.semanales);
     const mhoy=getMermaHoy(sec.data.merma);
     const dias=getDias(sec.data.merma);
-    const diasCV=parseNum(sem['Totales dias con venta']||'0');
+    const diasCV=parseNum(sem['Totales dias con venta']||'0')||(parseNum(sem['Venta Semanal $']||'0')>0?1:0);
     const mPct=parsePct(sem['% Merma Sobre Venta']||'0');
     const diasOK=parseNum(sem['Dias OK Merma <=0,3%']||sem['Dias OK Merma <=0.3%']||'0');
     const diasCrit=parseNum(sem['Dias Criticos Merma >0,6%']||sem['Dias Criticos Merma >0.6%']||'0');
     const mrg=parsePct(sem['Margen % Semanal']||'0');
     const cPct=diasCV===0?0:(1-mrg);
-    const cumMerma=sem['Cumple Merma']==='TRUE'||sem['Cumple Merma']==='true'||mPct<=CONFIG.objetivo_merma_semanal;
+    const _cumMermaCSV=sem['Cumple Merma'];
+    const cumMerma=_cumMermaCSV==='TRUE'||_cumMermaCSV==='true'||(_cumMermaCSV===''||_cumMermaCSV===undefined||_cumMermaCSV===null?mPct<=CONFIG.objetivo_merma_semanal:false);
     const cumCosto=sem['Cumple Costo']==='TRUE'||sem['Cumple Costo']==='true'||(cPct>0&&cPct<=CONFIG.costo_medio);
     const bMerma=parseNum(sem['Bono Merma $']||'0');
     const bCosto=parseNum(sem['Bono Costo $']||'0');
@@ -390,7 +391,7 @@ function renderDashboard(secciones){
   });
 
   // REGOLA A: gate venta minima + entrambe devono cumplir
-  const hasDatos=sd.some(s=>s.ok&&s.diasCV>0);
+  const hasDatos=sd.some(s=>s.ok&&(s.diasCV>0||s.ventaSem>0));
   const ventaSector=sd.filter(s=>s.ok).reduce((sum,s)=>sum+s.ventaSem,0);
   const cumpVenta=ventaSector>=CONFIG.venta_minima_sector;
   const allCumplen=sd.every(s=>s.ok&&s.cumMerma&&s.cumCosto);
