@@ -200,13 +200,14 @@ const CONFIG = {
   sector: "LÍQUIDOS",
   topbar_name: "Barra Café + Barra Jugos · Candelaria",
   url_parametros: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKfymDMvJd6XSSnfxuq2entJff2QwmEyKyvRRiiYVqNlwEA_rY7GXv0xVGC4k6746-EVAuLodfS9nt/pub?gid=58421555&single=true&output=csv",
-  venta_minima_sector: 8000000,
-  bono_potencial: 30000,
-  umbral_merma_normal: 0.003,
-  umbral_merma_critico: 0.006,
-  objetivo_merma_semanal: 0.010,
-  costo_alto: 0.25,
-  costo_medio: 0.30,
+  // — todos los valores numéricos se cargan desde PARAMETROS en loadParametros() —
+  venta_minima_sector: null,
+  bono_potencial: null,
+  umbral_merma_normal: null,
+  umbral_merma_critico: null,
+  objetivo_merma_semanal: null,
+  costo_alto: null,
+  costo_medio: null,
   secciones: [
     {
       nombre: "Barra Café",
@@ -297,7 +298,8 @@ async function loadParametros(){
     if(bonoMermaAlto!==null && bonoCostoAlto!==null) CONFIG.bono_potencial = bonoMermaAlto + bonoCostoAlto;
 
   } catch(e) {
-    console.warn('PARAMETROS no carg\u00f3 — usando valores de CONFIG:', e.message);
+    console.error('PARAMETROS no cargó:', e.message);
+    throw new Error('No se pudieron cargar los parámetros del sistema. Verifica la conexión.');
   }
 }
 
