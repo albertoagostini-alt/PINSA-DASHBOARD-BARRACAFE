@@ -423,7 +423,8 @@ async function load(){
     render({secs,gMap,mLoc,fcLoc,mOK,cOK,vOK,bono,bonoV,bonoC,bonoM,bPct,bCol,kpiSubtxt,
       totV,totB,pctV,ritmo,neces,dR,dA,dM,vSec,bSec,
       totBod,negs,topBod,bodAll,al,lastWk,now,
-      repTop,repExtra,repTotalUrgente,repCritico});
+      repTop,repExtra,repTotalUrgente,repCritico,
+      vR,bR,sRaw});
   }catch(e){
     document.getElementById('root').innerHTML=`<div style="padding:40px;text-align:center;color:var(--red);font-size:13px">Error: ${e.message}</div>`;
   }
@@ -444,7 +445,7 @@ function render(d){
   const{secs,gMap,mLoc,fcLoc,mOK,cOK,vOK,bono,bonoV,bonoC,bonoM,bPct,bCol,kpiSubtxt,
     totV,totB,pctV,ritmo,neces,dR,dA,dM,vSec,bSec,
     totBod,negs,topBod,bodAll,al,lastWk,now,
-    repTop,repExtra,repTotalUrgente,repCritico}=d;
+    repTop,repExtra,repTotalUrgente,repCritico,vR,bR,sRaw}=d;
 
   const pVStr=pctV!==null?Math.round(pctV*100)+'%':'—';
   const pVCol=pctV===null?'var(--muted)':vOK?'var(--green)':'var(--yellow)';
@@ -637,6 +638,8 @@ function render(d){
       </div>
     </div>
 
+    ${renderStoricoMensile(vR,bR,sRaw)}
+
     <div class="sec-label">Pedidos · Productos a reponer</div>
     <div class="card">
       <div style="padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">
@@ -676,6 +679,92 @@ function render(d){
           </div>`
       }
     </div>`;
+}
+
+function renderStoricoMensile(vR, bR, sRaw){
+  const now = new Date();
+  const meses = [];
+  for(let i=1;i<=3;i++){
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    meses.push({mn: d.getMonth()+1, yr: d.getFullYear(), label: MES[d.getMonth()]+' '+d.getFullYear()});
+  }
+
+  const rows = meses.map(({mn, yr, label}) => {
+    // VENTAS del mese
+    const vMes = vR.filter(r=>{ const d=parseD(r['Fecha']); return d&&d.getMonth()+1===mn&&d.getFullYear()===yr; });
+    const totV = vMes.reduce((a,r)=>a+$n(r['Venta $']),0);
+
+    // BUDGET del mese
+    const bSec={};
+    bR.forEach(r=>{const s=r['Seccion']||'',bm=parseBMes(r['Mes']||''),b=$n(r['Budget Mensual $$$']);if(b>0&&bm===mn)bSec[s]=b;});
+    const totB = Object.values(bSec).reduce((a,b)=>a+b,0);
+    const vOK = totB>0 && totV>=totB*0.9;
+
+    // COSTO + MERMA: aggrego settimane del mese da ogni BARRA_*
+    const secsOk = sRaw.filter(s=>s.ok&&s.rows&&s.rows.length);
+    let cumC=false, cumM=false;
+    if(secsOk.length){
+      // per ogni sezione: prendo le righe settimanali che hanno Fecha Inicio nel mese
+      const secResults = secsOk.map(s=>{
+        const rowsMes = s.rows.filter(r=>{
+          const fi = r['Fecha Inicio']||'';
+          const d = parseD(fi);
+          // accetto anche righe col campo Mes diretto
+          if(d) return d.getMonth()+1===mn && d.getFullYear()===yr;
+          // fallback: Semana contiene anno-Wxx, stima approssimata
+          return false;
+        });
+        if(!rowsMes.length) return null;
+        // Prendo l'ultima settimana del mese come indicatore (o faccio media)
+        const last = rowsMes[rowsMes.length-1];
+        const cC = last['Cumple Costo']==='TRUE';
+        const cM = last['Cumple Merma']==='TRUE';
+        return {cC, cM};
+      }).filter(Boolean);
+      if(secResults.length){
+        cumC = secResults.every(s=>s.cC);
+        cumM = secResults.every(s=>s.cM);
+      }
+    }
+
+    // Bono
+    const bonoV = vOK ? CFG.bono_v : 0;
+    const bonoC = cumC ? CFG.bono_c : 0;
+    const bonoM = cumM ? CFG.bono_m : 0;
+    const bono  = bonoV + bonoC + bonoM;
+    const bonoCol = bono>=CFG.bono_pot?'var(--green)':bono>0?'var(--yellow)':'var(--t3)';
+
+    const ic = (ok) => ok
+      ? `<span style="color:var(--green);font-weight:600;">✓</span>`
+      : `<span style="color:var(--red);opacity:.7;">✗</span>`;
+
+    return `<tr style="border-top:1px solid var(--border);">
+      <td style="font-size:12px;font-weight:500;color:var(--t1);padding:10px 14px;white-space:nowrap;">${label}</td>
+      <td style="font-size:13px;padding:10px 14px;text-align:center;">${totB>0?ic(vOK):'<span style="color:var(--t3)">—</span>'}</td>
+      <td style="font-size:13px;padding:10px 14px;text-align:center;">${secsOk.length?ic(cumC):'<span style="color:var(--t3)">—</span>'}</td>
+      <td style="font-size:13px;padding:10px 14px;text-align:center;">${secsOk.length?ic(cumM):'<span style="color:var(--t3)">—</span>'}</td>
+      <td style="font-size:13px;font-weight:600;color:${bonoCol};padding:10px 14px;text-align:right;">${clp(bono)}</td>
+    </tr>`;
+  }).join('');
+
+  return `
+  <div class="sec-label">Historial · Últimos 3 meses</div>
+  <div class="card" style="overflow:hidden;">
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border);">
+            <th style="font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--t3);padding:8px 14px;text-align:left;text-transform:uppercase;">Mes</th>
+            <th style="font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--t3);padding:8px 14px;text-align:center;text-transform:uppercase;">Venta</th>
+            <th style="font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--t3);padding:8px 14px;text-align:center;text-transform:uppercase;">Costo</th>
+            <th style="font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--t3);padding:8px 14px;text-align:center;text-transform:uppercase;">Merma</th>
+            <th style="font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--t3);padding:8px 14px;text-align:right;text-transform:uppercase;">Bono</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
 }
 
 load();
