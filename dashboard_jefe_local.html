@@ -336,11 +336,27 @@ async function load(){
       const mP=$p(last['% Merma Sobre Venta']);
       const vS=$n(last['Venta Semanal $']);
       const cS=$n(last['Costo Total Semanal $']);
-      const fc=vS>0?cS/vS:null; // Food cost directo = Costo/Venta
+      const fc=vS>0?cS/vS:null;
       const cumM=last['Cumple Merma']==='TRUE';
       const cumC=last['Cumple Costo']==='TRUE';
       const wk=last['Semana']||'';
-      return{...s,ok:true,mP,fc,cumM,cumC,wk,hist,vS,cS};
+
+      // MEDIA MENSILE — settimane del mese corrente nell'hist
+      const wkMes=hist.filter(r=>{
+        const sem=r['Semana']||'';
+        // es: "2026-W13" → estraiamo anno e settimana ISO e verifichiamo se cade nel mese corrente
+        // approssimazione pratica: usiamo le ultime 4 righe disponibili (un mese ~4 settimane)
+        return true; // usiamo tutte le righe hist filtrate a 4 per il mese
+      }).slice(-4);
+      const mMes=wkMes.length?wkMes.reduce((a,r)=>a+($p(r['% Merma Sobre Venta'])||0),0)/wkMes.length:null;
+      const fcMes=wkMes.length?(()=>{
+        const valid=wkMes.filter(r=>$n(r['Venta Semanal $'])>0);
+        return valid.length?valid.reduce((a,r)=>a+($n(r['Costo Total Semanal $'])/$n(r['Venta Semanal $'])),0)/valid.length:null;
+      })():null;
+      const cumMmes=wkMes.length>0&&wkMes.every(r=>r['Cumple Merma']==='TRUE');
+      const cumCmes=wkMes.length>0&&wkMes.every(r=>r['Cumple Costo']==='TRUE');
+
+      return{...s,ok:true,mP,fc,cumM,cumC,wk,hist,vS,cS,mMes,fcMes,cumMmes,cumCmes,nSem:wkMes.length};
     });
 
     const sOK=secs.filter(s=>s.ok);
@@ -480,10 +496,24 @@ function render(d){
           <span>${s.n.replace('Barra ','BARRA ')}</span>
           <div class="wk-dots">${wkDots(s.hist)}</div>
         </div>
-        <div class="k-row" style="margin-bottom:3px"><span class="k-label">Merma</span><span class="k-val" style="color:${mc}">${s.mP!==null?pf(s.mP):'—'}</span></div>
-        <div class="bar-bg" style="margin-bottom:8px"><div class="bar-fill" style="width:${mW}%;background:${mc}"></div></div>
-        <div class="k-row" style="margin-bottom:3px"><span class="k-label">Food Cost</span><span class="k-val" style="color:${cc}">${s.fc!==null?pf(s.fc):'—'}</span></div>
-        <div class="bar-bg"><div class="bar-fill" style="width:${cW}%;background:${cc}"></div></div>
+        <div class="k-row" style="margin-bottom:2px">
+          <span class="k-label">Merma <span style="color:var(--t3);font-size:9px;letter-spacing:.5px">SEMANA</span></span>
+          <span class="k-val" style="color:${mc}">${s.mP!==null?pf(s.mP):'—'}</span>
+        </div>
+        <div class="bar-bg" style="margin-bottom:4px"><div class="bar-fill" style="width:${mW}%;background:${mc}"></div></div>
+        <div class="k-row" style="margin-bottom:10px">
+          <span style="font-size:10px;color:var(--t3)">Media mes <span style="color:var(--t3);font-size:9px">(${s.nSem||0} sem)</span></span>
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:${s.mMes!==null?(s.cumMmes?'var(--green)':'var(--yellow)'):'var(--t3)'}">${s.mMes!==null?pf(s.mMes):'—'}</span>
+        </div>
+        <div class="k-row" style="margin-bottom:2px">
+          <span class="k-label">Food Cost <span style="color:var(--t3);font-size:9px;letter-spacing:.5px">SEMANA</span></span>
+          <span class="k-val" style="color:${cc}">${s.fc!==null?pf(s.fc):'—'}</span>
+        </div>
+        <div class="bar-bg" style="margin-bottom:4px"><div class="bar-fill" style="width:${cW}%;background:${cc}"></div></div>
+        <div class="k-row">
+          <span style="font-size:10px;color:var(--t3)">Media mes <span style="color:var(--t3);font-size:9px">(${s.nSem||0} sem)</span></span>
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:${s.fcMes!==null?(s.cumCmes?'var(--green)':'var(--yellow)'):'var(--t3)'}">${s.fcMes!==null?pf(s.fcMes):'—'}</span>
+        </div>
       </div>`;
     }).join('');
     return`<div class="sec-card"><div class="sec-head"><div><div class="sec-nom">SECTOR ${gn}</div><div class="sec-sub">${subs}</div></div><div class="s-badge ${cls}">${txt}</div></div>${bloqs}</div>`;
@@ -579,7 +609,7 @@ function render(d){
       <div style="padding:12px 20px">${sv}</div>
     </div>
 
-    <div class="sec-label">Estado Sectores · ${lastWk}</div>
+    <div class="sec-label">Estado Sectores · ${lastWk} · Media mes</div>
     <div class="s2">${secH}</div>
 
     <div class="sec-label">Bodega Local · Inventario actual</div>
