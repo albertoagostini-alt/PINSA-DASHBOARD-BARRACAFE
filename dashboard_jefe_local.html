@@ -638,8 +638,6 @@ function render(d){
       </div>
     </div>
 
-    ${renderStoricoMensile(vR,bR,sRaw)}
-
     <div class="sec-label">Pedidos · Productos a reponer</div>
     <div class="card">
       <div style="padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">
@@ -678,7 +676,9 @@ function render(d){
               : ''}
           </div>`
       }
-    </div>`;
+    </div>
+
+    ${renderStoricoMensile(vR,bR,sRaw)}`;
 }
 
 function renderStoricoMensile(vR, bR, sRaw){
