@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PINSA · Jefe de Local · Candelaria</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23C4622D'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='18' fill='white'>P</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%234A6FA5'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='18' fill='white'>P</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ===== V2 DESIGN SYSTEM — JEFE LOCAL (accent #4A6FA5) ===== */
@@ -12,7 +12,7 @@
   --tc:#4A6FA5;--tc-dim:rgba(74,111,165,0.12);--tc-glow:rgba(74,111,165,0.28);
   --bg:#0F0F0F;--card:#1A1A1A;--card2:#202020;
   --b:rgba(255,255,255,0.07);--b2:rgba(255,255,255,0.12);
-  --t1:#C8C2BC;--t2:#7A7570;--t3:#5C5652;
+  --t1:#E8E2DC;--t2:#A8A29C;--t3:#7A7570;
   --green:#5A9E7A;--gbg:rgba(90,158,122,0.10);
   --yellow:#C8893A;--ybg:rgba(200,137,58,0.10);
   --red:#B85450;--rbg:rgba(184,84,80,0.10);
@@ -372,8 +372,7 @@ async function load(){
     const bono = bonoV + bonoC + bonoM;
     const bPct = Math.round(bono / CFG.bono_pot * 100);
     const bCol = bono === 0 ? 'cero' : bPct >= 100 ? 'verde' : bPct >= 67 ? 'amarillo' : 'rojo';
-    const nKpiV = [vOK, cOK, mOK].filter(Boolean).length;
-    const kpiSubtxt = `${nKpiV} de 3 KPI en verde`;
+    const kpiSubtxt = bono === 0 ? 'construyendo bono' : bono >= CFG.bono_pot ? '¡Bono completo!' : `${clp(bono)} acumulados`;
 
     // ALERTAS
     const al=[];
