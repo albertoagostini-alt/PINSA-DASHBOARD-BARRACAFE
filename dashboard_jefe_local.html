@@ -356,12 +356,24 @@ async function load(){
     const negs=bodAll.filter(r=>$n(r['Stock Actual UTM'])<0);
     const topBod=[...bodAll].filter(r=>$n(r['Valor Inventario $'])>0).sort((a,b)=>$n(b['Valor Inventario $'])-$n(a['Valor Inventario $'])).slice(0,8);
 
-    // BONO
-    let bono=0;if(vOK)bono+=CFG.bono_v;if(cOK)bono+=CFG.bono_c;if(mOK)bono+=CFG.bono_m;
-    const bPct=Math.round(bono/CFG.bono_pot*100);
-    const bCol=bono===0?'cero':bPct>=100?'verde':bPct>=67?'amarillo':'rojo';
-    const nKpiV=[vOK,cOK,mOK].filter(Boolean).length;
-    const kpiSubtxt=`${nKpiV} de 3 KPI en verde`;
+    // BONO — proporzionale mensile per tutti e 3 i KPI
+    // Ventas: proporzionale al progresso atteso (pctV / pctMesDovuto)
+    const pctMesDovuto = dM > 0 ? dA / dM : 1;
+    const bonoV = totB > 0 && pctV !== null
+      ? Math.round(Math.min(pctV / pctMesDovuto, 1) * CFG.bono_v)
+      : 0;
+    // Food Cost: se cOK (tutte le sezioni in verde questa settimana) = pieno, altrimenti proporzionale sezioni ok
+    const sOKc = sOK.filter(s => s.cumC).length;
+    const bonoC = sOK.length > 0 ? Math.round((sOKc / sOK.length) * CFG.bono_c) : 0;
+    // Merma: idem
+    const sOKm = sOK.filter(s => s.cumM).length;
+    const bonoM = sOK.length > 0 ? Math.round((sOKm / sOK.length) * CFG.bono_m) : 0;
+
+    const bono = bonoV + bonoC + bonoM;
+    const bPct = Math.round(bono / CFG.bono_pot * 100);
+    const bCol = bono === 0 ? 'cero' : bPct >= 100 ? 'verde' : bPct >= 67 ? 'amarillo' : 'rojo';
+    const nKpiV = [vOK, cOK, mOK].filter(Boolean).length;
+    const kpiSubtxt = `${nKpiV} de 3 KPI en verde`;
 
     // ALERTAS
     const al=[];
@@ -385,7 +397,7 @@ async function load(){
       : repQuiebre.length - repTop.length);
     const repTotalUrgente=repCritico.length+repQuiebre.length;
 
-    render({secs,gMap,mLoc,fcLoc,mOK,cOK,vOK,bono,bPct,bCol,kpiSubtxt,
+    render({secs,gMap,mLoc,fcLoc,mOK,cOK,vOK,bono,bonoV,bonoC,bonoM,bPct,bCol,kpiSubtxt,
       totV,totB,pctV,ritmo,neces,dR,dA,dM,vSec,bSec,
       totBod,negs,topBod,bodAll,al,lastWk,now,
       repTop,repExtra,repTotalUrgente,repCritico});
@@ -406,7 +418,7 @@ function wkDots(hist){
 }
 
 function render(d){
-  const{secs,gMap,mLoc,fcLoc,mOK,cOK,vOK,bono,bPct,bCol,kpiSubtxt,
+  const{secs,gMap,mLoc,fcLoc,mOK,cOK,vOK,bono,bonoV,bonoC,bonoM,bPct,bCol,kpiSubtxt,
     totV,totB,pctV,ritmo,neces,dR,dA,dM,vSec,bSec,
     totBod,negs,topBod,bodAll,al,lastWk,now,
     repTop,repExtra,repTotalUrgente,repCritico}=d;
@@ -494,14 +506,17 @@ function render(d){
         <div><div class="bono-amount ${bCol}">${clp(bono)}</div><div class="bono-amount-label">de ${clp(CFG.bono_pot)} posibles</div></div>
       </div>
       <div class="bono-prog">
-        <div class="bp-top"><span class="bp-label">Progreso del mes</span><span class="bp-val">${bPct}% alcanzado</span></div>
-        <div class="prog-bg"><div class="prog-fill ${bCol}" style="width:${bPct}%"></div></div>
-        <div class="prog-footer"><span>${bono===0?'Sin bono aún':bono>=CFG.bono_pot?'¡Bono completo! 🏆':'Faltan '+clp(CFG.bono_pot-bono)}</span><span>${clp(CFG.bono_pot)}</span></div>
+        <div class="bp-top"><span class="bp-label">Progreso del mes</span><span class="bp-val">${bPct}% acumulado</span></div>
+        <div class="prog-bg"><div class="prog-fill ${bCol}" style="width:${Math.min(bPct,100)}%"></div></div>
+        <div class="prog-footer">
+          <span>${bono===0?'Construyendo bono…':bono>=CFG.bono_pot?'¡Bono completo! 🏆':'Potencial restante: '+clp(CFG.bono_pot-bono)}</span>
+          <span>${clp(CFG.bono_pot)}</span>
+        </div>
       </div>
       <div class="criterios">
-        <div class="crit"><div class="crit-name"><span class="dot dot-${dC(pctV,dA/dM*0.9,1)}"></span>VENTAS</div><div class="crit-val" style="color:${pVCol}">${pVStr}</div><div class="crit-target">vs presupuesto · ${clp(CFG.bono_v)}</div></div>
-        <div class="crit"><div class="crit-name"><span class="dot dot-${dC(fcLoc,CFG.ca,CFG.cm)}"></span>FOOD COST</div><div class="crit-val" style="color:${fcCol}">${fcStr}</div><div class="crit-target">Objetivo ≤ ${pf(CFG.cm)} · ${clp(CFG.bono_c)}</div></div>
-        <div class="crit"><div class="crit-name"><span class="dot dot-${dC(mLoc,CFG.mn,CFG.mc)}"></span>MERMA</div><div class="crit-val" style="color:${mColor(mLoc)}">${mLoc!==null?pf(mLoc):'—'}</div><div class="crit-target">Objetivo ≤ ${pf(CFG.ms)} · ${clp(CFG.bono_m)}</div></div>
+        <div class="crit"><div class="crit-name"><span class="dot dot-${dC(pctV,dA/dM*0.9,1)}"></span>VENTAS</div><div class="crit-val" style="color:${pVCol}">${pVStr}</div><div class="crit-target">vs presupuesto · <span style="color:var(--tc)">${clp(bonoV)}</span> / ${clp(CFG.bono_v)}</div></div>
+        <div class="crit"><div class="crit-name"><span class="dot dot-${dC(fcLoc,CFG.ca,CFG.cm)}"></span>FOOD COST</div><div class="crit-val" style="color:${fcCol}">${fcStr}</div><div class="crit-target">Objetivo ≤ ${pf(CFG.cm)} · <span style="color:var(--tc)">${clp(bonoC)}</span> / ${clp(CFG.bono_c)}</div></div>
+        <div class="crit"><div class="crit-name"><span class="dot dot-${dC(mLoc,CFG.mn,CFG.mc)}"></span>MERMA</div><div class="crit-val" style="color:${mColor(mLoc)}">${mLoc!==null?pf(mLoc):'—'}</div><div class="crit-target">Objetivo ≤ ${pf(CFG.ms)} · <span style="color:var(--tc)">${clp(bonoM)}</span> / ${clp(CFG.bono_m)}</div></div>
       </div>
     </div>
 
