@@ -427,17 +427,24 @@ function render(d){
   const fcStr=fcLoc!==null?pf(fcLoc):'—';
   const fcCol=cColor(fcLoc);
 
-  // VENTAS SEZIONE
+  // VENTAS SEZIONE — con marker obiettivo oggi
+  const pctOggi = dM > 0 ? dA / dM : 1; // % mese trascorso
   const sv=CFG.secs.map(s=>{
     const v=vSec[s.n]||0,b=bSec[s.n]||0;
     const p=b>0?Math.round(v/b*100):null;
-    const w=b>0?Math.min(Math.round(v/b*100),100):0;
-    const col=p===null?'var(--muted2)':p>=95?'var(--green)':p>=70?'var(--yellow)':'var(--red)';
+    const w=b>0?Math.min(v/b*100,100):0;
+    const obiettivoPct = Math.min(pctOggi * 100, 100); // posizione marker oggi
+    const col=p===null?'var(--muted2)':p>=obiettivoPct*0.9?'var(--green)':p>=obiettivoPct*0.6?'var(--yellow)':'var(--red)';
     const lbl=s.n.replace('Barra ','');
     return`<div class="sv-row">
       <div class="sv-nom">${lbl}</div>
       <div class="sv-mo">${v>0?clp(v):'—'}</div>
-      <div class="sv-bw"><div class="sv-bb"><div class="sv-bf" style="width:${w}%;background:${col}"></div></div></div>
+      <div class="sv-bw">
+        <div class="sv-bb" style="position:relative">
+          <div class="sv-bf" style="width:${w}%;background:${col}"></div>
+          <div style="position:absolute;top:0;bottom:0;left:${obiettivoPct}%;width:2px;background:rgba(255,255,255,0.25);border-radius:1px" title="Objetivo hoy: ${Math.round(obiettivoPct)}%"></div>
+        </div>
+      </div>
       <div class="sv-pc" style="color:${col}">${p!==null?p+'%':'—'}</div>
     </div>`;
   }).join('');
@@ -531,10 +538,21 @@ function render(d){
         </div>
       </div>
       <div class="v-card v-accent-orange">
-        <div class="v-label">Merma Promedio Local</div>
-        <div class="v-big" style="color:${mColor(mLoc)};font-size:42px">${mLoc!==null?pf(mLoc):'—'}</div>
-        <div class="v-sub">Semana: <span style="color:var(--t1)">${lastWk}</span></div>
-        <div style="margin-top:10px;font-size:11px;color:var(--t3)">Objetivo ≤ ${pf(CFG.mn)} · Crítico ≥ ${pf(CFG.mc)}</div>
+        <div class="v-label">Proyección fin de mes</div>
+        ${(()=>{
+          const proyec = dA > 0 ? Math.round(ritmo * dM) : 0;
+          const gap = proyec - totB;
+          const pCol = gap >= 0 ? 'var(--green)' : 'var(--red)';
+          const gapTxt = gap >= 0 ? '+' + clp(gap) + ' sobre budget' : clp(Math.abs(gap)) + ' bajo budget';
+          const pPct = totB > 0 ? Math.round(proyec / totB * 100) : 0;
+          return `
+          <div class="v-big" style="color:${pCol};font-size:32px">${clp(proyec)}</div>
+          <div class="v-sub">al ritmo actual de ${clp(ritmo)}/día</div>
+          <div style="margin-top:10px;display:flex;align-items:baseline;gap:8px">
+            <div style="font-size:16px;font-weight:500;color:${pCol}">${pPct}%</div>
+            <div style="font-size:11px;color:var(--t3)">${gapTxt}</div>
+          </div>`;
+        })()}
       </div>
       <div class="r-card">
         <div class="v-label" style="margin-bottom:12px">Ritmo necesario</div>
@@ -544,7 +562,7 @@ function render(d){
     <div class="card">
       <div style="padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)">
         <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;color:var(--cream)">VENTAS POR SECCIÓN</div>
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)">Acumulado mes + % vs budget</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)">Acumulado mes · barra = objetivo hoy</div>
       </div>
       <div style="padding:12px 20px">${sv}</div>
     </div>
