@@ -134,6 +134,17 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
 .sdot.sim{background:var(--blue)}
 .sdot.arch{background:var(--p5)}
 
+/* TABLET FILTROS COLLAPSIBLES — solo ≤1024px, desktop invariato */
+@media (max-width:1024px){
+  .shell{flex-direction:column}
+  .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--b2);flex-direction:column;overflow:visible;flex-shrink:0}
+  .sb-toggle{display:flex!important}
+  .sb-top{overflow:hidden;transition:max-height 0.3s ease,padding 0.3s ease;max-height:400px}
+  .sb-top.collapsed{max-height:0!important;padding-top:0!important;padding-bottom:0!important;border-bottom:none}
+  .sb-list{display:none!important}
+  #panel-recetas{flex-direction:column;height:100%}
+  .detail{flex:1;min-height:0;overflow-y:auto}
+}
 /* DETAIL */
 .detail{flex:1;background:var(--p2);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--p4) transparent}
 .detail::-webkit-scrollbar{width:4px}
@@ -474,7 +485,11 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:va
     <!-- ══ SECCIÓN RECETAS ══ -->
     <div class="sec-panel on" id="panel-recetas">
       <div class="sidebar">
-        <div class="sb-top">
+        <button class="sb-toggle" id="sbToggle" onclick="toggleSbFilters()" style="display:none;width:100%;padding:9px 14px;background:var(--p1);border:none;border-bottom:1px solid var(--b2);color:var(--tc);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;align-items:center;justify-content:space-between;">
+          <span style="display:flex;align-items:center;gap:8px;"><span>Filtros</span><span id="sbFilterCount" style="background:var(--tc-dim);color:var(--tc);font-size:9px;padding:2px 7px;border-radius:10px;">activos</span></span>
+          <span id="sbToggleArrow" style="font-size:13px;transition:transform 0.25s;">&#9660;</span>
+        </button>
+        <div class="sb-top open" id="sbTop">
 
           <!-- BUSCAR -->
           <div class="sb-search">
@@ -1189,19 +1204,8 @@ window.addEventListener('load', async () => {
   setTimeout(() => {
     document.getElementById('loadingOverlay').style.display = 'none';
     const saved = sessionStorage.getItem('pinsa_visor_user');
-    const urlParams = new URLSearchParams(window.location.search);
-    const perfilParam = urlParams.get('perfil');
-    if (saved) {
-      currentUser = JSON.parse(saved);
-      showApp();
-    } else if (perfilParam === 'OP') {
-      const localParam = urlParams.get('local') || 'Local';
-      currentUser = {nombre:'Operador', cargo:'Operador', codigo:'OP', local:localParam};
-      sessionStorage.setItem('pinsa_visor_user', JSON.stringify(currentUser));
-      showApp();
-    } else {
-      showLogin();
-    }
+    if (saved) { currentUser = JSON.parse(saved); showApp(); }
+    else showLogin();
   }, 500);
 });
 function animateBar(pct) { document.getElementById('ldBar').style.width = pct+'%'; }
@@ -1494,6 +1498,16 @@ function setSection(s, el) {
 }
 
 // ══════════════════════════════════════════════
+// TABLET TOGGLE FILTROS
+let sbFiltersOpen = true;
+function toggleSbFilters() {
+  sbFiltersOpen = !sbFiltersOpen;
+  const top = document.getElementById('sbTop');
+  const arrow = document.getElementById('sbToggleArrow');
+  if (top) top.className = sbFiltersOpen ? 'sb-top open' : 'sb-top collapsed';
+  if (arrow) arrow.style.transform = sbFiltersOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+}
+
 // FILTRO SIDEBAR
 // ══════════════════════════════════════════════
 function setL1(f,el){
