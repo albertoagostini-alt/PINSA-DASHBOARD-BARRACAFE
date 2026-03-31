@@ -126,11 +126,17 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 
 <div id="overlay-login">
   <div style="font-family:'Syne',sans-serif;font-weight:900;font-size:36px;color:var(--tc);letter-spacing:-1px;text-align:center;margin-bottom:4px;">PINSA.</div>
-  <div class="ol-sub">Sistema Operativo · <span id="ol-local">Candelaria</span></div>
-  <div class="ol-seccion">Checklist <em id="ol-seccion-label">Sección</em></div>
+  <div class="ol-sub">Checklist Sección · <span id="ol-local">Candelaria</span></div>
+
   <div class="ol-card">
     <h2>👋 Bienvenido</h2>
     <p>Selecciona tu turno y nombre para comenzar.</p>
+    <div class="field-label">Local</div>
+    <select class="field-select" id="sel-local">
+      <option value="">— Seleccionar local —</option>
+      <option>Candelaria</option>
+      <option>Riesco</option>
+    </select>
     <div class="field-label">Turno</div>
     <select class="field-select" id="sel-turno">
       <option value="">— Seleccionar turno —</option>
@@ -360,10 +366,12 @@ function enviarASheets(reg){
 }
 
 function iniciarSesion(){
+  var localSel=document.getElementById('sel-local').value;
   var turno=document.getElementById('sel-turno').value;
   var nombre=document.getElementById('sel-nombre').value;
-  if(!turno||!nombre){showToast('⚠️ Selecciona turno y nombre');return;}
-  SESSION={nombre:nombre,turno:turno,fecha:formatDate()};
+  if(!localSel||!turno||!nombre){showToast('⚠️ Selecciona local, turno y nombre');return;}
+  LOCAL=localSel;
+  SESSION={nombre:nombre,turno:turno,fecha:formatDate(),local:localSel};
   localStorage.setItem('session-'+LOCAL+'-'+SECCION+'-'+getDateKey(),JSON.stringify(SESSION));
   mostrarApp();
 }
@@ -376,6 +384,9 @@ function cerrarSesion(){
 
 function mostrarApp(){
   document.getElementById('overlay-login').classList.add('hidden');
+  document.getElementById('h-local').textContent=LOCAL;
+  document.getElementById('ol-local').textContent=LOCAL;
+  document.getElementById('ol-note-local').textContent=LOCAL;
   ['a','c'].forEach(function(s){
     var tb=SESSION.turno==='AM'?'badge-am':'badge-pm';
     document.getElementById('sb-turno-'+s).textContent=SESSION.turno;
@@ -420,12 +431,17 @@ function showToast(msg,type){var t=document.getElementById('toast');t.textConten
   document.getElementById('h-seccion').textContent=SECCION_LABEL;
   document.getElementById('h-date').textContent=formatDate();
   document.getElementById('ol-local').textContent=LOCAL;
-  document.getElementById('ol-seccion-label').textContent=SECCION_LABEL;
   document.getElementById('ol-note-sec').textContent=SECCION_LABEL;
   document.getElementById('ol-note-local').textContent=LOCAL;
-  var raw=localStorage.getItem('session-'+LOCAL+'-'+SECCION+'-'+getDateKey());
-  if(raw){try{var s=JSON.parse(raw);if(s.nombre&&s.turno){SESSION=s;mostrarApp();return;}}catch(e){}}
-  document.getElementById('overlay-login').classList.remove('hidden');
+  // Cerca sessione per qualsiasi local
+  var locals=['Candelaria','Riesco'];
+  var found=false;
+  for(var li=0;li<locals.length;li++){
+    var rawS=localStorage.getItem('session-'+locals[li]+'-'+SECCION+'-'+getDateKey());
+    if(rawS){try{var s=JSON.parse(rawS);if(s.nombre&&s.turno){SESSION=s;LOCAL=s.local||locals[li];mostrarApp();found=true;break;}}catch(e){}}
+  }
+  if(!found){
+  document.getElementById('overlay-login').classList.remove('hidden');}
 })();
 </script>
 </body>
