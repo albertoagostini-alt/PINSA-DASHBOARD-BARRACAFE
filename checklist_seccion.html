@@ -369,7 +369,12 @@ function firmar(tipo){
 
 function enviarASheets(reg){
   document.getElementById('sending-overlay').classList.add('show');
-  fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'checklistSeccion',fecha:new Date().toISOString().split('T')[0],local:reg.local,seccion:reg.seccion,operador:reg.nombre,turno:reg.turno,tipo:reg.tipo,items_ok:reg.items_ok,items_total:reg.items_total})})
+  (function(){
+    var mermaKey='merma-'+LOCAL.toLowerCase()+'-'+SECCION+'-'+getDateKey()+'-'+SESSION.turno;
+    var mermaRaw=localStorage.getItem(mermaKey);
+    var mermaVal=mermaRaw?JSON.parse(mermaRaw).tipo:'sin_confirmar';
+    return fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'checklistSeccion',fecha:new Date().toISOString().split('T')[0],local:reg.local,seccion:reg.seccion,operador:reg.nombre,turno:reg.turno,tipo:reg.tipo,items_ok:reg.items_ok,items_total:reg.items_total,merma:mermaVal})});
+  })()
     .then(function(r){return r.json();}).then(function(d){document.getElementById('sending-overlay').classList.remove('show');showToast(d.ok?'📊 Guardado en sistema':'⚠️ Guardado local',d.ok?'success':'');})
     .catch(function(){document.getElementById('sending-overlay').classList.remove('show');showToast('⚠️ Guardado local','');});
 }
