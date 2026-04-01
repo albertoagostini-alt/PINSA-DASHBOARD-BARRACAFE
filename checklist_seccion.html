@@ -261,7 +261,7 @@ var CE={
 function getChecks(t){return (CC[t]||[]).concat((CE[SECCION]&&CE[SECCION][t])||[]);}
 
 function getDateKey(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
-function sKey(t){return 'chk-'+SECCION+'-'+t+'-'+getDateKey();}
+function sKey(t){return 'chk-'+SECCION+'-'+t+'-'+getDateKey()+'-'+(SESSION.turno||'');}
 function getSaved(t){try{return JSON.parse(localStorage.getItem(sKey(t)))||{};}catch(e){return {};}}
 function setSaved(t,d){localStorage.setItem(sKey(t),JSON.stringify(d));}
 
@@ -322,7 +322,7 @@ function upFirma(t){
 
 function renderMermaConfirm(){
   var el=document.getElementById('merma-confirm-block');
-  var key='merma-'+LOCAL.toLowerCase()+'-'+SECCION+'-'+getDateKey();
+  var key='merma-'+LOCAL.toLowerCase()+'-'+SECCION+'-'+getDateKey()+'-'+(SESSION.turno||'');
   var raw=localStorage.getItem(key);
   if(raw){var v=JSON.parse(raw);el.innerHTML=v.tipo==='con_merma'?'<div class="merma-done">✅ Merma registrada · '+v.hora+'</div>':'<div class="merma-done-zero">⚪ Sin merma hoy · confirmado · '+v.hora+'</div>';return;}
   el.innerHTML='<div class="merma-btns"><button class="btn-merma-si" onclick="confMerma(\'con_merma\')">✅ Sí, registré la merma</button><button class="btn-merma-no" onclick="confMerma(\'sin_merma\')">⚪ Sin merma hoy</button></div>';
@@ -330,14 +330,14 @@ function renderMermaConfirm(){
 
 function confMerma(tipo){
   var hora=new Date().toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
-  localStorage.setItem('merma-'+LOCAL.toLowerCase()+'-'+SECCION+'-'+getDateKey(),JSON.stringify({tipo:tipo,hora:hora,operador:SESSION.nombre,seccion:SECCION,local:LOCAL}));
+  localStorage.setItem('merma-'+LOCAL.toLowerCase()+'-'+SECCION+'-'+getDateKey()+'-'+SESSION.turno,JSON.stringify({tipo:tipo,hora:hora,operador:SESSION.nombre,seccion:SECCION,local:LOCAL}));
   renderMermaConfirm();
   showToast(tipo==='con_merma'?'✅ Merma confirmada':'⚪ Sin merma registrada','success');
 }
 
 function renderFirma(tipo){
   var el=document.getElementById('firma-'+tipo);
-  var raw=localStorage.getItem('firma-'+LOCAL+'-'+SECCION+'-'+tipo+'-'+getDateKey());
+  var raw=localStorage.getItem('firma-'+LOCAL+'-'+SECCION+'-'+tipo+'-'+getDateKey()+'-'+(SESSION.turno||''));
   if(raw){var f=JSON.parse(raw);el.innerHTML='<div class="firma-title">✅ Turno firmado</div><div class="firma-done"><div class="firma-done-icon">✅</div><div class="firma-done-text">'+(tipo==='apertura'?'Apertura':'Cierre')+' completado</div><div class="firma-done-sub">'+f.nombre+' · Turno '+f.turno+' · '+f.hora+'</div></div>';return;}
   el.innerHTML='<div class="firma-title">📝 Firma de turno</div><div class="firma-grid"><div><div class="firma-field-label">Sección</div><div class="firma-field-val">'+SECCION_LABEL+'</div></div><div><div class="firma-field-label">Operador</div><div class="firma-field-val name">'+(SESSION.nombre||'—')+'</div></div><div><div class="firma-field-label">Turno</div><div class="firma-field-val">'+(SESSION.turno||'—')+'</div></div><div><div class="firma-field-label">Fecha</div><div class="firma-field-val">'+formatDate()+'</div></div></div><button class="btn-firma" onclick="firmar(\''+tipo+'\')">✅ Confirmar y firmar turno</button><div class="firma-pending" id="firma-pending-'+tipo+'"></div>';
   upFirma(tipo);
@@ -349,7 +349,7 @@ function firmar(tipo){
   var done=Object.keys(saved).filter(function(k){return saved[k];}).length;
   var hora=new Date().toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
   var reg={nombre:SESSION.nombre,turno:SESSION.turno,fecha:formatDate(),hora:hora,seccion:SECCION_LABEL,local:LOCAL,tipo:tipo,items_ok:done,items_total:total};
-  localStorage.setItem('firma-'+LOCAL+'-'+SECCION+'-'+tipo+'-'+getDateKey(),JSON.stringify(reg));
+  localStorage.setItem('firma-'+LOCAL+'-'+SECCION+'-'+tipo+'-'+getDateKey()+'-'+SESSION.turno,JSON.stringify(reg));
   renderFirma(tipo);
   showToast('✅ Turno firmado','success');
   enviarASheets(reg);
@@ -430,8 +430,16 @@ function showToast(msg,type){var t=document.getElementById('toast');t.textConten
   document.getElementById('ol-seccion-label').textContent=SECCION_LABEL;
   document.getElementById('ol-note-sec').textContent=SECCION_LABEL;
   document.getElementById('ol-note-local').textContent=LOCAL;
+  // Al reload mostriamo sempre il login — pre-compiliamo se c'è sessione salvata
   var raw=localStorage.getItem('session-'+LOCAL+'-'+SECCION+'-'+getDateKey());
-  if(raw){try{var s=JSON.parse(raw);if(s.nombre&&s.turno){SESSION=s;mostrarApp();return;}}catch(e){}}
+  if(raw){try{var s=JSON.parse(raw);
+    if(s.nombre&&s.turno){
+      var selN=document.getElementById('sel-nombre');
+      var selT=document.getElementById('sel-turno');
+      for(var i=0;i<selN.options.length;i++){if(selN.options[i].value===s.nombre)selN.selectedIndex=i;}
+      for(var i=0;i<selT.options.length;i++){if(selT.options[i].value===s.turno)selT.selectedIndex=i;}
+    }
+  }catch(e){}}
   document.getElementById('overlay-login').classList.remove('hidden');
 })();
 </script>
