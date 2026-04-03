@@ -1189,19 +1189,8 @@ window.addEventListener('load', async () => {
   setTimeout(() => {
     document.getElementById('loadingOverlay').style.display = 'none';
     const saved = sessionStorage.getItem('pinsa_visor_user');
-    const urlParams = new URLSearchParams(window.location.search);
-    const perfilParam = urlParams.get('perfil');
-    if (saved) {
-      currentUser = JSON.parse(saved);
-      showApp();
-    } else if (perfilParam === 'OP') {
-      const localParam = urlParams.get('local') || 'Local';
-      currentUser = {nombre:'Operador', cargo:'Operador', codigo:'OP', local:localParam};
-      sessionStorage.setItem('pinsa_visor_user', JSON.stringify(currentUser));
-      showApp();
-    } else {
-      showLogin();
-    }
+    if (saved) { currentUser = JSON.parse(saved); showApp(); }
+    else showLogin();
   }, 500);
 });
 function animateBar(pct) { document.getElementById('ldBar').style.width = pct+'%'; }
