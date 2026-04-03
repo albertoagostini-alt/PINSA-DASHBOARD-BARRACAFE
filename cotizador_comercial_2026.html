@@ -429,6 +429,10 @@ let recFiltradas=[];
 
 document.addEventListener('DOMContentLoaded',async()=>{
   await Promise.all([cargarRecetas(),cargarGAS()]);
+  /* Se ?id=COT-xxx carica la cotización existente */
+  const urlId = new URLSearchParams(window.location.search).get('id');
+  const urlMode = new URLSearchParams(window.location.search).get('mode');
+  if(urlId) await cargarCotizacion(urlId, urlMode==='view');
 });
 
 // ── DATI ─────────────────────────────────────────
@@ -783,6 +787,69 @@ async function agregarExtraLibre(){
   renderResumen();recalc();cerrarModal('modal-extra');showToast('＋ '+desc,'ok');
 }
 
+
+/* ── CARICA COTIZACIÓN EXISTENTE (?id=COT-xxx) ────────── */
+async function cargarCotizacion(id, readOnly){
+  try{
+    showToast('⏳ Cargando cotización...','ok');
+    const r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'getCotizacion',payload:{id_cot:id}})});
+    const txt=await r.text();
+    const d=JSON.parse(txt);
+    if(!d.ok){ showToast('Error: '+(d.error||'?'),'err'); return; }
+    const cot=d.cotizacion;
+    const lineas=d.lineas||[];
+
+    /* Popola header */
+    COT_ID=cot.id_cot;
+    document.getElementById('cot-badge').textContent=COT_ID;
+    document.getElementById('cot-badge').className='badge badge-ok';
+
+    /* Popola form evento */
+    document.getElementById('tipo-evento').value=cot.tipo_evento||'';
+    if(cot.fecha_evento){
+      const fd=cot.fecha_evento.toString();
+      if(/^\d{4}-\d{2}-\d{2}/.test(fd)){
+        document.getElementById('fecha-evento').value=fd.slice(0,10);
+      } else {
+        const p=fd.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+        if(p) document.getElementById('fecha-evento').value=`${p[3]}-${p[2].padStart(2,'0')}-${p[1].padStart(2,'0')}`;
+      }
+    }
+    document.getElementById('n-personas').value=cot.n_personas||'';
+    document.getElementById('ubicacion').value=cot.ubicacion||'';
+    document.getElementById('empresa-grupo').value=cot.empresa_grupo||'PINSA';
+    document.getElementById('notas').value=cot.notas||'';
+    if(cot.creado_por){
+      const sel=document.getElementById('creado-por');
+      let found=false;
+      for(let o of sel.options){ if(o.value===cot.creado_por){o.selected=true;found=true;break;} }
+      if(!found){ const o=document.createElement('option');o.value=cot.creado_por;o.textContent=cot.creado_por;o.selected=true;sel.appendChild(o); }
+    }
+
+    /* Popola cliente */
+    CLI_SEL={id_cliente:cot.id_cliente,razon_social:cot.cliente_nombre,contacto:'',email:'',telefono:'',ciudad:''};
+    document.getElementById('cli-sel-name').textContent=cot.cliente_nombre;
+    document.getElementById('cli-sel').style.display='flex';
+    document.getElementById('cli-info').style.display='none';
+
+    /* Popola linee */
+    LINEAS=lineas.map((l,i)=>({id:Date.now()+i,tipo:l.tipo,id_ref:l.id_ref,descripcion:l.descripcion,q:l.q,costo_u:l.costo_u,pv_u:l.pv_u}));
+    renderResumen();recalc();
+
+    /* Abilita PDF */
+    document.getElementById('btn-pdf-c').disabled=false;
+    document.getElementById('btn-pdf-o').disabled=false;
+
+    /* Modalità view: disabilita modifiche */
+    if(readOnly){
+      document.getElementById('btn-guardar').disabled=true;
+      document.getElementById('btn-guardar').textContent='👁 Solo lectura';
+    }
+
+    showToast('✓ '+COT_ID+' cargada','ok');
+  }catch(e){ console.error('cargarCotizacion error:',e); showToast('Error cargando cotización','err'); }
+}
 
 // ── CALCOLI PREZZO EXTRA ──────────────────────────────────────
 /* ── HELPERS FORMATO CLP ── */
