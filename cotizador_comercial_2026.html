@@ -186,6 +186,7 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
   <button class="btn btn-primary" style="padding:6px 12px;font-size:11px" id="btn-guardar" onclick="guardarCotizacion()">💾 Guardar</button>
   <button class="btn btn-amber" style="padding:6px 12px;font-size:11px" id="btn-pdf-c" onclick="generarPDFCliente()" disabled>📄 PDF Cliente</button>
   <button class="btn btn-green" style="padding:6px 12px;font-size:11px" id="btn-pdf-o" onclick="generarPDFOperativo()" disabled>📋 PDF Operativo</button>
+  <button class="btn" style="padding:6px 12px;font-size:11px;background:#1E3A5F;color:#60A5FA;border:1px solid #1D4ED8;display:none" id="btn-adjudicar" onclick="abrirModalAdjudicar()">✓ Adjudicar</button>
 </div>
 
 <!-- LAYOUT -->
@@ -409,6 +410,23 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
     <div class="modal-act">
       <button class="btn btn-secondary" onclick="cerrarModal('modal-extra')">Cancelar</button>
       <button class="btn btn-primary" onclick="agregarExtraLibre()">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADJUDICAR -->
+<div class="modal-ov" id="modal-adjudicar">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-t" style="color:#60A5FA">✓ Adjudicar Cotización</div>
+    <p style="font-size:12px;color:var(--t2);margin-bottom:14px">El cliente ha confirmado el evento. Registra el N° de O/C y la fecha de confirmación.</p>
+    <div class="fr">
+      <div class="fg"><label>N° O/C Cliente *</label><input type="text" id="adj-oc" placeholder="ej. OC-10900"></div>
+      <div class="fg"><label>Fecha Confirmación</label><input type="date" id="adj-fecha"></div>
+    </div>
+    <div class="fg"><label>Notas internas</label><textarea id="adj-notas" rows="2" placeholder="Instrucciones adicionales para el local..."></textarea></div>
+    <div class="modal-act">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-adjudicar')">Cancelar</button>
+      <button class="btn" style="background:#1E3A5F;color:#60A5FA;border:1px solid #1D4ED8" onclick="confirmarAdjudicacion()">✓ Confirmar Adjudicación</button>
     </div>
   </div>
 </div>
@@ -840,6 +858,7 @@ async function cargarCotizacion(id, readOnly){
     /* Abilita PDF */
     document.getElementById('btn-pdf-c').disabled=false;
     document.getElementById('btn-pdf-o').disabled=false;
+    document.getElementById('btn-adjudicar').style.display='inline-flex';
 
     /* Modalità view: disabilita modifiche */
     if(readOnly){
@@ -966,6 +985,7 @@ async function guardarCotizacion(){
       document.getElementById('cot-badge').className='badge badge-ok';
       document.getElementById('btn-pdf-c').disabled=false;
       document.getElementById('btn-pdf-o').disabled=false;
+      document.getElementById('btn-adjudicar').style.display='inline-flex';
       if(mgP<MARGEN_BLOQUEO){
         await enviarEmailValidador(COT_ID,mgP,document.getElementById('motivo-bloqueo').value);
       }
@@ -973,6 +993,45 @@ async function guardarCotizacion(){
     }else{showToast('Error: '+(d.error||'?'),'err');}
   }catch(e){showToast('Error de conexión','err');}
   btn.disabled=false;btn.innerHTML='💾 Guardar';
+}
+
+async function confirmarAdjudicacion(){
+  const oc = document.getElementById('adj-oc').value.trim();
+  if(!oc){ showToast('N° O/C obligatorio','err'); document.getElementById('adj-oc').focus(); return; }
+  const fecha = document.getElementById('adj-fecha').value;
+  const notas = document.getElementById('adj-notas').value.trim();
+  try{
+    const r = await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'updateEstado',payload:{
+        id_cot:COT_ID,
+        estado:'ADJUDICADA',
+        n_oc_cliente:oc,
+        fecha_oc:fecha,
+        notas_adjudicacion:notas,
+        usuario:document.getElementById('creado-por')?.value||'GC'
+      }})});
+    const d = await r.json();
+    if(d.ok){
+      cerrarModal('modal-adjudicar');
+      showToast('✓ Adjudicada: '+COT_ID,'ok');
+      /* Aggiorna badge stato nell header */
+      document.getElementById('cot-badge').textContent = COT_ID+' · ADJUDICADA';
+      document.getElementById('cot-badge').style.background='var(--green-dim)';
+      document.getElementById('cot-badge').style.color='var(--green)';
+      document.getElementById('btn-adjudicar').style.display='none';
+      /* Genera PDF Operativo automaticamente */
+      setTimeout(()=>generarPDFOperativo(), 400);
+    } else { showToast('Error: '+(d.error||'?'),'err'); }
+  }catch(e){ showToast('Error de conexión','err'); }
+}
+
+/* Inicializa fecha adjudicacion con hoy */
+function abrirModalAdjudicar(){
+  const hoy = new Date().toISOString().slice(0,10);
+  document.getElementById('adj-fecha').value = hoy;
+  document.getElementById('adj-oc').value = '';
+  document.getElementById('adj-notas').value = '';
+  abrirModal('modal-adjudicar');
 }
 
 async function cambiarEstado(nuevoEstado, motivo){
@@ -1131,6 +1190,7 @@ function resetForm(){
   document.getElementById('cot-badge').className='badge badge-new';
   document.getElementById('btn-pdf-c').disabled=true;
   document.getElementById('btn-pdf-o').disabled=true;
+  document.getElementById('btn-adjudicar').style.display='none';
   document.getElementById('btn-guardar').disabled=false;
   document.getElementById('btn-guardar').innerHTML='💾 Guardar';
   /* Rimuovi ?id= dall URL senza ricaricare la pagina */
