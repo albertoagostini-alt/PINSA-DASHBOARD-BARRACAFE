@@ -95,7 +95,7 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
 
 /* RIEPILOGO 3 RIGHE */
 .resumen{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden;flex-shrink:0;}
-.res-row{display:grid;grid-template-columns:1fr 110px 110px 90px;gap:0;padding:10px 14px;border-bottom:1px solid var(--border);transition:.15s;align-items:center;}
+.res-row{display:grid;grid-template-columns:1fr 130px 90px;gap:0;padding:10px 14px;border-bottom:1px solid var(--border);transition:.15s;align-items:center;}
 .res-row:hover{background:var(--bg3);}
 .res-row.total{background:var(--bg3);cursor:default;border-bottom:none;}
 .res-row.total:hover{background:var(--bg3);}
@@ -174,11 +174,9 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
     <div class="hdr-title">Cotizador Comercial</div>
     <div class="hdr-sub">Gerente Comercial · PINSA</div>
   </div>
-  <div class="hdr-mg">
-    <div class="hdr-mg-item"><div class="hdr-mg-lbl">Precio Venta</div><div class="hdr-mg-val" id="m-pv">$0</div></div>
-    <div class="hdr-mg-item"><div class="hdr-mg-lbl">Margen $</div><div class="hdr-mg-val" id="m-mg$">$0</div></div>
+  <div class="hdr-mg" style="border-left:1px solid var(--border);border-right:none;padding-right:0">
     <div class="hdr-mg-item">
-      <div class="hdr-mg-lbl">Margen %</div>
+      <div class="hdr-mg-lbl">Margen</div>
       <div class="hdr-mg-val rojo" id="m-mg%">0%</div>
       <div class="hdr-sem" id="m-sem" style="color:var(--t3)">— sin datos</div>
     </div>
@@ -238,7 +236,12 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
 
     <div class="sec" style="flex:1">
       <div class="sec-t">Creado por</div>
-      <div class="fg"><input type="text" id="creado-por" placeholder="Nombre Gerente Comercial"></div>
+      <div class="fg">
+        <select id="creado-por">
+          <option value="">Seleccionar...</option>
+          <option id="gc-opt-loading" disabled>Cargando...</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -248,27 +251,23 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
 
       <!-- 1. RIEPILOGO 3 RIGHE FISSO IN CIMA -->
       <div class="resumen" id="resumen" style="flex-shrink:0;margin-bottom:10px">
-        <div style="display:grid;grid-template-columns:1fr 110px 110px 90px;padding:5px 14px;border-bottom:1px solid var(--border)">
+        <div style="display:grid;grid-template-columns:1fr 130px 90px;padding:5px 14px;border-bottom:1px solid var(--border)">
           <span style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em">Sección</span>
-          <span style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;text-align:right">Costo</span>
           <span style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;text-align:right">PV Total</span>
           <span style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;text-align:right">Margen</span>
         </div>
         <div class="res-row">
           <div><div class="res-label">Productos PINSA</div><div class="res-sub" id="res-pinsa-sub">0 items</div></div>
-          <div class="res-val" id="res-pinsa-costo" style="color:var(--t3)">$0</div>
           <div class="res-val" id="res-pinsa-pv">$0</div>
           <div class="res-pct" id="res-pinsa-pct">—</div>
         </div>
         <div class="res-row">
           <div><div class="res-label">Extras / Servicios</div><div class="res-sub" id="res-ext-sub">0 items</div></div>
-          <div class="res-val" id="res-ext-costo" style="color:var(--t3)">$0</div>
           <div class="res-val" id="res-ext-pv">$0</div>
           <div class="res-pct" id="res-ext-pct">—</div>
         </div>
         <div class="res-row total">
           <div><div class="res-label" style="font-size:13px;font-weight:700">TOTAL</div></div>
-          <div class="res-val" id="res-tot-costo" style="color:var(--t3)">$0</div>
           <div class="res-val" id="res-tot-pv" style="font-size:14px;font-weight:700">$0</div>
           <div class="res-pct rojo" id="res-tot-pct" style="font-size:15px">0%</div>
         </div>
@@ -342,7 +341,18 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
     <div class="modal-t">Nuevo Cliente</div>
     <div class="fr"><div class="fg"><label>Razón Social *</label><input type="text" id="nc-razon"></div><div class="fg"><label>RUT</label><input type="text" id="nc-rut"></div></div>
     <div class="fr"><div class="fg"><label>Contacto *</label><input type="text" id="nc-contacto"></div><div class="fg"><label>Email *</label><input type="email" id="nc-email"></div></div>
-    <div class="fr"><div class="fg"><label>Teléfono</label><input type="text" id="nc-tel"></div><div class="fg"><label>Ciudad</label><input type="text" id="nc-ciudad" placeholder="Santiago"></div></div>
+    <div class="fr"><div class="fg"><label>Teléfono</label><input type="text" id="nc-tel"></div><div class="fg"><label>Ciudad</label>
+      <select id="nc-ciudad">
+        <option value="">Seleccionar...</option>
+        <option>Santiago</option><option>Providencia</option><option>Las Condes</option>
+        <option>Vitacura</option><option>Ñuñoa</option><option>La Florida</option>
+        <option>Maipú</option><option>Puente Alto</option><option>San Miguel</option>
+        <option>Valparaíso</option><option>Viña del Mar</option><option>Concepción</option>
+        <option>Temuco</option><option>Rancagua</option><option>Antofagasta</option>
+        <option>La Serena</option><option>Puerto Montt</option><option>Iquique</option>
+        <option>Otra</option>
+      </select>
+    </div></div>
     <div class="fg"><label>Dirección</label><input type="text" id="nc-dir"></div>
     <div class="fr">
       <div class="fg"><label>Empresa Grupo</label><select id="nc-grupo"><option value="PINSA">PINSA</option><option value="EXO">EXO</option><option value="BKS">BKS</option></select></div>
@@ -371,8 +381,9 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
     </div>
     <div class="fr">
       <div class="fg"><label>Proveedor</label><input type="text" id="ne-prov"></div>
-      <div class="fg"><label>Email Proveedor</label><input type="email" id="ne-eprov"></div>
+      <div class="fg"><label>Teléfono Proveedor</label><input type="tel" id="ne-tel-prov" placeholder="+56 9 XXXX XXXX"></div>
     </div>
+    <div class="fg"><label>Email Proveedor</label><input type="email" id="ne-eprov"></div>
     <p style="font-size:11px;color:var(--t3);margin-top:6px">💡 Se guardará en BD Extras para uso futuro</p>
     <div class="modal-act">
       <button class="btn btn-secondary" onclick="cerrarModal('modal-extra')">Cancelar</button>
@@ -427,6 +438,17 @@ async function cargarGAS(){
         MARGEN_ALERTA=parseFloat(d.params.margen_alerta_absoluto_pct||35);
       }
       renderExtList();
+      // Popola dropdown Creado por da params
+      const gcSel = document.getElementById('creado-por');
+      const gcNames = d.params?.gc_nombres || '';
+      if(gcNames) {
+        gcSel.innerHTML = '<option value="">Seleccionar...</option>';
+        gcNames.split(',').map(n=>n.trim()).filter(Boolean).forEach(n=>{
+          const o=document.createElement('option');o.value=n;o.textContent=n;gcSel.appendChild(o);
+        });
+      } else {
+        gcSel.innerHTML = '<option value="">Gerente Comercial</option>';
+      }
     }
   }catch(e){}
 }
@@ -605,8 +627,6 @@ function recalc(){
   let tc=0,tp=0;
   LINEAS.forEach(l=>{tc+=l.q*l.costo_u;tp+=l.q*l.pv_u;});
   const mg$=tp-tc,mgP=tp>0?(mg$/tp*100):0;
-  document.getElementById('m-pv').textContent=fmtCLP(tp);
-  document.getElementById('m-mg$').textContent=fmtCLP(mg$);
   const mgEl=document.getElementById('m-mg%'),sem=document.getElementById('m-sem');
   mgEl.textContent=mgP.toFixed(1)+'%';
   if(mgP>=MARGEN_ALERTA){mgEl.className='hdr-mg-val verde';sem.textContent='● OK';sem.style.color='var(--green)';}
