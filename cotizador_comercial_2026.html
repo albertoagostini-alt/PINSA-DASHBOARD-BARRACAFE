@@ -714,6 +714,8 @@ async function agregarExtraLibre(){
         descripcion:desc,categoria:document.getElementById('ne-cat').value,
         costo_u:costo,pv_u:pvFinal,
         proveedor:document.getElementById('ne-prov').value,
+        contacto:document.getElementById('ne-contacto')?.value||'',
+        telefono_proveedor:document.getElementById('ne-tel-prov')?.value||'',
         email_proveedor:document.getElementById('ne-eprov').value}})});
   }catch(e){}
   LINEAS.push({id:Date.now(),tipo:'EXTRA',id_ref:'',descripcion:desc,q,costo_u:costo,pv_u:pvFinal});
