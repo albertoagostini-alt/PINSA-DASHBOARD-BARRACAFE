@@ -491,7 +491,7 @@ async function cargarGcNombresCSV(){
     const rows = txt.trim().split('\n').slice(1);
     let gcNames = '';
     rows.forEach(l=>{
-      const cols = l.split(',');
+      const cols = splitLineSimple(l);
       if((cols[0]||'').trim().toLowerCase()==='gc_nombres') gcNames=(cols[1]||'').replace(/"/g,'').trim();
     });
     const gcSel = document.getElementById('creado-por');
@@ -1122,6 +1122,17 @@ function fmtCLP(v){return'$'+Math.round(v||0).toLocaleString('es-CL');}
 function limpiarNum(s){if(!s)return 0;/* Rimuove tutto tranne cifre — gestisce formato CLP $30.000 */return parseInt(s.toString().replace(/[^0-9]/g,''))||0;}
 function esc(s){return(s||'').replace(/'/g,"\'").replace(/"/g,'&quot;');}
 function showToast(msg,tipo){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(tipo||'ok');t.style.display='block';setTimeout(()=>t.style.display='none',2500);}
+function splitLineSimple(line){
+  const r=[];let cur='',inQ=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='"'){inQ=!inQ;}
+    else if(ch===','&&!inQ){r.push(cur.trim());cur='';}
+    else cur+=ch;
+  }
+  r.push(cur.trim());
+  return r;
+}
 function parseCsv(txt){
   return txt.split('\n').map(line=>{
     const r=[];let cur='';let inQ=false;
