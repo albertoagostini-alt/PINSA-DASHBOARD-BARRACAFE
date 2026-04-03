@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PINSA · Guía Operativa</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23C4622D'/%3E%3Ctext x='16' y='23' font-family='Arial Black,sans-serif' font-size='20' font-weight='900' fill='white' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1A1A1A;
+    --surface: #242424;
+    --surface2: #2E2E2E;
+    --border: #3A3A3A;
+    --verde: #5A9E7A;
+    --rosso: #B85450;
+    --ambra: #C8893A;
+    --azzurro: #4A8FA8;
+    --testo: #C8C2BC;
+    --testo-dim: #7A7470;
+    --orange: #C4622D;
+    --white: #F0EBE6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--testo);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-p {
+    width: 36px;
+    height: 36px;
+    background: var(--orange);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 600;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .header-text h1 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.02em;
+  }
+
+  .header-text p {
+    font-size: 12px;
+    color: var(--testo-dim);
+    margin-top: 1px;
+  }
+
+  /* ROLE SELECTOR */
+  .role-section {
+    padding: 20px 16px 8px;
+  }
+
+  .role-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--testo-dim);
+    margin-bottom: 10px;
+  }
+
+  .role-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .role-pill {
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--testo-dim);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .role-pill:hover { border-color: var(--orange); color: var(--testo); }
+  .role-pill.active { background: var(--orange); border-color: var(--orange); color: white; }
+
+  /* SECTION DIVIDER */
+  .section-divider {
+    padding: 20px 16px 8px;
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--testo-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* OPERATION CARDS */
+  .op-card {
+    margin: 0 16px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .op-card.hidden { display: none; }
+
+  .op-card:hover { border-color: #4A4A4A; }
+
+  .op-header {
+    padding: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    user-select: none;
+  }
+
+  .op-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .op-icon.verde { background: rgba(90,158,122,0.15); }
+  .op-icon.ambra { background: rgba(200,137,58,0.15); }
+  .op-icon.azzurro { background: rgba(74,143,168,0.15); }
+  .op-icon.rosso { background: rgba(184,84,80,0.15); }
+  .op-icon.orange { background: rgba(196,98,45,0.15); }
+
+  .op-meta { flex: 1; }
+
+  .op-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 3px;
+  }
+
+  .op-subtitle {
+    font-size: 12px;
+    color: var(--testo-dim);
+  }
+
+  .op-chevron {
+    color: var(--testo-dim);
+    font-size: 16px;
+    transition: transform 0.25s;
+  }
+
+  .op-card.open .op-chevron { transform: rotate(180deg); }
+
+  /* ROLE BADGE on card */
+  .role-badge {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(196,98,45,0.2);
+    color: var(--orange);
+  }
+
+  /* CONTENT PANEL */
+  .op-body {
+    display: none;
+    padding: 0 16px 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .op-card.open .op-body { display: block; }
+
+  /* WHEN TO USE */
+  .when-box {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 14px 0 16px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .when-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  .when-text {
+    font-size: 13px;
+    color: var(--testo);
+    line-height: 1.5;
+  }
+
+  .when-text strong { color: var(--ambra); }
+
+  /* STEPS */
+  .steps-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--testo-dim);
+    margin-bottom: 10px;
+  }
+
+  .step {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--orange);
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .step-content { flex: 1; }
+
+  .step-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 3px;
+  }
+
+  .step-desc {
+    font-size: 12px;
+    color: var(--testo-dim);
+    line-height: 1.5;
+  }
+
+  .step-desc code {
+    font-family: 'DM Mono', monospace;
+    background: var(--surface2);
+    color: var(--verde);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 11px;
+  }
+
+  /* SCRIPT TAG */
+  .script-box {
+    background: #1E2A20;
+    border: 1px solid rgba(90,158,122,0.3);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 14px 0;
+  }
+
+  .script-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--verde);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .script-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--verde);
+    font-weight: 500;
+  }
+
+  .script-where {
+    font-size: 11px;
+    color: var(--testo-dim);
+    margin-top: 4px;
+  }
+
+  /* ALERT BOXES */
+  .alert {
+    border-radius: 8px;
+    padding: 10px 13px;
+    margin: 10px 0;
+    font-size: 12px;
+    line-height: 1.5;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .alert-icon { flex-shrink: 0; font-size: 14px; }
+
+  .alert.warn {
+    background: rgba(200,137,58,0.1);
+    border: 1px solid rgba(200,137,58,0.25);
+    color: #D4A060;
+  }
+
+  .alert.danger {
+    background: rgba(184,84,80,0.1);
+    border: 1px solid rgba(184,84,80,0.25);
+    color: #C87070;
+  }
+
+  .alert.ok {
+    background: rgba(90,158,122,0.1);
+    border: 1px solid rgba(90,158,122,0.25);
+    color: #7ABB9A;
+  }
+
+  .alert.info {
+    background: rgba(74,143,168,0.1);
+    border: 1px solid rgba(74,143,168,0.25);
+    color: #7ABBD0;
+  }
+
+  /* CHECK LIST */
+  .checklist { margin: 14px 0 0; }
+
+  .check-item {
+    display: flex;
+    gap: 9px;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+
+  .check-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+
+  .check-dot.verde { background: var(--verde); }
+  .check-dot.ambra { background: var(--ambra); }
+  .check-dot.rosso { background: var(--rosso); }
+
+  /* DIVIDER inside card */
+  .inner-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 14px 0;
+  }
+
+  /* FREQUENCY BADGE */
+  .freq-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .freq-badge.diario { background: rgba(90,158,122,0.15); color: var(--verde); }
+  .freq-badge.semanal { background: rgba(200,137,58,0.15); color: var(--ambra); }
+  .freq-badge.mensual { background: rgba(74,143,168,0.15); color: var(--azzurro); }
+  .freq-badge.cuando { background: rgba(196,98,45,0.15); color: var(--orange); }
+  .freq-badge.siempre { background: rgba(184,84,80,0.18); color: var(--rosso); font-weight: 600; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--testo-dim);
+    font-size: 14px;
+    display: none;
+  }
+
+  .empty-state.show { display: block; }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 30px 20px 10px;
+    font-size: 11px;
+    color: var(--testo-dim);
+  }
+
+  /* ANIMATIONS */
+  .op-card { animation: fadeUp 0.3s ease both; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ANCHOR NAV */
+  .anchor-nav {
+    display: none;
+    overflow-x: auto;
+    gap: 6px;
+    padding: 10px 16px 12px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    scrollbar-width: none;
+  }
+  .anchor-nav::-webkit-scrollbar { display: none; }
+  .anchor-nav.visible { display: flex; }
+
+  .anchor-btn {
+    flex-shrink: 0;
+    padding: 5px 13px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--testo-dim);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .anchor-btn:hover { border-color: var(--orange); color: var(--testo); }
+  .anchor-btn.active-section { background: rgba(196,98,45,0.15); border-color: var(--orange); color: var(--orange); }
+
+  /* QUICK REFERENCE CARD */
+  .quick-ref {
+    display: none;
+    margin: 12px 16px 4px;
+    background: linear-gradient(135deg, rgba(196,98,45,0.08) 0%, rgba(196,98,45,0.04) 100%);
+    border: 1px solid rgba(196,98,45,0.3);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .quick-ref.visible { display: block; }
+
+  .quick-ref-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--orange);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .quick-ref-tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .quick-task {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--testo);
+  }
+
+  .quick-task-num {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--orange);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* Mobile tweaks */
+  @media (min-width: 600px) {
+    .header { padding: 18px 28px; }
+    .role-section, .section-divider { padding-left: 24px; padding-right: 24px; }
+    .op-card { margin-left: 24px; margin-right: 24px; }
+    .quick-ref { margin-left: 24px; margin-right: 24px; }
+    .anchor-nav { padding-left: 24px; padding-right: 24px; }
+    body { max-width: 680px; margin: 0 auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo-p">P</div>
+  <div class="header-text">
+    <h1>Guía Operativa PINSA</h1>
+    <p>Sistema de gestión · Bodega · Recetas · Cocina Central &nbsp;·&nbsp; <span style="color:var(--verde)">Actualizado 15/03/2026</span></p>
+  </div>
+</div>
+
+<!-- ROLE SELECTOR -->
+<div class="role-section">
+  <div class="role-label">¿Cuál es tu rol hoy?</div>
+  <div class="role-pills">
+    <button class="role-pill active" onclick="setRole('all')" data-role="all">👁 Ver todo</button>
+    <button class="role-pill" onclick="setRole('jb')" data-role="jb">📦 Jefe Bodega</button>
+    <button class="role-pill" onclick="setRole('jl')" data-role="jl">🏪 Jefe Local</button>
+    <button class="role-pill" onclick="setRole('op')" data-role="op">⚙️ Operador</button>
+    <button class="role-pill" onclick="setRole('cc')" data-role="cc">🧑‍🍳 Cocina Central</button>
+  </div>
+</div>
+
+<!-- ANCHOR NAV -->
+<div class="anchor-nav" id="anchor-nav">
+  <button class="anchor-btn" onclick="scrollToSection('sec-bodega')">📦 Bodega</button>
+  <button class="anchor-btn" onclick="scrollToSection('sec-cc')">🧑‍🍳 Cocina Central</button>
+  <button class="anchor-btn" onclick="scrollToSection('sec-candelaria')">🏪 Candelaria</button>
+  <button class="anchor-btn" onclick="scrollToSection('sec-secciones')">⚙️ Secciones</button>
+  <button class="anchor-btn" onclick="scrollToSection('sec-scripts')">🔧 Scripts</button>
+  <button class="anchor-btn" onclick="scrollToSection('sec-visor')">📖 Visor</button>
+  <button class="anchor-btn" onclick="scrollToSection('sec-porque')">💡 Por qué</button>
+  <button class="anchor-btn" onclick="scrollToSection('sec-errores')">🚨 Errores</button>
+</div>
+
+<!-- QUICK REFERENCE CARD -->
+<div class="quick-ref" id="quick-ref">
+  <div class="quick-ref-title">⚡ Tus tareas principales hoy</div>
+  <div class="quick-ref-tasks" id="quick-ref-tasks"></div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN: BODEGA CENTRAL -->
+<!-- ══════════════════════════════════════════ -->
+<div class="section-divider" id="sec-bodega">
+  <div class="section-title">📦 Bodega Central</div>
+</div>
+
+<!-- CARD 1: EMITIR OC -->
+<div class="op-card" data-roles="jb" id="card-oc">
+  <div class="op-header" onclick="toggleCard('card-oc')">
+    <div class="op-icon ambra">🛒</div>
+    <div class="op-meta">
+      <div class="op-title">Emitir Orden de Compra</div>
+      <div class="op-subtitle">Generar OC a proveedor y registrar en sistema</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body">
+
+    <span class="freq-badge cuando">🕐 Cuando se necesita reponer stock</span>
+
+    <div class="when-box">
+      <div class="when-icon">📋</div>
+      <div class="when-text">
+        Usar cuando la hoja <strong>Reposicion_BC</strong> tiene productos con cantidad confirmada (col J) y proveedor seleccionado (col L), y la columna O <strong>no dice "SI"</strong> (ya emitida).
+      </div>
+    </div>
+
+    <div class="steps-label">Pasos</div>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Verificar Reposicion_BC</div>
+        <div class="step-desc">Asegúrate que col J (Q confirmada) tenga valores > 0 y col L (proveedor) esté seleccionado. Col O debe estar <code>vacía</code> o en blanco.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Abrir el menú BCentral</div>
+        <div class="step-desc">En <strong>CONTROL_MAESTRO_2026</strong>, buscar el menú <code>BCentral</code> en la barra superior → seleccionar <strong>Emitir Órdenes de Compra</strong>.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Confirmar ejecución</div>
+        <div class="step-desc">El script pide confirmación. Acepta. Espera el mensaje de éxito. Se generará un PDF en Google Drive y un borrador de Gmail si el proveedor tiene email.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Verificar en OC_Log</div>
+        <div class="step-desc">La OC debe aparecer en hoja <strong>OC_Log</strong> con estado <code>EMITIDA</code> y número de formato <code>OC-YYYYMMDD-HHmm-PROV</code>.</div>
+      </div>
+    </div>
+
+    <div class="script-box">
+      <div class="script-label">▶ Script que se ejecuta</div>
+      <div class="script-name">emitirOrdenesDeCompra()</div>
+      <div class="script-where">Menú BCentral → "Emitir Órdenes de Compra" · CONTROL_MAESTRO_2026</div>
+    </div>
+
+    <div class="alert warn">
+      <div class="alert-icon">⚠️</div>
+      <div>Si una fila ya tiene <strong>col O = "SI"</strong>, el script la omite automáticamente. No la borres ni la modifiques.</div>
+    </div>
+
+    <div class="alert danger">
+      <div class="alert-icon">🚫</div>
+      <div>No ejecutar si col J está vacía — el script no genera OC por $0 pero puede generar filas erróneas en OC_Log.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CARD 2: ENVIAR CONSEGNA BCENTRAL → LOCAL -->
+<div class="op-card" data-roles="jb" id="card-envio">
+  <div class="op-header" onclick="toggleCard('card-envio')">
+    <div class="op-icon verde">🚚</div>
+    <div class="op-meta">
+      <div class="op-title">Enviar Entrega → BLocal</div>
+      <div class="op-subtitle">Registrar salida de Bodega Central hacia Local</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body">
+
+    <span class="freq-badge diario">📅 Uso diario / cuando se prepara despacho</span>
+
+    <div class="when-box">
+      <div class="when-icon">📋</div>
+      <div class="when-text">
+        Usar cuando vas a enviar productos desde <strong>Bodega Central</strong> hacia un local (Candelaria u otro). Registra la salida y crea automáticamente el movimiento en el local de destino.
+      </div>
+    </div>
+
+    <div class="steps-label">Pasos</div>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Abrir Movimientos_BC</div>
+        <div class="step-desc">En <strong>CONTROL_MAESTRO_2026</strong>, ir a la hoja <code>Movimientos_BC</code>. Agregar una nueva fila con los datos del despacho (SKU, cantidad, local destino).</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Completar campos obligatorios</div>
+        <div class="step-desc">Tipo de movimiento = <code>Entrega BLocal</code> · Local destino · SKU activo · Q UO Entregada (col J) mayor a cero.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Ejecutar el script</div>
+        <div class="step-desc">Menú <code>BCentral</code> → <strong>Enviar Entrega a BLocal</strong>. El script valida todo y escribe automáticamente en <strong>Movimientos_BLocal</strong> del local destino.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Verificar ID Entrega</div>
+        <div class="step-desc">La col T (ID Entrega BCentral) debe quedar completada. Ese ID es el vínculo para la confirmación posterior.</div>
+      </div>
+    </div>
+
+    <div class="script-box">
+      <div class="script-label">▶ Script que se ejecuta</div>
+      <div class="script-name">inviaConsegna()</div>
+      <div class="script-where">Menú BCentral → "Enviar Entrega a BLocal" · CONTROL_MAESTRO_2026</div>
+    </div>
+
+    <div class="alert warn">
+      <div class="alert-icon">⚠️</div>
+      <div>El script valida que el SKU esté <strong>activo en BD_INSUMOS</strong> (col AG = "SI"). SKUs inactivos son rechazados.</div>
+    </div>
+
+    <div class="alert ok">
+      <div class="alert-icon">✅</div>
+      <div>Estado en col S cambia a <strong>ENVIADO</strong> (amarillo) automáticamente. Queda esperando confirmación del local.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CARD 3: CONFIRMAR EN CANDELARIA -->
+<div class="op-card" data-roles="jl jb" id="card-confirmar">
+  <div class="op-header" onclick="toggleCard('card-confirmar')">
+    <div class="op-icon azzurro">✅</div>
+    <div class="op-meta">
+      <div class="op-title">Confirmar Recepción en Local</div>
+      <div class="op-subtitle">El local confirma lo recibido vs lo enviado</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body">
+
+    <span class="freq-badge diario">📅 Después de recibir cada consegna</span>
+
+    <div class="when-box">
+      <div class="when-icon">📋</div>
+      <div class="when-text">
+        El Jefe de Local recibe los productos y debe confirmar las cantidades reales. Si hay diferencia con lo enviado, el sistema lo marca automáticamente.
+      </div>
+    </div>
+
+    <div class="steps-label">Pasos — Jefe Local (Candelaria)</div>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Abrir Movimientos_BLocal en Candelaria</div>
+        <div class="step-desc">En <strong>CONTROL_CANDELARIA_2026</strong>, ir a hoja <code>Movimientos_BLocal</code>. Buscar las filas con estado <code>ENVIADO</code> (amarillo).</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Ingresar cantidad recibida</div>
+        <div class="step-desc">En la columna de <strong>Q Recibida</strong>, ingresar la cantidad real que llegó. Si todo llegó completo, iguala a la Q Enviada.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Ejecutar confirmación</div>
+        <div class="step-desc">Menú <code>BCentral</code> en Candelaria → <strong>Confirmar Recepción</strong>. El script actualiza el estado y notifica a BCentral.</div>
+      </div>
+    </div>
+
+    <div class="script-box">
+      <div class="script-label">▶ Script que se ejecuta</div>
+      <div class="script-name">leggiConferme()</div>
+      <div class="script-where">Se ejecuta automáticamente (trigger) o desde Menú BCentral · CONTROL_MAESTRO_2026</div>
+    </div>
+
+    <div class="alert ok">
+      <div class="alert-icon">✅</div>
+      <div>Si Q recibida = Q enviada → estado cambia a <strong>RECIBIDO</strong> (verde).</div>
+    </div>
+
+    <div class="alert warn">
+      <div class="alert-icon">⚠️</div>
+      <div>Si Q recibida ≠ Q enviada → estado cambia a <strong>DIFERENCIA</strong> (rojo). Se crea automáticamente un ajuste correctivo.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CARD 4: RECONFIRMAR EN BCENTRAL -->
+<div class="op-card" data-roles="jb" id="card-reconfirmar">
+  <div class="op-header" onclick="toggleCard('card-reconfirmar')">
+    <div class="op-icon rosso">🔁</div>
+    <div class="op-meta">
+      <div class="op-title">Reconfirmar en BCentral</div>
+      <div class="op-subtitle">BCentral revisa y cierra el ciclo de entrega</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body">
+
+    <span class="freq-badge cuando">🕐 Después que el local confirme recepción</span>
+
+    <div class="when-box">
+      <div class="when-icon">📋</div>
+      <div class="when-text">
+        Después que el local confirma la recepción, el Jefe de Bodega revisa si hay diferencias y cierra el movimiento. Si hay <strong>DIFERENCIA</strong>, se debe investigar y corregir.
+      </div>
+    </div>
+
+    <div class="steps-label">Pasos</div>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Revisar Movimientos_BC</div>
+        <div class="step-desc">Buscar filas con estado <code>DIFERENCIA</code> (col S en rojo). Comparar col J (enviado) con lo confirmado por el local.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Decidir acción</div>
+        <div class="step-desc">Si la diferencia es correcta → marcar como <code>CORREGIDO</code>. Si fue un error de digitación → corregir y re-confirmar.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Verificar ajuste automático</div>
+        <div class="step-desc">El sistema ya habrá creado un <strong>Ajuste-menos</strong> automático en Movimientos_BC para compensar la diferencia. Verificar que el stock cuadra.</div>
+      </div>
+    </div>
+
+    <div class="alert info">
+      <div class="alert-icon">ℹ️</div>
+      <div>Los estados posibles en col S son: <strong>ENVIADO</strong> (amarillo) → <strong>RECIBIDO</strong> (verde) / <strong>DIFERENCIA</strong> (rojo) → <strong>CORREGIDO</strong> (gris).</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN: COCINA CENTRAL -->
+<!-- ══════════════════════════════════════════ -->
+<div class="section-divider" id="sec-cc">
+  <div class="section-title">🧑‍🍳 Cocina Central</div>
+</div>
+
+<!-- CARD: REGISTRAR PRODUCCION -->
+<div class="op-card" data-roles="cc jb" id="card-produccion-cc">
+  <div class="op-header" onclick="toggleCard('card-produccion-cc')">
+    <div class="op-icon orange">🍳</div>
+    <div class="op-meta">
+      <div class="op-title">Registrar lote producido</div>
+      <div class="op-subtitle">Anotar cada preparación completada en PRODUCCION_CC</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body">
+
+    <span class="freq-badge diario">📅 Cada vez que se completa un lote</span>
+
+    <div class="when-box">
+      <div class="when-icon">📋</div>
+      <div class="when-text">
+        Cada vez que terminas de producir una preparación — salsa, base, masa — debes registrarla en <strong>CONTROL_MAESTRO_2026</strong> → hoja <code>Produccion_CC</code>. Este registro es la fuente de verdad del inventario de CC y la base del bono semanal.
+      </div>
+    </div>
+
+    <div class="steps-label">Pasos</div>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Abre PRODUCCION_CC</div>
+        <div class="step-desc">En <strong>CONTROL_MAESTRO_2026</strong>, ir a la hoja <code>Produccion_CC</code>. Ir a la primera fila vacía al final.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Selecciona la receta</div>
+        <div class="step-desc"><strong>Col D (Nombre_Receta)</strong> — Dropdown con todas las PREPARACIONES. Escribe las primeras letras para filtrar. El código REC-XXXX se completa automáticamente en col C.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Completa los campos manuales</div>
+        <div class="step-desc">
+          <strong>Col A</strong> — ID_Produccion: formato <code>PC-2026-001</code> (número correlativo)<br>
+          <strong>Col B</strong> — Fecha: fecha de producción<br>
+          <strong>Col E</strong> — Tipo de Registro: <code>Producido</code> / <code>Planificado</code> / <code>Cancelado</code><br>
+          <strong>Col F</strong> — Q_lotes_plan: cuántos lotes planificabas producir<br>
+          <strong>Col G</strong> — Q_lotes_real: cuántos lotes produjiste realmente<br>
+          <strong>Col I</strong> — Q_salida_real_gr: gramos reales obtenidos al final
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Verifica los campos automáticos</div>
+        <div class="step-desc">Las columnas H (Q teórica), J (Merma gr), K (Merma %), L (Costo teórico), M (Costo total), N (Rendimiento) se calculan solos. <strong>Si Costo aparece $0 o PENDIENTE</strong> → falta costo en RECETAS_MASTER, avisar al JO.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Marca el estado final</div>
+        <div class="step-desc"><strong>Col Q (Estado)</strong>: <code>OK</code> si todo normal · <code>Merma Alta</code> si perdiste más del 6% · <code>Sin Costo</code> si falta precio · <code>Cancelado</code> si no se completó.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <div class="step-title">Avisa al Jefe de Bodega</div>
+        <div class="step-desc">Cuando el lote está registrado y físicamente listo, avisa al JB para que registre la <strong>Entrada_CC</strong> en Movimientos_BC. <strong>Sin ese paso el producto no existe en el inventario de BC.</strong></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CARD: REGLA FLUJO CC -->
+<div class="op-card" data-roles="cc jb jl" id="card-flujo-cc" style="border-top:2px solid var(--rosso)">
+  <div class="op-header" onclick="toggleCard('card-flujo-cc')">
+    <div class="op-icon rosso">🚦</div>
+    <div class="op-meta">
+      <div class="op-title">Regla de flujo CC → BC → Local</div>
+      <div class="op-subtitle">El único camino válido para que las preparaciones lleguen a los locales</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body" style="display:block">
+
+    <span class="freq-badge siempre">🔴 Regla siempre — sin excepciones</span>
+
+    <div style="display:flex;flex-direction:column;gap:8px;margin:16px 0">
+
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(90,158,122,0.08);border:1px solid rgba(90,158,122,0.2);border-radius:8px">
+        <div style="font-size:20px">1️⃣</div>
+        <div style="font-size:13px;color:var(--testo);line-height:1.5"><strong>CC produce y registra</strong> → fila en PRODUCCION_CC con Q_salida_real_gr</div>
+      </div>
+
+      <div style="text-align:center;color:var(--testo-dim);font-size:18px">↓</div>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(200,137,58,0.08);border:1px solid rgba(200,137,58,0.2);border-radius:8px">
+        <div style="font-size:20px">2️⃣</div>
+        <div style="font-size:13px;color:var(--testo);line-height:1.5"><strong>JB recibe y registra</strong> → <code>Entrada_CC</code> en Movimientos_BC. Solo si existe la fila en PRODUCCION_CC.</div>
+      </div>
+
+      <div style="text-align:center;color:var(--testo-dim);font-size:18px">↓</div>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(74,143,168,0.08);border:1px solid rgba(74,143,168,0.2);border-radius:8px">
+        <div style="font-size:20px">3️⃣</div>
+        <div style="font-size:13px;color:var(--testo);line-height:1.5"><strong>BC entrega al local</strong> → <code>Entrega BLocal</code> normal. El producto ahora está en el inventario de BLocal.</div>
+      </div>
+
+    </div>
+
+    <div style="background:rgba(184,84,80,0.08);border:1px solid rgba(184,84,80,0.3);border-radius:8px;padding:14px;margin-top:4px">
+      <div style="font-size:11px;font-weight:600;color:var(--rosso);letter-spacing:1px;margin-bottom:8px">❌ LO QUE NO DEBE PASAR</div>
+      <div style="font-size:12px;color:var(--testo-dim);line-height:1.7">
+        • CC entrega directo a BLocal sin pasar por BC<br>
+        • CC entrega directo a una sección sin registro<br>
+        • JB registra Entrada_CC sin que exista la fila en PRODUCCION_CC<br><br>
+        <strong style="color:var(--testo)">Si el flujo se salta, el inventario miente y el bono no se puede calcular.</strong>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN: CANDELARIA -->
+<!-- ══════════════════════════════════════════ -->
+<div class="section-divider" id="sec-candelaria">
+  <div class="section-title">🏪 Candelaria</div>
+</div>
+
+<!-- CARD 8: ENTREGA BLOCAL → SECCIÓN -->
+<div class="op-card" data-roles="jl jb" id="card-entrega-secc">
+  <div class="op-header" onclick="toggleCard('card-entrega-secc')">
+    <div class="op-icon verde">📤</div>
+    <div class="op-meta">
+      <div class="op-title">Entrega BLocal → Sección</div>
+      <div class="op-subtitle">Registrar salida de bodega local hacia una sección operativa</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body">
+
+    <span class="freq-badge diario">📅 Uso diario — cada vez que se despacha a sección</span>
+
+    <div class="when-box">
+      <div class="when-icon">📋</div>
+      <div class="when-text">
+        Cuando la Barra Café, Barra Jugos, Helados o Alimentos solicita insumos desde la bodega local, se debe registrar la salida manualmente en <strong>CONTROL_CANDELARIA_2026</strong>. Este movimiento descuenta el stock de BLocal e impacta el food cost de la sección.
+      </div>
+    </div>
+
+    <div class="steps-label">Pasos</div>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Abrir Movimientos_BLocal en Candelaria</div>
+        <div class="step-desc">En <strong>CONTROL_CANDELARIA_2026</strong>, ir a la hoja <code>Movimientos_BLocal</code>. Ir a la primera fila vacía al final de la tabla.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Completar los campos obligatorios</div>
+        <div class="step-desc">
+          <strong>Col A</strong> — Fecha (hoy)<br>
+          <strong>Col B</strong> — Tipo movimiento: <code>Entrega Secc</code> (valor exacto de PARAMETROS B27)<br>
+          <strong>Col E</strong> — Sección destino: <code>BARRA CAFE</code> / <code>BARRA JUGOS</code> / <code>HELADOS</code> / <code>ALIMENTOS</code><br>
+          <strong>Col F</strong> — SKU del insumo (dropdown desde BD_INSUMOS)<br>
+          <strong>Col M</strong> — Cantidad en UTM (negativo — es una salida)
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Verificar el stock actualizado</div>
+        <div class="step-desc">Ir a hoja <code>Inventario_BLocal</code> y confirmar que el stock del SKU entregado bajó correctamente. El cálculo es automático.</div>
+      </div>
+    </div>
+
+    <div class="alert warn">
+      <div class="alert-icon">⚠️</div>
+      <div>La cantidad en col M debe ir en <strong>UTM (unidad de medida base)</strong> — no en kilos ni unidades. Revisar la columna UTM en BD_INSUMOS si tienes dudas sobre la conversión.</div>
+    </div>
+
+    <div class="alert danger">
+      <div class="alert-icon">🚫</div>
+      <div>No escribir en columnas con fórmulas. Solo editar: col A (fecha), B (tipo), E (sección), F (SKU), M (cantidad). Las demás se calculan solas.</div>
+    </div>
+
+    <div class="inner-divider"></div>
+
+    <div class="steps-label">Tipos de ajuste disponibles</div>
+    <div class="checklist">
+      <div class="check-item">
+        <div class="check-dot verde"></div>
+        <div><code>Entrega Secc</code> — salida normal a sección (negativo)</div>
+      </div>
+      <div class="check-item">
+        <div class="check-dot ambra"></div>
+        <div><code>Ajuste + mas</code> — corrección positiva de stock (ej. conteo físico)</div>
+      </div>
+      <div class="check-item">
+        <div class="check-dot rosso"></div>
+        <div><code>Ajuste - menos</code> — corrección negativa de stock</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CARD 9: REGISTRAR MERMA -->
+<div class="op-card" data-roles="jl jb op" id="card-merma">
+  <div class="op-header" onclick="toggleCard('card-merma')">
+    <div class="op-icon rosso">🗑️</div>
+    <div class="op-meta">
+      <div class="op-title">Registrar Merma</div>
+      <div class="op-subtitle">Registrar pérdida o descarte de insumos en Bodega Local</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body">
+
+    <span class="freq-badge diario">📅 Registrar inmediatamente — no acumular</span>
+
+    <div class="when-box">
+      <div class="when-icon">📋</div>
+      <div class="when-text">
+        Cualquier insumo descartado, vencido, derramado o dañado en la <strong>Bodega Local</strong> debe registrarse <strong>el mismo día</strong> en <code>Movimientos_BLocal</code>. Tipo de movimiento: <code>Merma BLocal</code>. El sistema mide merma semanal con umbral: <strong style="color:#5A9E7A">≤0.3% normal</strong> · <strong style="color:#C8893A">≤0.6% alerta</strong> · <strong style="color:#B85450">&gt;0.6% crítico</strong>.
+      </div>
+    </div>
+
+    <div class="steps-label">Pasos</div>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Abrir Movimientos_BLocal</div>
+        <div class="step-desc">En <strong>CONTROL_CANDELARIA_2026</strong>, ir a <code>Movimientos_BLocal</code>. Primera fila vacía al final.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Completar los campos</div>
+        <div class="step-desc">
+          <strong>Col A</strong> — Fecha (hoy, o fecha real del descarte)<br>
+          <strong>Col B</strong> — Tipo movimiento: <code>Merma BLocal</code> (valor exacto de PARAMETROS B32)<br>
+          <strong>Col E</strong> — Sección donde ocurrió la merma<br>
+          <strong>Col F</strong> — SKU del insumo dañado / descartado<br>
+          <strong>Col M</strong> — Cantidad en UTM (negativo)<br>
+          <strong>Col N</strong> — Nota descriptiva: motivo de la merma (ej: "vencido", "derrame", "producto dañado")
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Verificar en Inventario_BLocal</div>
+        <div class="step-desc">El stock del SKU afectado debe haber bajado. Si la merma es de Clase A (producto de alto valor), el impacto aparecerá en el KPI de merma del dashboard.</div>
+      </div>
+    </div>
+
+    <div class="inner-divider"></div>
+
+    <div class="steps-label">¿Cuándo aplica cada tipo?</div>
+    <div class="checklist">
+      <div class="check-item">
+        <div class="check-dot rosso"></div>
+        <div><strong>Producto vencido</strong> — insumo fuera de fecha. Registrar y descartar físicamente.</div>
+      </div>
+      <div class="check-item">
+        <div class="check-dot rosso"></div>
+        <div><strong>Derrame o rotura</strong> — accidente en manipulación. Registrar inmediatamente.</div>
+      </div>
+      <div class="check-item">
+        <div class="check-dot rosso"></div>
+        <div><strong>Producto dañado en recepción</strong> — llega en mal estado desde BCentral. Registrar merma + avisar diferencia en confirmación.</div>
+      </div>
+      <div class="check-item">
+        <div class="check-dot ambra"></div>
+        <div><strong>Merma de producción</strong> — pérdida normal en preparación (ej. cáscaras, residuos). Registrar si supera lo esperado.</div>
+      </div>
+    </div>
+
+    <div class="alert warn">
+      <div class="alert-icon">⚠️</div>
+      <div>Solo productos de <strong>Clase A</strong> (BD_INSUMOS col AJ = "A") generan alerta en el dashboard de merma. Los Clase B y C se registran igualmente pero no afectan el KPI de bono.</div>
+    </div>
+
+    <div class="alert ok">
+      <div class="alert-icon">✅</div>
+      <div>Una merma bien registrada protege al equipo: el sistema distingue entre pérdida real y error de digitación. Sin registro, el stock queda inflado y el food cost se distorsiona.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN: SECCIONES OPERATIVAS -->
+<!-- ══════════════════════════════════════════ -->
+<div class="section-divider" id="sec-secciones">
+  <div class="section-title">🧑‍🍳 Secciones Operativas</div>
+</div>
+
+<!-- CARD: REGISTRAR MERMA DIARIA SECCIÓN -->
+<div class="op-card" data-roles="op jl" id="card-merma-secc">
+  <div class="op-header" onclick="toggleCard('card-merma-secc')">
+    <div class="op-icon rosso">📝</div>
+    <div class="op-meta">
+      <div class="op-title">Registrar Merma Diaria de Sección</div>
+      <div class="op-subtitle">Insumos descartados en Barra Café, Jugos, Helados o Alimentos</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body">
+
+    <span class="freq-badge diario">📅 Registrar cada vez que ocurra — no acumular</span>
+
+    <div class="when-box">
+      <div class="when-icon">📋</div>
+      <div class="when-text">
+        Cada operador registra las mermas de su sección directamente en la hoja <strong>MERMA_DIARIA</strong> de <strong>CONTROL_CANDELARIA_2026</strong>. Este registro es independiente de Movimientos_BLocal — es el control de pérdidas a nivel de sección.
+      </div>
+    </div>
+
+    <div class="steps-label">Pasos</div>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Abrir MERMA_DIARIA en Candelaria</div>
+        <div class="step-desc">En <strong>CONTROL_CANDELARIA_2026</strong>, ir a la hoja <code>MERMA_DIARIA</code>. Agregar una fila al final de la tabla.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Completar los campos</div>
+        <div class="step-desc">
+          <strong>fecha</strong> — fecha real del descarte<br>
+          <strong>Local</strong> — Candelaria<br>
+          <strong>Seccion</strong> — <code>Barra Cafe</code> / <code>Barra Jugos</code> / <code>Barra Alimentos</code> / <code>Helados</code><br>
+          <strong>Descripcion</strong> — nombre del insumo<br>
+          <strong>SKU</strong> — código numérico del insumo<br>
+          <strong>Cantidad Mermada</strong> — cantidad real descartada<br>
+          <strong>UTM</strong> — unidad: <code>Gr</code> / <code>CC</code> / <code>Un</code><br>
+          <strong>Motivo de Merma</strong> — ver tabla abajo<br>
+          <strong>Responsable</strong> — <code>Operador Seccion</code> o <code>Jefe de Local</code><br>
+          <strong>Observacion</strong> — nota adicional si aplica
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Verificar que quedó registrado</div>
+        <div class="step-desc">La fila debe quedar completa. Las columnas <strong>Costo por UTM</strong> y <strong>Costo Total Merma</strong> se calculan automáticamente con fórmula — no las edites.</div>
+      </div>
+    </div>
+
+    <div class="inner-divider"></div>
+
+    <div class="steps-label">Motivos de merma disponibles</div>
+    <div class="checklist">
+      <div class="check-item">
+        <div class="check-dot rosso"></div>
+        <div><strong>Vencido</strong> — producto fuera de fecha. Reforzar FIFO.</div>
+      </div>
+      <div class="check-item">
+        <div class="check-dot rosso"></div>
+        <div><strong>Manipulación</strong> — accidente en preparación o manejo.</div>
+      </div>
+      <div class="check-item">
+        <div class="check-dot ambra"></div>
+        <div><strong>Calidad</strong> — producto recibido o almacenado en mal estado.</div>
+      </div>
+      <div class="check-item">
+        <div class="check-dot ambra"></div>
+        <div><strong>Error pedido</strong> — se pidió más de lo necesario.</div>
+      </div>
+      <div class="check-item">
+        <div class="check-dot ambra"></div>
+        <div><strong>Ajuste inventario</strong> — diferencia entre stock real y sistema.</div>
+      </div>
+      <div class="check-item">
+        <div class="check-dot verde"></div>
+        <div><strong>Devolución</strong> — producto devuelto al cliente o rechazado.</div>
+      </div>
+    </div>
+
+    <div class="alert warn">
+      <div class="alert-icon">⚠️</div>
+      <div>No editar las columnas <strong>Costo por UTM</strong> ni <strong>Costo Total Merma $</strong> — son fórmulas automáticas. Solo completar los campos de datos.</div>
+    </div>
+
+    <div class="alert ok">
+      <div class="alert-icon">✅</div>
+      <div>Registrar la merma el mismo día que ocurre. Una merma no registrada infla el stock y distorsiona el food cost de la sección.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN: SCRIPTS — CUÁNDO EJECUTARLOS -->
+<!-- ══════════════════════════════════════════ -->
+<div class="section-divider" id="sec-scripts">
+  <div class="section-title">⚙️ Scripts — Cuándo y Cómo</div>
+</div>
+
+<!-- CARD 7: RESUMEN DE SCRIPTS -->
+<div class="op-card" data-roles="jb" id="card-scripts">
+  <div class="op-header" onclick="toggleCard('card-scripts')">
+    <div class="op-icon ambra">🔧</div>
+    <div class="op-meta">
+      <div class="op-title">Resumen de Scripts Activos</div>
+      <div class="op-subtitle">Qué hace cada script, cuándo ejecutarlo</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body">
+
+    <div class="script-box">
+      <div class="script-label">📦 Bodega Central</div>
+      <div class="script-name">emitirOrdenesDeCompra()</div>
+      <div class="script-where">Cuándo: al confirmar reposición → genera OC + PDF + Gmail</div>
+    </div>
+
+    <div class="script-box">
+      <div class="script-label">🚚 Bodega Central</div>
+      <div class="script-name">inviaConsegna()</div>
+      <div class="script-where">Cuándo: al preparar despacho → escribe en BLocal del destino</div>
+    </div>
+
+    <div class="script-box">
+      <div class="script-label">✅ Automático (trigger)</div>
+      <div class="script-name">leggiConferme()</div>
+      <div class="script-where">Cuándo: automático al guardar en Candelaria. También ejecutable manualmente desde menú BCentral en MAESTRO</div>
+    </div>
+
+    <div class="script-box">
+      <div class="script-label">🔒 Pendiente deploy</div>
+      <div class="script-name">bloquearFilasHistoricas()</div>
+      <div class="script-where">Cuándo: automático cada noche a las 23:00 (cuando esté activado). Protege filas anteriores a hoy</div>
+    </div>
+
+    <div class="alert info">
+      <div class="alert-icon">ℹ️</div>
+      <div>Los scripts del menú <strong>BCentral</strong> son visibles para todos los colaboradores. Solo ejecutar si eres Jefe de Bodega o tienes instrucciones.</div>
+    </div>
+
+    <div class="alert danger">
+      <div class="alert-icon">🚫</div>
+      <div>Nunca ejecutar el mismo script dos veces seguidas sin revisar el resultado. Puede generar registros duplicados.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN: VISOR DE RECETAS -->
+<!-- ══════════════════════════════════════════ -->
+<div class="section-divider" id="sec-visor">
+  <div class="section-title">📖 Visor de Recetas</div>
+</div>
+
+<!-- CARD 5: BUSCAR Y VER RECETA -->
+<div class="op-card" data-roles="jb jl op" id="card-ver-receta">
+  <div class="op-header" onclick="toggleCard('card-ver-receta')">
+    <div class="op-icon verde">🔍</div>
+    <div class="op-meta">
+      <div class="op-title">Buscar y Ver una Receta</div>
+      <div class="op-subtitle">Consultar ingredientes, costos y procedimiento</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body">
+
+    <span class="freq-badge diario">📅 Consulta diaria</span>
+
+    <div class="when-box">
+      <div class="when-icon">📋</div>
+      <div class="when-text">
+        El Visor de Recetas es la app web para consultar recetas activas. Se abre en el navegador, funciona en el celular y en computador. Login requerido con usuario y cargo PINSA.
+      </div>
+    </div>
+
+    <div class="steps-label">Cómo usarlo</div>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Abrir el Visor</div>
+        <div class="step-desc">Ir a la URL del Visor de Recetas (GitHub Pages). Ingresar nombre de usuario y seleccionar cargo. Los Operadores solo ven recetas en estado <code>ACTIVA</code>, sin columna de costos.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Filtrar y buscar</div>
+        <div class="step-desc">Usar el buscador libre o los filtros de sección: <code>TODAS</code> · <code>LÍQUIDOS</code> · <code>SÓLIDOS</code>. Dentro de cada sección se puede filtrar por familia (ICED_MATCHAS, SUPER_JUGOS, etc.).</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Ver la ficha completa</div>
+        <div class="step-desc">Clic en la receta en la lista lateral. Verás: ingredientes con cantidades y unidades, food cost y margen (si tienes permiso de costo), tiempo de prep, dificultad, procedimiento paso a paso, foto y video si disponibles.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Actualizar la lista</div>
+        <div class="step-desc">Si se acaban de guardar recetas nuevas, usar el botón <strong>↻ Actualizar lista</strong> en la parte superior de la barra lateral. Esperar 1–2 minutos después de guardar antes de actualizar — el sistema necesita ese tiempo para publicar los cambios.</div>
+      </div>
+    </div>
+
+    <div class="alert info">
+      <div class="alert-icon">ℹ️</div>
+      <div>Los <strong>Operadores</strong> no ven costos ni food cost — solo ingredientes y procedimiento. Los roles JL, CC, JO y AD ven la información completa.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CARD 6: CREAR NUEVA RECETA -->
+<div class="op-card" data-roles="jb" id="card-crear-receta">
+  <div class="op-header" onclick="toggleCard('card-crear-receta')">
+    <div class="op-icon orange">➕</div>
+    <div class="op-meta">
+      <div class="op-title">Crear Nueva Receta</div>
+      <div class="op-subtitle">Ingresar receta nueva al sistema desde el Simulador</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body">
+
+    <span class="freq-badge cuando">🕐 Cuando se desarrolla un nuevo producto</span>
+
+    <div class="when-box">
+      <div class="when-icon">📋</div>
+      <div class="when-text">
+        Solo roles <strong>JO / AD / CC</strong> pueden crear recetas. Usar la pestaña <strong>Simulador</strong> en el Visor de Recetas. La receta se guarda directamente en Google Sheets.
+      </div>
+    </div>
+
+    <div class="steps-label">Pasos para crear</div>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Ir al Simulador</div>
+        <div class="step-desc">En el Visor de Recetas, hacer clic en la pestaña <strong>Simulador</strong> del menú superior. Asegurarse de estar en la sub-pestaña <strong>Nueva Receta</strong>.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Completar los campos obligatorios</div>
+        <div class="step-desc">
+          <strong>Nombre</strong> — único, sin duplicados.<br>
+          <strong>Tipo</strong> — SIMPLE · PREPARACION · ENSAMBLE · OFERTA.<br>
+          <strong>Sección</strong> — BARRA CAFE · BARRA JUGOS · COCINA CENTRAL.<br>
+          <strong>Familia</strong> — categoría dentro de la sección.<br>
+          <strong>Al menos 1 ingrediente</strong> con nombre y cantidad.<br>
+          <strong>Precio de venta</strong> — necesario para calcular el food cost.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Campos opcionales recomendados</div>
+        <div class="step-desc">
+          <strong>Rendimiento</strong> — obligatorio para tipo PREPARACION.<br>
+          <strong>Procedimiento</strong> — pasos del proceso de preparación.<br>
+          <strong>URL Foto / Video</strong> — enlace Drive o YouTube.<br>
+          <strong>Perfect Serve</strong> — instrucciones de presentación.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Guardar la receta</div>
+        <div class="step-desc">Hacer clic en <strong>Guardar receta</strong>. El sistema envía los datos a Google Sheets automáticamente. Aparecerá un mensaje de confirmación. <strong>No cerrar ni recargar la página</strong> durante el guardado.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Verificar que se guardó</div>
+        <div class="step-desc">Ir a la pestaña <strong>Recetas</strong> y esperar 1–2 minutos. Luego presionar <strong>↻ Actualizar lista</strong>. Si la receta no aparece, esperar otro minuto y repetir — el sistema tiene un pequeño retraso de publicación.</div>
+      </div>
+    </div>
+
+    <div class="inner-divider"></div>
+
+    <div class="steps-label">Ciclo de vida de la receta</div>
+
+    <div class="step">
+      <div class="step-num">①</div>
+      <div class="step-content">
+        <div class="step-title">SIMULACION</div>
+        <div class="step-desc">Recién creada. Visible solo para quien la creó y roles AD/JO.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">②</div>
+      <div class="step-content">
+        <div class="step-title">PENDIENTE</div>
+        <div class="step-desc">Enviada a revisión. Esperando validación del Jefe de Operaciones.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">③</div>
+      <div class="step-content">
+        <div class="step-title">ACTIVA_SIN_DATA</div>
+        <div class="step-desc">Aprobada pero sin foto, video o procedimiento completo. Ya visible para el equipo.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">④</div>
+      <div class="step-content">
+        <div class="step-title">ACTIVA</div>
+        <div class="step-desc">Completa y operativa. Visible para todos según cargo. Food cost dinámico activo.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">⑤</div>
+      <div class="step-content">
+        <div class="step-title">ARCHIVADA</div>
+        <div class="step-desc">Ya no está en uso. Solo visible para AD/JO. No eliminar — el historial de costos depende de que existan los registros.</div>
+      </div>
+    </div>
+
+    <div class="alert warn">
+      <div class="alert-icon">⚠️</div>
+      <div><strong>Mac / Safari:</strong> si al guardar no aparece confirmación, verificar que el navegador no bloqueó la conexión. Usar Chrome en lo posible.</div>
+    </div>
+
+    <div class="alert warn">
+      <div class="alert-icon">⚠️</div>
+      <div>Nunca eliminar recetas. Siempre <strong>archivar</strong>. El historial de costos depende de que los registros existan.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN: POR QUÉ IMPORTA -->
+<!-- ══════════════════════════════════════════ -->
+<div class="section-divider" id="sec-porque" style="margin-top:32px">
+  <div class="section-title">💡 Por qué importa — El sistema somos todos</div>
+</div>
+
+<div class="op-card" data-roles="all jb jl op cc" id="card-porque" style="border-top:2px solid var(--orange)">
+  <div class="op-header" onclick="toggleCard('card-porque')">
+    <div class="op-icon orange">❤️</div>
+    <div class="op-meta">
+      <div class="op-title">Por qué registrar cada movimiento</div>
+      <div class="op-subtitle">El propósito detrás del sistema — en 2 minutos</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body" style="display:block">
+
+    <div style="background:rgba(196,98,45,0.08);border:1px solid rgba(196,98,45,0.25);border-radius:10px;padding:18px 20px;margin-bottom:20px">
+      <div style="font-size:13px;font-weight:600;color:var(--orange);margin-bottom:8px;letter-spacing:0.5px">LA PREGUNTA REAL</div>
+      <div style="font-size:16px;color:var(--white);line-height:1.6">¿Por qué debería yo registrar algo en un sistema que no entiendo?</div>
+      <div style="font-size:13px;color:var(--testo-dim);margin-top:8px;line-height:1.6">Esta es una pregunta válida. La respuesta honesta es: <strong style="color:var(--testo)">porque el sistema trabaja para ti — pero solo si tú le das los datos.</strong></div>
+    </div>
+
+    <!-- LA CADENA -->
+    <div class="steps-label">La cadena que conecta tu trabajo con tu bono</div>
+
+    <div style="display:flex;flex-direction:column;gap:0;margin-bottom:24px;position:relative">
+
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px dashed var(--border)">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(90,158,122,0.15);border:1.5px solid var(--verde);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">👩‍🍳</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--testo);margin-bottom:3px">Tú trabajas</div>
+          <div style="font-size:12px;color:var(--testo-dim);line-height:1.5">Produces, despachas, atiendes. Cada acción tiene un valor real — en gramos, en pesos, en tiempo.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px dashed var(--border)">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(200,137,58,0.15);border:1.5px solid var(--ambra);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📝</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--testo);margin-bottom:3px">El sistema registra</div>
+          <div style="font-size:12px;color:var(--testo-dim);line-height:1.5">Cuando tú ingresas el dato — merma, cantidad producida, movimiento — el sistema lo guarda. Sin ese dato, para el sistema ese trabajo no existió.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px dashed var(--border)">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(74,143,168,0.15);border:1.5px solid var(--azzurro);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📊</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--testo);margin-bottom:3px">Los números hablan</div>
+          <div style="font-size:12px;color:var(--testo-dim);line-height:1.5">El dashboard muestra food cost, merma y cumplimiento en tiempo real. Estos números son tu trabajo visible — para ti, para el equipo, para PINSA.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 0">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(90,158,122,0.15);border:1.5px solid var(--verde);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">💰</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--verde);margin-bottom:3px">Tu bono se calcula</div>
+          <div style="font-size:12px;color:var(--testo-dim);line-height:1.5">El bono no lo decide nadie a dedo. Lo calculan los datos que tú ingresaste. <strong style="color:var(--testo)">Sin datos = sin bono. Con datos correctos = bono justo.</strong></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- LO QUE PASA SIN DATOS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px">
+      <div style="background:rgba(184,84,80,0.08);border:1px solid rgba(184,84,80,0.25);border-radius:8px;padding:14px">
+        <div style="font-size:11px;font-weight:600;color:var(--rosso);letter-spacing:1px;margin-bottom:10px">❌ SIN REGISTRO</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.7">
+          • El inventario miente<br>
+          • El food cost es incalculable<br>
+          • El bono no se puede calcular<br>
+          • Los errores se repiten<br>
+          • Nadie sabe qué pasó realmente
+        </div>
+      </div>
+      <div style="background:rgba(90,158,122,0.08);border:1px solid rgba(90,158,122,0.25);border-radius:8px;padding:14px">
+        <div style="font-size:11px;font-weight:600;color:var(--verde);letter-spacing:1px;margin-bottom:10px">✓ CON REGISTRO</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.7">
+          • El stock es real y confiable<br>
+          • Sabes cuánto cuesta producir<br>
+          • El bono se calcula solo<br>
+          • Los problemas se detectan<br>
+          • Tu trabajo queda documentado
+        </div>
+      </div>
+    </div>
+
+    <!-- EL ROL DE CADA UNO -->
+    <div class="steps-label">El rol de cada persona en el sistema</div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px">
+
+      <div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border-radius:8px;padding:12px 14px">
+        <div style="font-size:20px;flex-shrink:0">🧑‍🍳</div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--orange);margin-bottom:2px">Chef Cocina Central</div>
+          <div style="font-size:12px;color:var(--testo-dim);line-height:1.5">Registra cada lote producido en <strong style="color:var(--testo)">PRODUCCION_CC</strong> — cantidad real, merma, estado. Sin este dato el sistema no sabe qué hay disponible para los locales.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border-radius:8px;padding:12px 14px">
+        <div style="font-size:20px;flex-shrink:0">📦</div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--orange);margin-bottom:2px">Jefe de Bodega</div>
+          <div style="font-size:12px;color:var(--testo-dim);line-height:1.5">Registra cada entrada y salida en <strong style="color:var(--testo)">Movimientos_BC</strong>. Es el guardián del inventario real — si no registra, el stock miente y los pedidos fallan.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border-radius:8px;padding:12px 14px">
+        <div style="font-size:20px;flex-shrink:0">🏪</div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--orange);margin-bottom:2px">Jefe de Local</div>
+          <div style="font-size:12px;color:var(--testo-dim);line-height:1.5">Confirma cada entrega recibida y supervisa que las secciones registren mermas. Su confirmación cierra el ciclo — sin ella, la entrega queda como "pendiente" para siempre.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border-radius:8px;padding:12px 14px">
+        <div style="font-size:20px;flex-shrink:0">⚙️</div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--orange);margin-bottom:2px">Operador de Sección</div>
+          <div style="font-size:12px;color:var(--testo-dim);line-height:1.5">Registra merma en su sección cuando ocurre — no acumula. Este es el dato más difícil de recuperar después. <strong style="color:var(--testo)">Una merma no registrada es un costo invisible que sale del bono de todos.</strong></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FRASE FINAL -->
+    <div style="background:rgba(196,98,45,0.06);border-left:3px solid var(--orange);border-radius:0 8px 8px 0;padding:14px 16px;margin-top:16px">
+      <div style="font-size:13px;color:var(--testo);line-height:1.7;font-style:italic">"Este sistema no es de PINSA. Es nuestro. Cada número que ingresamos construye una imagen real de cómo trabajamos — y esa imagen es la que decide si ganamos el bono o no. El sistema solo refleja lo que hacemos."</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- EMPTY STATE -->
+<div class="empty-state" id="empty-state">
+  No hay operaciones disponibles para este rol en esta sección.
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN: QUÉ HACER SI ALGO FALLA -->
+<!-- ══════════════════════════════════════════ -->
+<div class="section-divider" id="sec-errores">
+  <div class="section-title">🚨 Qué hacer si algo falla</div>
+</div>
+
+<div class="op-card" data-roles="all jb jl op cc" id="card-errores">
+  <div class="op-header" onclick="toggleCard('card-errores')">
+    <div class="op-icon rosso">🚨</div>
+    <div class="op-meta">
+      <div class="op-title">Errores frecuentes y cómo resolverlos</div>
+      <div class="op-subtitle">El script no responde · el sheet no actualiza · veo un error raro</div>
+    </div>
+    <div class="op-chevron">▾</div>
+  </div>
+  <div class="op-body">
+
+    <span class="freq-badge siempre">🔴 Consultar antes de llamar</span>
+
+    <!-- ERROR 1 -->
+    <div style="margin-top:16px;margin-bottom:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--testo-dim)">Errores de Script</div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+
+      <div style="background:var(--surface2);border-radius:8px;padding:13px 14px;border-left:3px solid var(--rosso)">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">❌ El script se ejecutó pero no pasó nada</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.6">
+          1. Revisar la hoja de origen — ¿los campos obligatorios están completos?<br>
+          2. Verificar que el SKU está activo en BD_INSUMOS (col AG = <code>SI</code>).<br>
+          3. Cerrar el sheet, esperar 30 segundos, volver a abrir y reintentar.<br>
+          4. Si persiste: avisar al JO con captura de pantalla del error.
+        </div>
+      </div>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:13px 14px;border-left:3px solid var(--rosso)">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">❌ Ejecuté el script dos veces por error</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.6">
+          No corrijas solo. Avisar inmediatamente al JO con el ID de la fila duplicada. El sistema puede tener registros dobles que distorsionan el inventario — se necesita borrar manualmente con permisos de admin.
+        </div>
+      </div>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:13px 14px;border-left:3px solid var(--ambra)">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">⚠️ El script pide autorización / dice "no autorizado"</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.6">
+          El deploy de la WebApp está configurado como <strong style="color:var(--testo)">"Anyone with Google account"</strong> en lugar de <strong style="color:var(--verde)">"Anyone"</strong>. Solo el JO puede corregirlo desde Apps Script → Deploy → Manage deployments.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ERROR 2 -->
+    <div style="margin-bottom:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--testo-dim)">Errores de Datos</div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+
+      <div style="background:var(--surface2);border-radius:8px;padding:13px 14px;border-left:3px solid var(--rosso)">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">❌ El stock en el dashboard no cuadra con la realidad</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.6">
+          1. Verificar que todos los movimientos del día están registrados en <code>Movimientos_BC</code> o <code>Movimientos_BLocal</code>.<br>
+          2. Revisar si hay filas con campos vacíos (fecha, SKU, cantidad) que no están sumando.<br>
+          3. Si el error persiste después de verificar, avisar al JO — no hacer ajustes manuales sin autorización.
+        </div>
+      </div>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:13px 14px;border-left:3px solid var(--ambra)">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">⚠️ Una receta aparece con Costo $0 o "PENDIENTE"</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.6">
+          Falta precio en algún insumo de <code>RECETAS_MASTER</code> o <code>BD_INSUMOS</code>. No es un error crítico operativo — la receta funciona igual. Avisar al JO para que actualice el precio. No editar RECETAS_MASTER directamente.
+        </div>
+      </div>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:13px 14px;border-left:3px solid var(--ambra)">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">⚠️ Guardé una receta en el Visor pero no aparece en la lista</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.6">
+          El sistema tiene un retraso de publicación de 1–2 minutos. Esperar y presionar <strong>↻ Actualizar lista</strong>. Si después de 5 minutos no aparece: verificar en <code>RECETAS_MASTER</code> que la fila existe. En Mac/Safari, cambiar a Chrome.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ERROR 3 -->
+    <div style="margin-bottom:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--testo-dim)">Errores de Flujo CC</div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+
+      <div style="background:var(--surface2);border-radius:8px;padding:13px 14px;border-left:3px solid var(--rosso)">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">❌ El lote está físicamente en BC pero no aparece en Inventario_BC</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.6">
+          El Chef CC produjo pero no se registró la <strong style="color:var(--testo)">Entrada_CC</strong> en <code>Movimientos_BC</code>. Verificar que existe la fila en <code>PRODUCCION_CC</code> primero. Si existe, el JB debe registrar la entrada. Si no existe, el Chef CC debe registrar primero.
+        </div>
+      </div>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:13px 14px;border-left:3px solid var(--ambra)">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">⚠️ El SKU de una PREPARACION no aparece en BD_INSUMOS</div>
+        <div style="font-size:12px;color:var(--testo-dim);line-height:1.6">
+          El GAS V3.2 crea el SKU automáticamente al guardar una receta PREPARACION en el Visor. Si no se creó, verificar que el deploy es <strong style="color:var(--verde)">"Anyone"</strong> (no "Anyone with Google account"). Avisar al JO.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="alert info">
+      <div class="alert-icon">ℹ️</div>
+      <div><strong>Regla de oro:</strong> ante cualquier duda — <strong>no corrijas solo</strong>. Toma captura de pantalla, anota el ID de la fila o el nombre de la receta, y avisa al JO. Una corrección incorrecta puede ser peor que el error original.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  PINSA Superfoods & Wellness · Guía Operativa V3.2 · 15/03/2026
+</div>
+
+<script>
+  let currentRole = 'all';
+
+  // ── QUICK REFERENCE per ruolo ──────────────────────────────
+  const quickRefData = {
+    jb: {
+      label: 'Jefe Bodega',
+      tasks: [
+        'Registrar cada entrada y salida en Movimientos_BC',
+        'Ejecutar script antes de enviar despacho a BLocal',
+        'Confirmar lotes CC recibidos → Entrada_CC en Movimientos_BC'
+      ]
+    },
+    jl: {
+      label: 'Jefe Local',
+      tasks: [
+        'Confirmar recepción de cada entrega desde BCentral',
+        'Supervisar que secciones registren mermas al momento',
+        'Revisar Movimientos_BLocal: filas ENVIADO sin confirmar'
+      ]
+    },
+    op: {
+      label: 'Operador',
+      tasks: [
+        'Registrar merma en MERMA_DIARIA cuando ocurra — no acumular',
+        'Usar el Visor de Recetas para consultar ingredientes y proceso',
+        'Avisar al Jefe de Local ante cualquier diferencia de stock'
+      ]
+    },
+    cc: {
+      label: 'Cocina Central',
+      tasks: [
+        'Registrar cada lote en PRODUCCION_CC con Q_salida_real_gr',
+        'Seguir siempre el flujo CC → BC → Local sin atajos',
+        'Avisar al JB cuando el lote esté físicamente listo para retirar'
+      ]
+    }
+  };
+
+  function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      const offset = 100;
+      const top = el.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  }
+
+  function updateAnchorHighlight() {
+    const sections = ['sec-bodega','sec-cc','sec-candelaria','sec-secciones','sec-scripts','sec-visor','sec-porque','sec-errores'];
+    const btns = document.querySelectorAll('.anchor-btn');
+    let active = 0;
+    sections.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < 160) active = i;
+    });
+    btns.forEach((b, i) => b.classList.toggle('active-section', i === active));
+  }
+
+  window.addEventListener('scroll', updateAnchorHighlight, { passive: true });
+
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    card.classList.toggle('open');
+  }
+
+  function setRole(role) {
+    currentRole = role;
+
+    // Update pills
+    document.querySelectorAll('.role-pill').forEach(p => {
+      p.classList.toggle('active', p.dataset.role === role);
+    });
+
+    // Show/hide anchor nav
+    const anchorNav = document.getElementById('anchor-nav');
+    anchorNav.classList.toggle('visible', role !== 'all');
+
+    // Quick reference
+    const qr = document.getElementById('quick-ref');
+    const qrTasks = document.getElementById('quick-ref-tasks');
+    if (role !== 'all' && quickRefData[role]) {
+      const data = quickRefData[role];
+      qrTasks.innerHTML = data.tasks.map((t, i) => `
+        <div class="quick-task">
+          <div class="quick-task-num">${i+1}</div>
+          <span>${t}</span>
+        </div>
+      `).join('');
+      qr.classList.add('visible');
+    } else {
+      qr.classList.remove('visible');
+    }
+
+    // Show/hide cards
+    const cards = document.querySelectorAll('.op-card');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      if (role === 'all') {
+        card.classList.remove('hidden');
+        visibleCount++;
+      } else {
+        const roles = card.dataset.roles || '';
+        const visible = roles === 'all' || roles.includes(role);
+        card.classList.toggle('hidden', !visible);
+        if (visible) visibleCount++;
+      }
+    });
+
+    // Empty state
+    document.getElementById('empty-state').classList.toggle('show', visibleCount === 0);
+  }
+</script>
+
+</body>
+</html>
