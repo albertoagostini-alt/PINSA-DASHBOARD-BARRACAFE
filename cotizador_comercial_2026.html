@@ -339,9 +339,9 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
 <div class="modal-ov" id="modal-cliente">
   <div class="modal">
     <div class="modal-t">Nuevo Cliente</div>
-    <div class="fr"><div class="fg"><label>Razón Social *</label><input type="text" id="nc-razon"></div><div class="fg"><label>RUT</label><input type="text" id="nc-rut"></div></div>
+    <div class="fr"><div class="fg"><label>Razón Social *</label><input type="text" id="nc-razon"></div><div class="fg"><label>RUT</label><input type="text" id="nc-rut" placeholder="12.345.678-9" oninput="formatRUT(this)" maxlength="12"></div></div>
     <div class="fr"><div class="fg"><label>Contacto *</label><input type="text" id="nc-contacto"></div><div class="fg"><label>Email *</label><input type="email" id="nc-email"></div></div>
-    <div class="fr"><div class="fg"><label>Teléfono</label><input type="text" id="nc-tel"></div><div class="fg"><label>Ciudad</label>
+    <div class="fr"><div class="fg"><label>Teléfono</label><input type="text" id="nc-tel" placeholder="+56 9 XXXX XXXX" oninput="formatTelCL(this)" maxlength="16"></div><div class="fg"><label>Ciudad</label>
       <select id="nc-ciudad">
         <option value="">Seleccionar...</option>
         <option>Santiago</option><option>Providencia</option><option>Las Condes</option>
@@ -378,7 +378,7 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
     <div class="fr">
       <div class="fg">
         <label>Costo Unitario $</label>
-        <input type="number" id="ne-costo" placeholder="0" min="0" oninput="calcPrecioExtra()">
+        <input type="text" id="ne-costo" placeholder="$0" oninput="onCostoExtraInput(this)">
       </div>
       <div class="fg">
         <label>Precio Venta $
@@ -388,7 +388,7 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
             <button type="button" onclick="setPrecioExtra('sugerido')" style="background:#451A03;border:none;color:#F59E0B;border-radius:3px;padding:1px 6px;font-size:10px;cursor:pointer" title="Precio sugerido BD">$S</button>
           </span>
         </label>
-        <input type="number" id="ne-pv" placeholder="0" min="0" oninput="calcMargenExtra()">
+        <input type="text" id="ne-pv" placeholder="$0" oninput="onPVExtraInput(this)">
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
@@ -402,7 +402,7 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
       <div class="fg"><label>Contacto</label><input type="text" id="ne-contacto" placeholder="Nombre contacto"></div>
     </div>
     <div class="fr">
-      <div class="fg"><label>Teléfono Proveedor</label><input type="tel" id="ne-tel-prov" placeholder="+56 9 XXXX XXXX"></div>
+      <div class="fg"><label>Teléfono Proveedor</label><input type="text" id="ne-tel-prov" placeholder="+56 9 XXXX XXXX" oninput="formatTelCL(this)" maxlength="16"></div>
       <div class="fg"><label>Email Proveedor</label><input type="email" id="ne-eprov"></div>
     </div>
     <p style="font-size:11px;color:var(--t3);margin-top:6px">💡 Se guardará en BD Extras para uso futuro</p>
@@ -424,7 +424,7 @@ const CSV_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vRKfymDMvJd6XSSnf
 
 let RECETAS=[],EXTRAS_BD=[],CLIENTES_BD=[],LINEAS=[];
 let CLI_SEL=null,COT_ID=null;
-let MARGEN_MIN_ABS=20, MARGEN_BLOQUEO=25, MARGEN_ALERTA=35;
+let MARGEN_MIN_ABS=20, MARGEN_BLOQUEO=25, MARGEN_ALERTA=35, MARGEN_SUGERIDO_EXTRA=30;
 let recFiltradas=[];
 
 document.addEventListener('DOMContentLoaded',async()=>{
@@ -457,6 +457,7 @@ async function cargarGAS(){
         MARGEN_MIN_ABS=parseFloat(d.params.margen_alerta_pct_linea||d.params.margen_alerta_pct||20);
         MARGEN_BLOQUEO=parseFloat(d.params.margen_minimo_absoluto_pct||25);
         MARGEN_ALERTA=parseFloat(d.params.margen_alerta_absoluto_pct||35);
+        MARGEN_SUGERIDO_EXTRA=parseFloat(d.params['margen sugerido extras']||d.params.margen_sugerido_extras||30);
       }
       renderExtList();
       // Popola dropdown Creado por da params
@@ -727,8 +728,8 @@ async function agregarExtraLibre(){
   if(!desc){showToast('Descripción obligatoria','err');return;}
   const telProv = document.getElementById('ne-tel-prov').value;
   if(telProv && !validaTelCL(telProv)){showToast('Teléfono proveedor inválido — formato: +56 9 XXXX XXXX','err');document.getElementById('ne-tel-prov').focus();return;}
-  const costo=parseFloat(document.getElementById('ne-costo').value)||0;
-  const pv=parseFloat(document.getElementById('ne-pv').value)||0;
+  const costo=limpiarNum(document.getElementById('ne-costo').value);
+  const pv=limpiarNum(document.getElementById('ne-pv').value);
   const q=parseInt(document.getElementById('ne-q').value)||1;
   const pvMin=pvMinimo(costo);
   const pvFinal=Math.max(pv,pvMin);
@@ -753,30 +754,49 @@ async function agregarExtraLibre(){
 
 
 // ── CALCOLI PREZZO EXTRA ──────────────────────────────────────
-function calcPrecioExtra() {
-  const c = parseFloat(document.getElementById('ne-costo').value)||0;
-  const pv = parseFloat(document.getElementById('ne-pv').value)||0;
-  if(c>0 && pv>0) {
-    const mg = ((pv-c)/pv*100).toFixed(1);
-    const el = document.getElementById('ne-mg-show');
-    if(el) { el.textContent = mg+'%'; el.style.color = mg>=40?'var(--green)':mg>=25?'var(--amber)':'var(--red)'; }
-    const inp = document.getElementById('ne-mg-input');
-    if(inp) inp.value = mg;
+/* ── HELPERS FORMATO CLP ── */
+function parseCostoExtra(){ return limpiarNum(document.getElementById('ne-costo').value); }
+function parsePVExtra(){     return limpiarNum(document.getElementById('ne-pv').value); }
+
+function showMgExtra(mg){
+  const el = document.getElementById('ne-mg-show');
+  const inp = document.getElementById('ne-mg-input');
+  if(el){ el.textContent = mg.toFixed(1)+'%'; el.style.color = mg>=40?'var(--green)':mg>=25?'var(--amber)':'var(--red)'; }
+  if(inp) inp.value = mg.toFixed(1);
+}
+
+/* Inserisco costo → auto-calcola PV con MARGEN_SUGERIDO_EXTRA */
+function onCostoExtraInput(el){
+  const raw = el.value.replace(/[^0-9]/g,'');
+  el.value = raw ? '$'+parseInt(raw).toLocaleString('es-CL') : '';
+  const c = limpiarNum(el.value);
+  if(c > 0){
+    const mg = MARGEN_SUGERIDO_EXTRA || 30;
+    const pv = Math.round(c / (1 - mg/100));
+    document.getElementById('ne-pv').value = '$'+pv.toLocaleString('es-CL');
+    showMgExtra(mg);
   }
 }
 
-function calcMargenExtra() {
-  calcPrecioExtra();
+/* Modifico PV manualmente → aggiorna margine */
+function onPVExtraInput(el){
+  const raw = el.value.replace(/[^0-9]/g,'');
+  el.value = raw ? '$'+parseInt(raw).toLocaleString('es-CL') : '';
+  const c = parseCostoExtra();
+  const pv = limpiarNum(el.value);
+  if(c > 0 && pv > 0) showMgExtra((pv-c)/pv*100);
 }
 
+function calcPrecioExtra(){ /* compatibilità */ }
+function calcMargenExtra(){ /* compatibilità */ }
+
 function calcPVdesdeMargen() {
-  const c = parseFloat(document.getElementById('ne-costo').value)||0;
+  const c = parseCostoExtra();
   const mg = parseFloat(document.getElementById('ne-mg-input').value)||0;
   if(c>0 && mg>0 && mg<100) {
     const pv = Math.round(c / (1 - mg/100));
-    document.getElementById('ne-pv').value = pv;
-    const el = document.getElementById('ne-mg-show');
-    if(el) { el.textContent = mg.toFixed(1)+'%'; el.style.color = mg>=40?'var(--green)':mg>=25?'var(--amber)':'var(--red)'; }
+    document.getElementById('ne-pv').value = '$'+pv.toLocaleString('es-CL');
+    showMgExtra(mg);
   }
 }
 
@@ -789,7 +809,7 @@ function setPrecioExtra(tipo) {
     document.getElementById('ne-mg-show').textContent = '0%';
     document.getElementById('ne-mg-show').style.color = 'var(--red)';
   } else if(tipo==='margen') {
-    const mg = parseFloat(MARGEN_ALERTA)||40;
+    const mg = parseFloat(MARGEN_SUGERIDO_EXTRA)||30;
     const pv = Math.round(c / (1 - mg/100));
     document.getElementById('ne-pv').value = pv;
     document.getElementById('ne-mg-input').value = mg;
@@ -852,6 +872,19 @@ async function guardarCotizacion(){
     }else{showToast('Error: '+(d.error||'?'),'err');}
   }catch(e){showToast('Error de conexión','err');}
   btn.disabled=false;btn.innerHTML='💾 Guardar';
+}
+
+async function cambiarEstado(nuevoEstado, motivo){
+  if(!COT_ID) return;
+  try{
+    await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'updateEstado',payload:{
+        id_cot:COT_ID,
+        estado:nuevoEstado,
+        motivo_perdida:motivo||'',
+        usuario:document.getElementById('creado-por')?.value||'GC'
+      }})});
+  }catch(e){ console.warn('updateEstado error:', e); }
 }
 
 async function enviarEmailValidador(cotId,mgP,motivo){
@@ -947,6 +980,8 @@ function generarPDFCliente(){
   <div class="ftr">PINSA Superfoods &amp; Wellness · Cotización válida por 15 días corridos</div>
   </body></html>`;
   const w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),600);
+  /* Cambia stato a PENDIENTE dopo aver inviato il PDF */
+  if(COT_ID) cambiarEstado('PENDIENTE');
 }
 
 function generarPDFOperativo(){
@@ -998,6 +1033,39 @@ function resetForm(){
 }
 
 // ── UTILS ──────────────────────────────────────────
+
+/* ── FORMATTER LIVE TELEFONO CL ── */
+function formatTelCL(el){
+  let v = el.value.replace(/[^0-9+]/g,'');
+  // Normalizza: rimuove prefisso 56 iniziale se già c'è +56
+  if(v.startsWith('+56')) v = v;
+  else if(v.startsWith('56') && v.length > 10) v = '+' + v;
+  else if(v.startsWith('9') && v.length <= 9) v = '+56 9 ' + v.slice(1);
+  // Formatta +56 9 XXXX XXXX
+  const digits = v.replace(/[^0-9]/g,'');
+  if(digits.length >= 11 && digits.startsWith('56')){
+    const n = digits.slice(2); // 9XXXXXXXX
+    el.value = '+56 ' + n.slice(0,1) + ' ' + n.slice(1,5) + ' ' + n.slice(5,9);
+  } else if(digits.length >= 9 && digits.startsWith('9')){
+    el.value = '+56 ' + digits.slice(0,1) + ' ' + digits.slice(1,5) + ' ' + digits.slice(5,9);
+  } else {
+    el.value = v;
+  }
+}
+
+/* ── FORMATTER LIVE RUT CL ── */
+function formatRUT(el){
+  let v = el.value.replace(/[^0-9Kk]/g,'').toUpperCase();
+  if(v.length > 1){
+    const dv = v.slice(-1);
+    let num = v.slice(0,-1);
+    // Inserisce punti: 12345678 → 12.345.678
+    num = num.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+    el.value = num + '-' + dv;
+  } else {
+    el.value = v;
+  }
+}
 
 function validaTelCL(tel) {
   const t = tel.replace(/[\s\-\.]/g,'');
