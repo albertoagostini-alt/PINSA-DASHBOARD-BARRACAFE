@@ -449,7 +449,8 @@ async function cargarRecetas(){
 async function cargarGAS(){
   try{
     const r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getCatalogo',payload:{}})});
-    const d=await r.json();
+    const txt=await r.text();
+    const d=JSON.parse(txt);
     if(d.ok){
       CLIENTES_BD=d.clientes||[];
       EXTRAS_BD=(d.extras||[]).filter(e=>e.Activo==='SI');
@@ -462,17 +463,47 @@ async function cargarGAS(){
       renderExtList();
       // Popola dropdown Creado por da params
       const gcSel = document.getElementById('creado-por');
-      const gcNames = d.params?.gc_nombres || '';
+      const gcNames = (d.params?.gc_nombres||'').toString().trim();
       if(gcNames) {
         gcSel.innerHTML = '<option value="">Seleccionar...</option>';
         gcNames.split(',').map(n=>n.trim()).filter(Boolean).forEach(n=>{
           const o=document.createElement('option');o.value=n;o.textContent=n;gcSel.appendChild(o);
         });
       } else {
-        gcSel.innerHTML = '<option value="">Gerente Comercial</option>';
+        gcSel.innerHTML = '<option value="">Seleccionar...</option><option>GC</option>';
       }
+    } else {
+      console.warn('getCatalogo error:', d.error);
+      cargarGcNombresCSV();
     }
-  }catch(e){}
+  }catch(e){
+    console.warn('cargarGAS error:', e);
+    cargarGcNombresCSV();
+  }
+}
+
+/* Fallback: lee gc_nombres directo desde CSV PARAMETROS */
+const URL_PARAMS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvt15zKAdGjMkMyDXlP6xnbqj-IJiyi4oZKxjCkc-cLWOAEhimW-McOxKXk1Iw8-ZltG9EFp-ZySuy/pub?gid=192257884&single=true&output=csv';
+async function cargarGcNombresCSV(){
+  try{
+    const r = await fetch(URL_PARAMS_CSV);
+    const txt = await r.text();
+    const rows = txt.trim().split('\n').slice(1);
+    let gcNames = '';
+    rows.forEach(l=>{
+      const cols = l.split(',');
+      if((cols[0]||'').trim().toLowerCase()==='gc_nombres') gcNames=(cols[1]||'').replace(/"/g,'').trim();
+    });
+    const gcSel = document.getElementById('creado-por');
+    if(gcNames){
+      gcSel.innerHTML = '<option value="">Seleccionar...</option>';
+      gcNames.split(',').map(n=>n.trim()).filter(Boolean).forEach(n=>{
+        const o=document.createElement('option');o.value=n;o.textContent=n;gcSel.appendChild(o);
+      });
+    } else {
+      gcSel.innerHTML = '<option value="">Seleccionar...</option>';
+    }
+  }catch(e){ console.warn('cargarGcNombresCSV error:', e); }
 }
 
 // ── CATALOGO ──────────────────────────────────────
@@ -1088,7 +1119,7 @@ function validaRUT(rut) {
   return dv === dvCalc;
 }
 function fmtCLP(v){return'$'+Math.round(v||0).toLocaleString('es-CL');}
-function limpiarNum(s){if(!s)return 0;return parseFloat(s.toString().replace(/[^0-9.]/g,''))||0;}
+function limpiarNum(s){if(!s)return 0;/* Rimuove tutto tranne cifre — gestisce formato CLP $30.000 */return parseInt(s.toString().replace(/[^0-9]/g,''))||0;}
 function esc(s){return(s||'').replace(/'/g,"\'").replace(/"/g,'&quot;');}
 function showToast(msg,tipo){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(tipo||'ok');t.style.display='block';setTimeout(()=>t.style.display='none',2500);}
 function parseCsv(txt){
