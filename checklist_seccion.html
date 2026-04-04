@@ -804,6 +804,7 @@ function mrRegistrar(){
   var responsable=SESSION.nombre||'Operador';
   var local=SESSION.local||LOCAL;
   var seccion=SECCION_LABEL;
+  var obs=(document.getElementById('mr-obs')?document.getElementById('mr-obs').value:'').trim();
   var rows=[];
   if(mrCurrentItem.ing && mrCurrentItem.ing.length){
     mrCurrentItem.ing.forEach(function(ing){
