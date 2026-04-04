@@ -630,9 +630,34 @@ function agregarExtraExistente(id,nombre,costo,pv){
 
 function eliminarLinea(id){LINEAS=LINEAS.filter(l=>l.id!==id);renderResumen();recalc();}
 
-function actualizarQ(id,val){
+function actualizarQ(id,val,el){
   const l=LINEAS.find(x=>x.id===id);
-  if(l){l.q=parseFloat(val)||1;renderResumen();recalc();}
+  if(!l)return;
+  l.q=parseFloat(val)||1;
+  /* Aggiorna solo i totali senza ridisegnare l'intera lista — preserva il cursore */
+  recalc();
+  /* Aggiorna solo il totale PV della riga senza toccare il campo qty */
+  const pvTot=document.getElementById('pvt-'+id);
+  if(pvTot) pvTot.textContent=fmtCLP(l.q*l.pv_u);
+  /* Aggiorna riepilogo sezioni */
+  updateResumenTotals();
+}
+
+function updateResumenTotals(){
+  let tcP=0,tpP=0,tcE=0,tpE=0;
+  LINEAS.forEach(l=>{
+    if(l.tipo==='RECETA'){tcP+=l.q*l.costo_u;tpP+=l.q*l.pv_u;}
+    else{tcE+=l.q*l.costo_u;tpE+=l.q*l.pv_u;}
+  });
+  const totP=document.getElementById('res-pinsa-pv');
+  const totE=document.getElementById('res-ext-pv');
+  const totT=document.getElementById('res-tot-pv');
+  if(totP)totP.textContent=fmtCLP(tpP);
+  if(totE)totE.textContent=fmtCLP(tpE);
+  if(totT)totT.textContent=fmtCLP(tpP+tpE);
+  setMgPct('res-pinsa-pct',tpP>0?(tpP-tcP)/tpP*100:0,tpP);
+  setMgPct('res-ext-pct',tpE>0?(tpE-tcE)/tpE*100:0,tpE);
+  setMgPct('res-tot-pct',(tpP+tpE)>0?((tpP+tpE)-(tcP+tcE))/(tpP+tpE)*100:0,tpP+tpE);
 }
 
 function actualizarPV(id,val,inputEl){
@@ -697,7 +722,7 @@ function lineaHTML(l){
   const errClass=l.pv_u<pvMin?'error':l.pv_u<pvMin*1.1?'warn':'';
   return`<div class="cot-row">
     <div class="cot-name" title="${l.descripcion}">${l.descripcion}</div>
-    <div><input class="cot-input" type="number" value="${l.q}" min="1" oninput="actualizarQ(${l.id},this.value)" style="width:100%"></div>
+    <div><input class="cot-input" type="number" value="${l.q}" min="1" oninput="actualizarQ(${l.id},this.value,this)" style="width:100%"></div>
     <div style="text-align:right">
       <input class="cot-input ${errClass}" type="number" value="${Math.round(l.pv_u)}" min="0" oninput="actualizarPV(${l.id},this.value,this)" style="width:100%;text-align:right">
       ${errClass==='error'?`<div class="pv-min-hint">mín: ${fmtCLP(pvMin)}</div>`:''}</div>
@@ -894,6 +919,26 @@ async function cargarCotizacion(id, readOnly){
     if(readOnly){
       document.getElementById('btn-guardar').disabled=true;
       document.getElementById('btn-guardar').textContent='👁 Solo lectura';
+      /* Disabilita tutti i campi del form */
+      document.querySelectorAll('.pl input, .pl select, .pl textarea').forEach(el=>el.disabled=true);
+      /* Disabilita bottoni azione */
+      ['btn-adjudicar','btn-perder','btn-pdf-c'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el){el.style.display='none';}
+      });
+      /* Disabilita add-bar */
+      document.querySelectorAll('.btn-add-prod,.btn-add-ext,.btn-adjudicar-bar,.btn-perder-bar').forEach(el=>{
+        el.disabled=true;el.style.opacity='0.3';el.style.pointerEvents='none';
+      });
+      /* Rendi campi linee non editabili */
+      document.querySelectorAll('.cot-input').forEach(el=>{
+        el.disabled=true;el.style.pointerEvents='none';
+      });
+      /* Banner sola lettura */
+      const banner=document.createElement('div');
+      banner.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1A1A1A;border:1px solid #4A6FA5;color:#60A5FA;padding:8px 20px;border-radius:20px;font-size:11px;z-index:500;pointer-events:none;';
+      banner.textContent='👁 Modo Solo Lectura — Sin modificaciones';
+      document.body.appendChild(banner);
     }
 
     showToast('✓ '+COT_ID+' cargada','ok');
