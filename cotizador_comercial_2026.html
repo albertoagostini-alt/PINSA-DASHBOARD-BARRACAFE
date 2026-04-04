@@ -531,6 +531,8 @@ async function cargarGAS(){
     console.warn('cargarGAS error:', e);
     cargarGcNombresCSV();
   }
+  /* Fallback: se CLIENTES_BD ancora vuoto dopo GAS, carica da CSV */
+  if(!CLIENTES_BD.length) await cargarClientesCSV();
 }
 
 /* Fallback: lee gc_nombres directo desde CSV PARAMETROS */
@@ -1370,6 +1372,28 @@ function fmtCLP(v){return'$'+Math.round(v||0).toLocaleString('es-CL');}
 function limpiarNum(s){if(!s)return 0;/* Rimuove tutto tranne cifre — gestisce formato CLP $30.000 */return parseInt(s.toString().replace(/[^0-9]/g,''))||0;}
 function esc(s){return(s||'').replace(/'/g,"\'").replace(/"/g,'&quot;');}
 function showToast(msg,tipo){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(tipo||'ok');t.style.display='block';setTimeout(()=>t.style.display='none',2500);}
+/* Fallback: carica CLIENTES da CSV pubblicato */
+const URL_CLIENTES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvt15zKAdGjMkMyDXlP6xnbqj-IJiyi4oZKxjCkc-cLWOAEhimW-McOxKXk1Iw8-ZltG9EFp-ZySuy/pub?gid=0&single=true&output=csv';
+async function cargarClientesCSV(){
+  try{
+    const r = await fetch(URL_CLIENTES_CSV);
+    const txt = await r.text();
+    const rows = txt.trim().split('\n').slice(1);
+    CLIENTES_BD = rows.map(l=>{
+      const cols = splitLineSimple(l);
+      return {
+        ID_Cliente: cols[0]||'',
+        RazonSocial: cols[1]||'',
+        Contacto:   cols[2]||'',
+        Email:      cols[3]||'',
+        Telefono:   cols[4]||'',
+        Ciudad:     cols[6]||''
+      };
+    }).filter(c=>c.ID_Cliente);
+    console.log('Clientes cargados desde CSV:', CLIENTES_BD.length);
+  }catch(e){ console.warn('cargarClientesCSV error:', e); }
+}
+
 function splitLineSimple(line){
   const r=[];let cur='',inQ=false;
   for(let i=0;i<line.length;i++){
