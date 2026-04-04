@@ -535,8 +535,6 @@ async function cargarGAS(){
     console.warn('cargarGAS error:', e);
     cargarGcNombresCSV();
   }
-  /* Carica sempre clienti da CSV per affidabilità */
-  await cargarClientesCSV();
 }
 
 /* Fallback: lee gc_nombres directo desde CSV PARAMETROS */
