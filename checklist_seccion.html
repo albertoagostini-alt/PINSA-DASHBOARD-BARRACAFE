@@ -336,6 +336,10 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
         <div class="mr-explosion-title">Ingredientes que se registrarán</div>
         <div id="mr-explosion-list"></div>
       </div>
+      <div id="mr-obs-wrap" style="display:none; margin-bottom:16px;">
+        <div class="mr-qty-label" style="margin-bottom:8px;">Observación <span style="color:var(--t3);font-size:10px;letter-spacing:0;">(opcional)</span></div>
+        <textarea id="mr-obs" rows="2" placeholder="" style="width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--bg3);border-radius:8px;color:var(--t1);font-family:'Instrument Sans',sans-serif;font-size:13px;outline:none;resize:none;box-sizing:border-box;"></textarea>
+      </div>
       <button class="mr-registrar" onclick="mrRegistrar()">Registrar Merma</button>
     </div>
     <div id="mr-step-ok" class="mr-step">
@@ -758,10 +762,25 @@ function mrChangeQty(d){
   inp.value=Math.max(0.1,Math.round((v+d)*10)/10);
 }
 
+var MR_OBS_PLACEHOLDER={
+  'Calidad':'¿Qué producto? ¿Cómo se detectó?',
+  'Manipulación':'¿Qué pasó exactamente?',
+  'Vencido':'Fecha vencimiento / lote',
+  'Error pedido':'¿Qué receta? ¿Qué salió mal?',
+  'Ajuste inventario':'Motivo del ajuste'
+};
+
 function mrSelMotivo(btn,m){
   mrCurrentMotivo=m;
   document.querySelectorAll('.mr-mot-btn').forEach(function(b){b.classList.remove('sel');});
   btn.classList.add('sel');
+  var wrap=document.getElementById('mr-obs-wrap');
+  var obs=document.getElementById('mr-obs');
+  if(wrap&&obs){
+    wrap.style.display='block';
+    obs.placeholder=MR_OBS_PLACEHOLDER[m]||'Nota opcional...';
+    obs.value='';
+  }
 }
 
 function mrGetMermaKey(){
@@ -788,10 +807,10 @@ function mrRegistrar(){
   var rows=[];
   if(mrCurrentItem.ing && mrCurrentItem.ing.length){
     mrCurrentItem.ing.forEach(function(ing){
-      rows.push({fecha:fecha,local:local,seccion:seccion,descripcion:ing.d,sku:'',cantidad:Math.round(ing.q*qty*10)/10,utm:ing.utm,motivo:mrCurrentMotivo,responsable:responsable,observacion:'['+mrCurrentItem.n+' x'+qty+']'});
+      rows.push({fecha:fecha,local:local,seccion:seccion,descripcion:ing.d,sku:'',cantidad:Math.round(ing.q*qty*10)/10,utm:ing.utm,motivo:mrCurrentMotivo,responsable:responsable,observacion:'['+mrCurrentItem.n+' x'+qty+']'+(obs?' | '+obs:'')});
     });
   } else {
-    rows.push({fecha:fecha,local:local,seccion:seccion,descripcion:mrCurrentItem.n,sku:mrCurrentItem.sku,cantidad:qty,utm:mrCurrentItem.utm,motivo:mrCurrentMotivo,responsable:responsable,observacion:''});
+    rows.push({fecha:fecha,local:local,seccion:seccion,descripcion:mrCurrentItem.n,sku:mrCurrentItem.sku,cantidad:qty,utm:mrCurrentItem.utm,motivo:mrCurrentMotivo,responsable:responsable,observacion:obs});
   }
   mrSaveLocal(rows);
   mrEnviarGAS(rows,function(ok){
