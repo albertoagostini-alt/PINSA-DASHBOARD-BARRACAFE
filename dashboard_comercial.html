@@ -170,6 +170,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(15,15,15,0.97);backdrop
 .cal-personas{font-size:10px;color:var(--t2);display:flex;align-items:center;gap:4px}
 .cal-pv{font-family:'DM Mono',monospace;font-size:12px;color:var(--green)}
 .cal-empty{padding:24px;text-align:center;color:var(--t3);font-size:12px}
+.cal-notas{font-size:11px;color:var(--t3);margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4;font-style:italic}
 
 /* ===== TOP CLIENTES ===== */
 .top-list{display:flex;flex-direction:column;gap:6px}
@@ -460,6 +461,7 @@ function buildFromCSV(rows, cliMap){
     notas:          r[14]||'',
     creado_por:     r[15]||'',
     version:        r[16]||'1',
+    n_oc_cliente:   r[17]||'',
     /* enriquece nombre cliente desde mapa CLIENTES */
     cliente_nombre: cliMap[r[2]||''] || r[2] || '—'
   })).filter(c=>c.id);
@@ -702,7 +704,10 @@ function renderCalendario(cots){
           <div class="cal-meta">
             ${c.n_personas?`<span class="cal-personas">👥 ${c.n_personas} pers.</span>`:''}
             <span class="cal-pv">${fmtCLP(c.total_pv)}</span>
+            ${c.n_oc_cliente?`<span style="font-size:10px;color:var(--t3)">OC: ${esc(c.n_oc_cliente)}</span>`:''}
+            <a class="btn-ver" href="${COT_URL}?id=${c.id}&mode=view" target="_blank">Ver</a>
           </div>
+          ${c.notas?`<div class="cal-notas">📝 ${esc(c.notas)}</div>`:''}
         </div>
       </div>`;
   }).join('');
