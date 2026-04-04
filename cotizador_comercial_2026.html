@@ -475,7 +475,11 @@ let MARGEN_MIN_ABS=20, MARGEN_BLOQUEO=25, MARGEN_ALERTA=35, MARGEN_SUGERIDO_EXTR
 let recFiltradas=[];
 
 document.addEventListener('DOMContentLoaded',async()=>{
+  /* Assicura che i bottoni azione siano nascosti all'avvio */
+  document.getElementById('btn-adjudicar').style.display='none';
+  document.getElementById('btn-perder').style.display='none';
   await Promise.all([cargarRecetas(),cargarGAS()]);
+  await cargarClientesCSV();
   /* Se ?id=COT-xxx carica la cotización existente */
   const urlId = new URLSearchParams(window.location.search).get('id');
   const urlMode = new URLSearchParams(window.location.search).get('mode');
