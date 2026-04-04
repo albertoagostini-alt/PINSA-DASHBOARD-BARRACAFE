@@ -551,6 +551,8 @@ function cerrarSesion(){
   document.getElementById('firma-apertura').innerHTML='';
   document.getElementById('firma-cierre').innerHTML='';
   document.getElementById('merma-confirm-block').innerHTML='';
+  mrCurrentType=''; mrCurrentItem=null; mrCurrentMotivo='';
+  mrGoStep(1,'');
   document.getElementById('overlay-login').classList.remove('hidden');
 }
 
