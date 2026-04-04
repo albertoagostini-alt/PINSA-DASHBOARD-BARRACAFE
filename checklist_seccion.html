@@ -674,7 +674,7 @@ function mrCargarInsumosDinamicos(cb){
     var map={cafe:'barra cafe',jugos:'barra jugos',alimentos:'barra alimentos',helados:'barra helados'};
     var target=map[SECCION]||'';
     var lista=[];
-    // Parser CSV che gestisce campi quoted con virgole interne
+    // Parser CSV corretto: gestisce campi quoted con virgole interne
     function parseRow(line){
       var cols=[],cur='',inQ=false;
       for(var i=0;i<line.length;i++){
@@ -691,10 +691,9 @@ function mrCargarInsumosDinamicos(cb){
       var c=parseRow(lines[i]);
       var sku=(c[0]||'').trim();
       var desc=(c[1]||'').trim();
-      var sec=(c[2]||'').trim().toLowerCase(); // colonna C = sezione principale
-      var utm=(c[3]||'').trim();
+      var sec=(c[2]||'').trim().toLowerCase(); // col C = Seccion (multi-valore)
+      var utm=(c[15]||'').trim();              // col P (indice 15) = UTM reale
       if(!sku||!desc)continue;
-      // Controlla se il target appare nel campo sezione (gestisce multi-sezione)
       if(sec.indexOf(target)!==-1)lista.push({n:desc,sku:sku,utm:utm,tipo:'insumo'});
     }
     MR_INSUMOS_PER_SEC[SECCION]=lista;
