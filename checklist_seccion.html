@@ -643,7 +643,7 @@ function showSection(id,el){
   document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
   if(el)el.classList.add('active');
   if(id==='historial')renderHistorial();
-  if(id==='merma'){mrUpdateSessionBar();mrRenderHistorialMini();}
+  if(id==='merma'){mrUpdateSessionBar();mrRenderHistorialMini();mrCargarInsumos(null);}
 }
 
 function renderHistorial(){
@@ -667,38 +667,43 @@ var mrCurrentMotivo='';
 var MR_RECETAS_CACHE=null;
 var MR_INSUMOS_CACHE=null;
 var BD_INSUMOS_CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vRKfymDMvJd6XSSnfxuq2entJff2QwmEyKyvRRiiYVqNlwEA_rY7GXv0xVGC4k6746-EVAuLodfS9nt/pub?gid=514178276&single=true&output=csv';
-function mrCargarInsumosDinamicos(cb){
-  var need=['alimentos','helados'];
-  if(need.indexOf(SECCION)===-1||(MR_INSUMOS_PER_SEC[SECCION]&&MR_INSUMOS_PER_SEC[SECCION].length>0)){if(cb)cb();return;}
-  fetch(BD_INSUMOS_CSV,{cache:'no-store'}).then(function(r){return r.ok?r.text():Promise.reject(r.status);}).then(function(txt){
-    var map={cafe:'barra cafe',jugos:'barra jugos',alimentos:'barra alimentos',helados:'barra helados'};
-    var target=map[SECCION]||'';
-    var lista=[];
-    // Parser CSV corretto: gestisce campi quoted con virgole interne
-    function parseRow(line){
-      var cols=[],cur='',inQ=false;
-      for(var i=0;i<line.length;i++){
-        var ch=line[i];
-        if(ch==='"'){inQ=!inQ;}
-        else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
-        else{cur+=ch;}
+
+function mrCargarInsumos(cb){
+  // Cafe e jugos sono gia hardcodati — carica solo alimentos/helados se mancano
+  if(MR_INSUMOS_PER_SEC[SECCION]&&MR_INSUMOS_PER_SEC[SECCION].length>0){if(cb)cb();return;}
+  fetch(BD_INSUMOS_CSV,{cache:'no-store'})
+    .then(function(r){return r.ok?r.text():Promise.reject(r.status);})
+    .then(function(txt){
+      var map={cafe:'barra cafe',jugos:'barra jugos',alimentos:'barra alimentos',helados:'barra helados'};
+      var target=(map[SECCION]||'').toLowerCase();
+      var lista=[];
+      function parseRow(line){
+        var cols=[],cur='',inQ=false;
+        for(var i=0;i<line.length;i++){
+          var ch=line[i];
+          if(ch==='"'){inQ=!inQ;}
+          else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+          else{cur+=ch;}
+        }
+        cols.push(cur.trim());
+        return cols;
       }
-      cols.push(cur.trim());
-      return cols;
-    }
-    var lines=txt.trim().split('\n');
-    for(var i=1;i<lines.length;i++){
-      var c=parseRow(lines[i]);
-      var sku=(c[0]||'').trim();
-      var desc=(c[1]||'').trim();
-      var sec=(c[2]||'').trim().toLowerCase(); // col C = Seccion (multi-valore)
-      var utm=(c[15]||'').trim();              // col P (indice 15) = UTM reale
-      if(!sku||!desc)continue;
-      if(sec.indexOf(target)!==-1)lista.push({n:desc,sku:sku,utm:utm,tipo:'insumo'});
-    }
-    MR_INSUMOS_PER_SEC[SECCION]=lista;
-    if(cb)cb();
-  }).catch(function(){if(cb)cb();});
+      var lines=txt.trim().split('\n');
+      for(var i=1;i<lines.length;i++){
+        var c=parseRow(lines[i]);
+        var sku=(c[0]||'').trim();
+        var desc=(c[1]||'').trim();
+        var sec=(c[2]||'').trim().toLowerCase();
+        var utm=(c[15]||'').trim();
+        var activo=(c[32]||'Si').trim().toLowerCase();
+        if(!sku||!desc||activo==='no')continue;
+        if(sec.indexOf(target)!==-1)lista.push({n:desc,sku:sku,utm:utm,tipo:'insumo'});
+      }
+      lista.sort(function(a,b){return a.n.localeCompare(b.n);});
+      MR_INSUMOS_PER_SEC[SECCION]=lista;
+      if(cb)cb();
+    })
+    .catch(function(e){console.warn('BD_INSUMOS fetch error:',e);if(cb)cb();});
 }
 
 function mrUpdateSessionBar(){
@@ -726,7 +731,7 @@ function mrGoStep(n,type){
     document.getElementById('mr-step2-sub').textContent=type==='insumo'?'Ingredientes y materiales':'Productos activos de la sección';
     document.getElementById('mr-search-input').value='';
     document.getElementById('mr-step2').classList.add('active');
-    mrCargarInsumosDinamicos(function(){mrRenderList('');});
+    mrCargarInsumos(function(){mrRenderList('');});
   } else if(n===3){
     document.getElementById('mr-step3').classList.add('active');
   } else if(n==='ok'){
@@ -936,7 +941,6 @@ function showToast(msg,type){var t=document.getElementById('toast');t.textConten
   document.getElementById('h-date').textContent=formatDate();
   document.getElementById('ol-local').textContent=LOCAL;
 
-  // Filtra dropdown sección in base al sector dall'URL
   (function(){
     var sel=document.getElementById('sel-seccion');
     if(!sel)return;
