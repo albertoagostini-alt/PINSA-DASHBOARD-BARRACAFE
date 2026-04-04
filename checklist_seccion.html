@@ -121,6 +121,55 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .sending-text{color:var(--t1);font-size:14px;}
 .spinner{width:32px;height:32px;border:2px solid var(--bg3);border-top-color:var(--tc);border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
+.mr-step{display:none;}.mr-step.active{display:block;animation:fadeIn 0.2s ease both;}
+.mr-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--t1);margin-bottom:4px;letter-spacing:-0.3px;}
+.mr-sub{font-size:12px;color:var(--t2);margin-bottom:20px;}
+.mr-step-label{font-size:10px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.mr-type-btn{width:100%;background:var(--bg2);border:1px solid var(--bg3);border-radius:12px;padding:16px;text-align:left;cursor:pointer;margin-bottom:10px;transition:border-color 0.2s;}
+.mr-type-btn:hover{border-color:var(--tc);}
+.mr-type-btn-title{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:3px;}
+.mr-type-btn-sub{font-size:11px;color:var(--t2);}
+.mr-tag{display:inline-block;background:rgba(196,98,45,0.12);border:1px solid rgba(196,98,45,0.25);border-radius:6px;padding:2px 8px;font-size:10px;color:var(--tc2);margin-top:6px;}
+.mr-back{background:var(--bg2);border:1px solid var(--bg3);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--t2);cursor:pointer;font-family:'Instrument Sans',sans-serif;margin-bottom:14px;}
+.mr-search{width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--bg3);border-radius:8px;color:var(--t1);font-family:'Instrument Sans',sans-serif;font-size:13px;margin-bottom:10px;outline:none;box-sizing:border-box;}
+.mr-search:focus{border-color:var(--tc);}
+.mr-list{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;}
+.mr-item{background:var(--bg2);border:1px solid var(--bg3);border-radius:8px;padding:12px 14px;text-align:left;cursor:pointer;width:100%;transition:border-color 0.2s;}
+.mr-item:hover{border-color:var(--tc);}
+.mr-item-name{font-size:13px;font-weight:600;color:var(--t1);}
+.mr-item-meta{font-size:11px;color:var(--t3);margin-top:2px;}
+.mr-item-ing{font-size:10px;color:var(--tc);margin-top:4px;}
+.mr-selected-box{background:var(--bg2);border:1px solid var(--bg3);border-radius:10px;padding:12px 14px;margin-bottom:16px;}
+.mr-selected-label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
+.mr-selected-name{font-size:14px;font-weight:700;color:var(--t1);}
+.mr-selected-sku{font-size:11px;color:var(--t2);margin-top:2px;}
+.mr-qty-wrap{margin-bottom:16px;}
+.mr-qty-label{font-size:11px;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.mr-qty-row{display:flex;align-items:center;gap:10px;}
+.mr-qty-btn{width:48px;height:48px;background:var(--bg2);border:1px solid var(--bg3);border-radius:8px;font-size:22px;color:var(--t1);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.mr-qty-input{flex:1;text-align:center;padding:10px;background:var(--bg2);border:1px solid var(--tc);border-radius:8px;color:var(--t1);font-size:22px;font-weight:700;font-family:'Instrument Sans',sans-serif;outline:none;}
+.mr-utm-badge{background:rgba(196,98,45,0.15);border:1px solid rgba(196,98,45,0.35);border-radius:8px;padding:8px 14px;font-size:16px;font-weight:700;color:var(--tc2);min-width:60px;text-align:center;flex-shrink:0;}
+.mr-motivos{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px;}
+.mr-mot-btn{padding:11px 8px;background:var(--bg2);border:1px solid var(--bg3);border-radius:8px;color:var(--t2);font-size:12px;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all 0.2s;}
+.mr-mot-btn.sel{background:rgba(196,98,45,0.15);color:var(--tc2);border-color:rgba(196,98,45,0.4);}
+.mr-mot-full{grid-column:1/-1;}
+.mr-explosion{background:rgba(196,98,45,0.06);border:1px solid rgba(196,98,45,0.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;}
+.mr-explosion-title{font-size:10px;color:var(--tc2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.mr-explosion-item{font-size:12px;color:var(--t2);line-height:1.9;}
+.mr-explosion-item strong{color:var(--t1);}
+.mr-registrar{width:100%;padding:15px;background:var(--tc);border:none;border-radius:10px;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:white;cursor:pointer;font-family:'Syne',sans-serif;}
+.mr-ok{text-align:center;padding:30px 20px;}
+.mr-ok-circle{width:60px;height:60px;background:rgba(61,170,110,0.12);border:1px solid rgba(61,170,110,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:26px;color:var(--green);}
+.mr-ok-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--t1);margin-bottom:6px;}
+.mr-ok-msg{font-size:12px;color:var(--t2);margin-bottom:24px;line-height:1.6;}
+.mr-otra{padding:12px 28px;background:var(--bg2);border:1px solid var(--bg3);border-radius:8px;color:var(--t1);font-size:13px;cursor:pointer;font-family:'Instrument Sans',sans-serif;}
+.mr-historial{display:flex;flex-direction:column;gap:8px;margin-top:16px;}
+.mr-hist-item{background:var(--bg2);border:1px solid var(--bg3);border-radius:8px;padding:12px 14px;}
+.mr-hist-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.mr-hist-prod{font-size:13px;font-weight:600;color:var(--t1);}
+.mr-hist-hora{font-size:10px;color:var(--t3);}
+.mr-hist-detail{font-size:11px;color:var(--t2);}
+.mr-empty{text-align:center;padding:30px;color:var(--t2);font-size:13px;}
 </style>
 </head>
 <body>
@@ -179,6 +228,7 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 <div class="nav">
   <button class="nav-btn active" onclick="showSection('apertura',this)"><span class="nav-dot"></span>Apertura</button>
   <button class="nav-btn" onclick="showSection('cierre',this)"><span class="nav-dot"></span>Cierre</button>
+  <button class="nav-btn" onclick="showSection('merma',this)"><span class="nav-dot"></span>Merma</button>
   <button class="nav-btn" onclick="showSection('historial',this)"><span class="nav-dot"></span>Historial</button>
 </div>
 
@@ -220,6 +270,82 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
       <div id="merma-confirm-block"></div>
     </div>
     <div class="firma-section" id="firma-cierre"></div>
+  </div>
+
+  <div id="sec-merma" class="section">
+    <div class="session-bar">
+      <div class="session-info">
+        <span class="badge-sec" id="sb-sec-m">—</span>
+        <span class="session-badge badge-am" id="sb-turno-m">AM</span>
+        <span class="session-name" id="sb-nombre-m">—</span>
+      </div>
+      <button class="btn-cambiar" onclick="cerrarSesion()">Cambiar</button>
+    </div>
+    <div id="mr-step1" class="mr-step active">
+      <div class="mr-step-label">Paso 1 de 3</div>
+      <div class="mr-title">¿Qué mermaste?</div>
+      <div class="mr-sub">Selecciona el tipo de producto</div>
+      <button class="mr-type-btn" onclick="mrGoStep(2,'insumo')">
+        <div class="mr-type-btn-title">Insumo o ingrediente</div>
+        <div class="mr-type-btn-sub">Leche, café, fruta, syrup, hielo, crema...</div>
+      </button>
+      <button class="mr-type-btn" onclick="mrGoStep(2,'producto')">
+        <div class="mr-type-btn-title">Producto final</div>
+        <div class="mr-type-btn-sub">Matcha Mango, Cold Brew, Berry Lift...</div>
+        <div class="mr-tag">Explota ingredientes automático</div>
+      </button>
+      <div style="margin-top:20px;">
+        <div class="mr-step-label" style="margin-bottom:10px;">Mermas registradas hoy</div>
+        <div id="mr-historial-mini"></div>
+      </div>
+    </div>
+    <div id="mr-step2" class="mr-step">
+      <button class="mr-back" onclick="mrGoStep(1,'')">← Atrás</button>
+      <div class="mr-step-label">Paso 2 de 3</div>
+      <div class="mr-title" id="mr-step2-title">Selecciona producto</div>
+      <div class="mr-sub" id="mr-step2-sub">Productos activos</div>
+      <input class="mr-search" type="text" placeholder="Buscar..." oninput="mrFilter(this.value)" id="mr-search-input"/>
+      <div class="mr-list" id="mr-product-list"></div>
+    </div>
+    <div id="mr-step3" class="mr-step">
+      <button class="mr-back" onclick="mrGoStep(2,mrCurrentType)">← Atrás</button>
+      <div class="mr-step-label">Paso 3 de 3</div>
+      <div class="mr-selected-box">
+        <div class="mr-selected-label">Producto seleccionado</div>
+        <div class="mr-selected-name" id="mr-sel-name"></div>
+        <div class="mr-selected-sku" id="mr-sel-sku"></div>
+      </div>
+      <div class="mr-qty-wrap">
+        <div class="mr-qty-label">Cantidad</div>
+        <div class="mr-qty-row">
+          <button class="mr-qty-btn" onclick="mrChangeQty(-1)">−</button>
+          <input class="mr-qty-input" type="number" id="mr-qty" value="1" min="0.1" step="0.1"/>
+          <button class="mr-qty-btn" onclick="mrChangeQty(1)">+</button>
+          <div class="mr-utm-badge" id="mr-utm-badge">Gr</div>
+        </div>
+      </div>
+      <div class="mr-qty-label" style="margin-bottom:8px;">Motivo</div>
+      <div class="mr-motivos">
+        <button class="mr-mot-btn" onclick="mrSelMotivo(this,'Calidad')">Calidad</button>
+        <button class="mr-mot-btn" onclick="mrSelMotivo(this,'Manipulación')">Manipulación</button>
+        <button class="mr-mot-btn" onclick="mrSelMotivo(this,'Vencido')">Vencido</button>
+        <button class="mr-mot-btn" onclick="mrSelMotivo(this,'Error pedido')">Error pedido</button>
+        <button class="mr-mot-btn mr-mot-full" onclick="mrSelMotivo(this,'Ajuste inventario')">Ajuste inventario</button>
+      </div>
+      <div id="mr-explosion" style="display:none;" class="mr-explosion">
+        <div class="mr-explosion-title">Ingredientes que se registrarán</div>
+        <div id="mr-explosion-list"></div>
+      </div>
+      <button class="mr-registrar" onclick="mrRegistrar()">Registrar Merma</button>
+    </div>
+    <div id="mr-step-ok" class="mr-step">
+      <div class="mr-ok">
+        <div class="mr-ok-circle">✓</div>
+        <div class="mr-ok-title">Merma registrada</div>
+        <div class="mr-ok-msg" id="mr-ok-msg"></div>
+        <button class="mr-otra" onclick="mrGoStep(1,'')">Registrar otra</button>
+      </div>
+    </div>
   </div>
 
   <div id="sec-historial" class="section">
@@ -473,6 +599,7 @@ function showSection(id,el){
   document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
   if(el)el.classList.add('active');
   if(id==='historial')renderHistorial();
+  if(id==='merma'){mrUpdateSessionBar();mrRenderHistorialMini();}
 }
 
 function renderHistorial(){
@@ -480,6 +607,238 @@ function renderHistorial(){
   var keys=Object.keys(localStorage).filter(function(k){return k.startsWith('firma-'+LOCAL+'-'+SECCION+'-');});
   if(!keys.length){el.innerHTML='<div class="historial-empty">📭 No hay registros aún.</div>';return;}
   el.innerHTML=keys.sort(function(a,b){return b.localeCompare(a);}).map(function(k){try{var d=JSON.parse(localStorage.getItem(k));return'<div class="historial-item"><div class="historial-header"><div class="historial-tipo">'+(d.tipo==='apertura'?'🌅 Apertura':'🌙 Cierre')+'</div><div class="historial-fecha">'+(d.fecha||'')+'</div></div><div class="historial-body"><strong>'+d.nombre+'</strong> · Turno '+d.turno+' · '+d.hora+'<br>Items: <strong>'+d.items_ok+'/'+d.items_total+'</strong></div></div>';}catch(e){return'';}}).join('');
+}
+
+
+// ============================================================
+// MODULO MERMA
+// ============================================================
+var GAS_MERMA_URL='https://script.google.com/macros/s/AKfycbMERMA_PLACEHOLDER/exec';
+
+var MR_IDS_CAFE={cafe:'1DO8ryspkTW1U4P2BlVL7Gd4cpQok4LEpdGkdKTMkNg8',jugos:'1_rJHyCmTOBnssio415q-Av0nlCoKGkfSUpBTZBEhdWY'};
+var mrCurrentType='';
+var mrCurrentItem=null;
+var mrCurrentMotivo='';
+
+var MR_RECETAS_CACHE=null;
+var MR_INSUMOS_CACHE=null;
+
+function mrUpdateSessionBar(){
+  var s=SESSION||{};
+  var el=document.getElementById('sb-sec-m');
+  if(el)el.textContent=SECCION_LABEL;
+  var et=document.getElementById('sb-turno-m');
+  if(et){et.textContent=s.turno||'—';et.className='session-badge '+(s.turno==='AM'?'badge-am':'badge-pm');}
+  var en=document.getElementById('sb-nombre-m');
+  if(en)en.textContent=s.nombre||'—';
+}
+
+function mrGoStep(n,type){
+  document.querySelectorAll('.mr-step').forEach(function(s){s.classList.remove('active');});
+  if(n===1){
+    document.getElementById('mr-step1').classList.add('active');
+    mrRenderHistorialMini();
+  } else if(n===2){
+    mrCurrentType=type;
+    document.getElementById('mr-step2-title').textContent=type==='insumo'?'¿Qué insumo?':'¿Qué producto?';
+    document.getElementById('mr-step2-sub').textContent=type==='insumo'?'Ingredientes y materiales':'Productos activos de la sección';
+    document.getElementById('mr-search-input').value='';
+    mrRenderList('');
+    document.getElementById('mr-step2').classList.add('active');
+  } else if(n===3){
+    document.getElementById('mr-step3').classList.add('active');
+  } else if(n==='ok'){
+    document.getElementById('mr-step-ok').classList.add('active');
+  }
+}
+
+function mrGetInsumos(){
+  if(MR_INSUMOS_CACHE)return MR_INSUMOS_CACHE;
+  var seccion=SECCION||'cafe';
+  var base=[
+    {n:'Café blend',sku:'1049',utm:'Gr',tipo:'insumo'},
+    {n:'Leche descremada S/Lactosa',sku:'1106',utm:'CC',tipo:'insumo'},
+    {n:'Matcha Ceremonial',sku:'1124',utm:'Gr',tipo:'insumo'},
+    {n:'Hojicha',sku:'1247',utm:'Gr',tipo:'insumo'},
+    {n:'Hielo Cubo',sku:'1095',utm:'Gr',tipo:'insumo'},
+    {n:'Agua',sku:'1230',utm:'CC',tipo:'insumo'},
+    {n:'Colágeno',sku:'1064',utm:'Gr',tipo:'insumo'},
+    {n:'Syrup de Durazno',sku:'5001',utm:'CC',tipo:'insumo'},
+    {n:'Syrup de Mango',sku:'5002',utm:'CC',tipo:'insumo'},
+    {n:'Syrup de Frutilla',sku:'5003',utm:'CC',tipo:'insumo'},
+    {n:'Crema Tiramisú',sku:'5018',utm:'unidad',tipo:'insumo'},
+    {n:'Galleta Tiramisú',sku:'1242',utm:'unidad',tipo:'insumo'},
+    {n:'Vasos 16oz Transparente',sku:'1219',utm:'unidad',tipo:'insumo'},
+    {n:'Vasos 12oz Transparente',sku:'1218',utm:'unidad',tipo:'insumo'},
+    {n:'Tapa Domo 16oz',sku:'1208',utm:'unidad',tipo:'insumo'},
+    {n:'Tapa Domo 12oz',sku:'1206',utm:'unidad',tipo:'insumo'},
+    {n:'Bombilla',sku:'1045',utm:'unidad',tipo:'insumo'},
+    {n:'Naranja',sku:'1130',utm:'Gr',tipo:'insumo'},
+    {n:'Limón',sku:'1111',utm:'Gr',tipo:'insumo'},
+    {n:'Manzana verde',sku:'1120',utm:'Gr',tipo:'insumo'},
+    {n:'Zanahoria',sku:'1226',utm:'Gr',tipo:'insumo'},
+    {n:'Aceite de oliva EV',sku:'1003',utm:'CC',tipo:'insumo'},
+    {n:'Jengibre polvo',sku:'1102',utm:'Gr',tipo:'insumo'},
+    {n:'Crema vegetal',sku:'1069',utm:'CC',tipo:'insumo'},
+    {n:'Estabilizante G Xantana',sku:'1078',utm:'Gr',tipo:'insumo'},
+  ];
+  MR_INSUMOS_CACHE=base;
+  return base;
+}
+
+function mrGetProductos(){
+  if(MR_RECETAS_CACHE)return MR_RECETAS_CACHE;
+  var cafe=[
+    {n:'Matcha Mango',sku:'REC-0001',utm:'unidad',seccion:'cafe',ing:[{d:'Matcha Ceremonial',q:5,utm:'Gr'},{d:'Leche S/Lactosa',q:250,utm:'CC'},{d:'Syrup Mango',q:60,utm:'CC'},{d:'Hielo Cubo',q:160,utm:'Gr'},{d:'Colágeno',q:4,utm:'Gr'}]},
+    {n:'Matcha Frutilla',sku:'REC-0046',utm:'unidad',seccion:'cafe',ing:[{d:'Matcha Ceremonial',q:5,utm:'Gr'},{d:'Leche S/Lactosa',q:250,utm:'CC'},{d:'Syrup Frutilla',q:60,utm:'CC'},{d:'Hielo Cubo',q:160,utm:'Gr'}]},
+    {n:'Matcha Arándano',sku:'REC-0045',utm:'unidad',seccion:'cafe',ing:[{d:'Matcha Ceremonial',q:5,utm:'Gr'},{d:'Leche S/Lactosa',q:250,utm:'CC'},{d:'Hielo Cubo',q:160,utm:'Gr'}]},
+    {n:'Cold Brew',sku:'REC-0063',utm:'unidad',seccion:'cafe',ing:[{d:'Café blend',q:80,utm:'Gr'},{d:'Agua fría',q:800,utm:'CC'}]},
+    {n:'Tiramisu Latte',sku:'REC-0041',utm:'unidad',seccion:'cafe',ing:[{d:'Crema Tiramisú',q:1,utm:'unidad'},{d:'Café blend',q:18,utm:'Gr'},{d:'Galleta Tiramisú',q:1,utm:'unidad'}]},
+    {n:'Beta Mojito',sku:'REC-0059',utm:'unidad',seccion:'cafe',ing:[{d:'Matcha Ceremonial',q:3,utm:'Gr'},{d:'Limón',q:20,utm:'CC'},{d:'Hielo Cubo',q:160,utm:'Gr'}]},
+    {n:'Matcha Latte Frío',sku:'REC-0057',utm:'unidad',seccion:'cafe',ing:[{d:'Matcha Ceremonial',q:5,utm:'Gr'},{d:'Leche S/Lactosa',q:250,utm:'CC'},{d:'Hielo Cubo',q:160,utm:'Gr'}]},
+    {n:'Coco Matcha',sku:'REC-0050',utm:'unidad',seccion:'cafe',ing:[{d:'Matcha Ceremonial',q:5,utm:'Gr'},{d:'Leche S/Lactosa',q:250,utm:'CC'},{d:'Hielo Cubo',q:160,utm:'Gr'}]},
+    {n:'Limonada Matcha',sku:'REC-0056',utm:'unidad',seccion:'cafe',ing:[{d:'Matcha Ceremonial',q:5,utm:'Gr'},{d:'Limón',q:40,utm:'CC'},{d:'Hielo Cubo',q:160,utm:'Gr'}]},
+  ];
+  var jugos=[
+    {n:'Berry Lift',sku:'REC-0069',utm:'unidad',seccion:'jugos',ing:[{d:'Naranja',q:300,utm:'Gr'},{d:'Limón',q:30,utm:'Gr'},{d:'Hielo Cubo',q:160,utm:'Gr'}]},
+    {n:'Golden Rise',sku:'REC-0070',utm:'unidad',seccion:'jugos',ing:[{d:'Naranja',q:250,utm:'Gr'},{d:'Zanahoria',q:100,utm:'Gr'},{d:'Jengibre polvo',q:2,utm:'Gr'}]},
+    {n:'Banana Fuel',sku:'REC-0071',utm:'unidad',seccion:'jugos',ing:[{d:'Manzana verde',q:200,utm:'Gr'},{d:'Limón',q:30,utm:'Gr'}]},
+    {n:'Beet Charge',sku:'REC-0072',utm:'unidad',seccion:'jugos',ing:[{d:'Naranja',q:200,utm:'Gr'},{d:'Zanahoria',q:100,utm:'Gr'},{d:'Limón',q:30,utm:'Gr'}]},
+  ];
+  var all=[].concat(cafe,jugos);
+  MR_RECETAS_CACHE=all;
+  return all;
+}
+
+function mrGetItemsForSection(type){
+  var seccion=SECCION||'cafe';
+  if(type==='insumo') return mrGetInsumos();
+  return mrGetProductos().filter(function(p){return p.seccion===seccion;});
+}
+
+function mrRenderList(q){
+  var items=mrGetItemsForSection(mrCurrentType);
+  if(q)items=items.filter(function(it){return it.n.toLowerCase().includes(q.toLowerCase());});
+  var el=document.getElementById('mr-product-list');
+  if(!items.length){el.innerHTML='<div class="mr-empty">Sin resultados</div>';return;}
+  el.innerHTML=items.map(function(it,i){
+    return '<button class="mr-item" onclick="mrSelectItem(''+encodeURIComponent(JSON.stringify(it))+'')">'
+      +'<div class="mr-item-name">'+it.n+'</div>'
+      +'<div class="mr-item-meta">SKU '+it.sku+' · '+it.utm+'</div>'
+      +(it.ing?'<div class="mr-item-ing">'+it.ing.length+' ingredientes</div>':'')
+      +'</button>';
+  }).join('');
+}
+
+function mrFilter(q){mrRenderList(q);}
+
+function mrSelectItem(encoded){
+  mrCurrentItem=JSON.parse(decodeURIComponent(encoded));
+  mrCurrentMotivo='';
+  document.getElementById('mr-sel-name').textContent=mrCurrentItem.n;
+  document.getElementById('mr-sel-sku').textContent='SKU '+mrCurrentItem.sku;
+  document.getElementById('mr-utm-badge').textContent=mrCurrentItem.utm;
+  document.getElementById('mr-qty').value=1;
+  document.querySelectorAll('.mr-mot-btn').forEach(function(b){b.classList.remove('sel');});
+  if(mrCurrentItem.ing && mrCurrentItem.ing.length){
+    var list=document.getElementById('mr-explosion-list');
+    list.innerHTML=mrCurrentItem.ing.map(function(x){
+      return '<div class="mr-explosion-item">· '+x.d+' — <strong>'+x.q+' '+x.utm+'</strong></div>';
+    }).join('');
+    document.getElementById('mr-explosion').style.display='block';
+  } else {
+    document.getElementById('mr-explosion').style.display='none';
+  }
+  mrGoStep(3,'');
+}
+
+function mrChangeQty(d){
+  var inp=document.getElementById('mr-qty');
+  var v=parseFloat(inp.value)||0;
+  inp.value=Math.max(0.1,Math.round((v+d)*10)/10);
+}
+
+function mrSelMotivo(btn,m){
+  mrCurrentMotivo=m;
+  document.querySelectorAll('.mr-mot-btn').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+}
+
+function mrGetMermaKey(){
+  return 'merma-reg-'+LOCAL+'-'+SECCION+'-'+getDateKey()+'-'+(SESSION.turno||'');
+}
+
+function mrSaveLocal(registros){
+  var key=mrGetMermaKey();
+  var existing=[];
+  try{existing=JSON.parse(localStorage.getItem(key))||[];}catch(e){}
+  existing=existing.concat(registros);
+  localStorage.setItem(key,JSON.stringify(existing));
+}
+
+function mrRegistrar(){
+  if(!mrCurrentMotivo){showToast('⚠️ Selecciona un motivo','');return;}
+  var qty=parseFloat(document.getElementById('mr-qty').value)||0;
+  if(qty<=0){showToast('⚠️ Ingresa una cantidad válida','');return;}
+  var fecha=new Date().toLocaleDateString('es-CL',{day:'2-digit',month:'short',year:'numeric'});
+  var hora=new Date().toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
+  var responsable=SESSION.nombre||'Operador';
+  var local=SESSION.local||LOCAL;
+  var seccion=SECCION_LABEL;
+  var rows=[];
+  if(mrCurrentItem.ing && mrCurrentItem.ing.length){
+    mrCurrentItem.ing.forEach(function(ing){
+      rows.push({fecha:fecha,local:local,seccion:seccion,descripcion:ing.d,sku:'',cantidad:Math.round(ing.q*qty*10)/10,utm:ing.utm,motivo:mrCurrentMotivo,responsable:responsable,observacion:'['+mrCurrentItem.n+' x'+qty+']'});
+    });
+  } else {
+    rows.push({fecha:fecha,local:local,seccion:seccion,descripcion:mrCurrentItem.n,sku:mrCurrentItem.sku,cantidad:qty,utm:mrCurrentItem.utm,motivo:mrCurrentMotivo,responsable:responsable,observacion:''});
+  }
+  mrSaveLocal(rows);
+  mrEnviarGAS(rows,function(ok){
+    var msg=mrCurrentItem.ing
+      ?qty+' '+mrCurrentItem.utm+' de '+mrCurrentItem.n+' → '+rows.length+' ingredientes registrados'
+      :qty+' '+mrCurrentItem.utm+' de '+mrCurrentItem.n;
+    document.getElementById('mr-ok-msg').textContent=msg+(ok?' · Guardado en sistema':' · Guardado localmente');
+    mrGoStep('ok','');
+  });
+}
+
+function mrEnviarGAS(rows,cb){
+  var seccionId=SECCION||'cafe';
+  var sheetId=MR_IDS_CAFE[seccionId]||MR_IDS_CAFE['cafe'];
+  document.getElementById('sending-overlay').classList.add('show');
+  fetch(GAS_MERMA_URL,{
+    method:'POST',
+    mode:'no-cors',
+    body:JSON.stringify({action:'registrarMerma',sheetId:sheetId,seccion:seccionId,rows:rows})
+  }).then(function(){
+    document.getElementById('sending-overlay').classList.remove('show');
+    cb(true);
+  }).catch(function(){
+    document.getElementById('sending-overlay').classList.remove('show');
+    cb(false);
+  });
+}
+
+function mrRenderHistorialMini(){
+  var el=document.getElementById('mr-historial-mini');
+  if(!el)return;
+  var key=mrGetMermaKey();
+  var items=[];
+  try{items=JSON.parse(localStorage.getItem(key))||[];}catch(e){}
+  if(!items.length){el.innerHTML='<div class="mr-empty">Sin mermas registradas hoy en este turno</div>';return;}
+  var byProd={};
+  items.forEach(function(r){
+    var k=r.observacion&&r.observacion.startsWith('[')?(r.observacion):r.descripcion;
+    if(!byProd[k])byProd[k]={count:0,motivo:r.motivo};
+    byProd[k].count++;
+  });
+  el.innerHTML='<div class="mr-historial">'+Object.keys(byProd).map(function(k){
+    return '<div class="mr-hist-item">'
+      +'<div class="mr-hist-header"><div class="mr-hist-prod">'+k+'</div><div class="mr-hist-hora">'+byProd[k].motivo+'</div></div>'
+      +'<div class="mr-hist-detail">'+byProd[k].count+' registro'+(byProd[k].count>1?'s':'')+'</div>'
+      +'</div>';
+  }).join('')+'</div>';
 }
 
 function goHome(){
