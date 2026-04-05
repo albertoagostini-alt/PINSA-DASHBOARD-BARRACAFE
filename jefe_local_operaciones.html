@@ -1057,15 +1057,13 @@ function buscarInsumoMov(q) {
   const res = document.getElementById('mov-search-results');
   if (!q || q.length < 2) { res.innerHTML = ''; return; }
 
-  // Filtra solo ACTIVOS (col AG = "Si" o "SI")
+  // Colonne reali BD_INSUMOS: SKU, Descripcion, UTM, UO Descripcion Principal, Activo No/Activo
   const matches = STATE.bdInsumos.filter(r => {
-    const activo = (r['Activo'] || r['AG'] || '').toString().toUpperCase();
-    if (activo !== 'SI' && activo !== 'S' && activo !== '1' && activo !== 'TRUE') {
-      // fallback: se non troviamo col Activo, prendiamo tutti
-    }
-    const desc = (r['Descripcion'] || r['UPC Descripcion'] || '').toLowerCase();
+    const activo = (r['Activo No/Activo'] || '').toString().trim().toLowerCase();
+    if (activo === 'no' || activo === 'no/activo') return false;
+    const desc = (r['Descripcion'] || '').toLowerCase();
     const sku  = (r['SKU'] || '').toString();
-    return desc.includes(q.toLowerCase()) || sku.includes(q);
+    return desc.includes(q.toLowerCase()) || sku.startsWith(q);
   }).slice(0, 7);
 
   if (!matches.length) {
@@ -1074,11 +1072,11 @@ function buscarInsumoMov(q) {
   }
 
   res.innerHTML = matches.map(r => {
-    const desc    = r['Descripcion'] || r['UPC Descripcion'] || '—';
+    const desc    = r['Descripcion'] || '—';
     const sku     = r['SKU'] || '—';
     const utm     = r['UTM'] || '';
-    const uoDesc  = r['UO o BO'] || r['Descripcion UO'] || r['Unidad Operativa'] || '';
-    const skuSafe = sku.toString().replace(/'/g, "\\'");
+    const uoDesc  = r['UO Descripcion Principal'] || utm;
+    const skuSafe = String(sku).replace(/'/g, "\\'");
     const dSafe   = desc.replace(/'/g, "\\'").replace(/"/g, '\\"');
     const uSafe   = uoDesc.replace(/'/g, "\\'").replace(/"/g, '\\"');
     return `<div class="list-item" style="cursor:pointer;margin-bottom:6px" onclick="selectInsumoMov('${skuSafe}','${dSafe}','${utm}','${uSafe}')">
