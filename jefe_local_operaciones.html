@@ -562,39 +562,43 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
 
         <div class="field" style="margin:0">
-          <label style="display:flex;align-items:center;gap:6px">
-            <span style="width:8px;height:8px;border-radius:50%;background:#C4621D;display:inline-block"></span>
+          <label style="display:flex;align-items:center;gap:6px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3)">
+            <span style="width:8px;height:8px;border-radius:50%;background:#C4621D;flex-shrink:0"></span>
             Barra Café
           </label>
-          <input type="number" id="venta-cafe" min="0" step="1" placeholder="$0"
-            oninput="updateVentaTotal()">
+          <input type="text" id="venta-cafe" inputmode="numeric" placeholder="$0"
+            oninput="fmtVentaInput(this)" onfocus="unFmtInput(this)" onblur="reFmtInput(this); updateVentaTotal()"
+            style="font-family:var(--mono);font-size:15px;font-weight:600">
         </div>
 
         <div class="field" style="margin:0">
-          <label style="display:flex;align-items:center;gap:6px">
-            <span style="width:8px;height:8px;border-radius:50%;background:#1A9070;display:inline-block"></span>
+          <label style="display:flex;align-items:center;gap:6px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3)">
+            <span style="width:8px;height:8px;border-radius:50%;background:#1A9070;flex-shrink:0"></span>
             Barra Jugos
           </label>
-          <input type="number" id="venta-jugos" min="0" step="1" placeholder="$0"
-            oninput="updateVentaTotal()">
+          <input type="text" id="venta-jugos" inputmode="numeric" placeholder="$0"
+            oninput="fmtVentaInput(this)" onfocus="unFmtInput(this)" onblur="reFmtInput(this); updateVentaTotal()"
+            style="font-family:var(--mono);font-size:15px;font-weight:600">
         </div>
 
         <div class="field" style="margin:0">
-          <label style="display:flex;align-items:center;gap:6px">
-            <span style="width:8px;height:8px;border-radius:50%;background:#6BAEE0;display:inline-block"></span>
+          <label style="display:flex;align-items:center;gap:6px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3)">
+            <span style="width:8px;height:8px;border-radius:50%;background:#6BAEE0;flex-shrink:0"></span>
             Barra Alimentos
           </label>
-          <input type="number" id="venta-alimentos" min="0" step="1" placeholder="$0"
-            oninput="updateVentaTotal()">
+          <input type="text" id="venta-alimentos" inputmode="numeric" placeholder="$0"
+            oninput="fmtVentaInput(this)" onfocus="unFmtInput(this)" onblur="reFmtInput(this); updateVentaTotal()"
+            style="font-family:var(--mono);font-size:15px;font-weight:600">
         </div>
 
         <div class="field" style="margin:0">
-          <label style="display:flex;align-items:center;gap:6px">
-            <span style="width:8px;height:8px;border-radius:50%;background:#D4860A;display:inline-block"></span>
+          <label style="display:flex;align-items:center;gap:6px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3)">
+            <span style="width:8px;height:8px;border-radius:50%;background:#D4860A;flex-shrink:0"></span>
             Barra Helados
           </label>
-          <input type="number" id="venta-helados" min="0" step="1" placeholder="$0"
-            oninput="updateVentaTotal()">
+          <input type="text" id="venta-helados" inputmode="numeric" placeholder="$0"
+            oninput="fmtVentaInput(this)" onfocus="unFmtInput(this)" onblur="reFmtInput(this); updateVentaTotal()"
+            style="font-family:var(--mono);font-size:15px;font-weight:600">
         </div>
       </div>
 
@@ -1508,9 +1512,30 @@ function renderVentas() {
   </div>`;
 }
 
+// ── Helpers formato CLP en inputs ────────────────────────
+function getRawValue(el) {
+  // Rimuove tutto tranne cifre (gestisce sia "400.000" che "400,000" che "400000")
+  const clean = (el.value || '').replace(/[^\d]/g, '');
+  return parseInt(clean) || 0;
+}
+function fmtVentaInput(el) {
+  const raw = getRawValue(el);
+  if (raw > 0) el.value = '$' + raw.toLocaleString('es-CL');
+  else el.value = '';
+  updateVentaTotal();
+}
+function unFmtInput(el) {
+  const raw = getRawValue(el);
+  el.value = raw > 0 ? String(raw) : '';
+}
+function reFmtInput(el) {
+  const raw = getRawValue(el);
+  el.value = raw > 0 ? '$' + raw.toLocaleString('es-CL') : '';
+}
+
 function updateVentaTotal() {
   const vals = ['cafe','jugos','alimentos','helados'].map(s =>
-    parseFloat(document.getElementById('venta-' + s).value) || 0
+    getRawValue(document.getElementById('venta-' + s))
   );
   const total = vals.reduce((a,b) => a+b, 0);
   const previewEl = document.getElementById('venta-total-preview');
@@ -1535,13 +1560,10 @@ async function guardarVentas() {
     { id: 'jugos',     nombre: 'Barra Jugos' },
     { id: 'alimentos', nombre: 'Barra Alimentos' },
     { id: 'helados',   nombre: 'Barra Helados' },
-  ];
+  ].map(s => ({ ...s, monto: getRawValue(document.getElementById('venta-' + s.id)) }))
+   .filter(s => s.monto > 0);
 
-  const toRegistrar = secciones
-    .map(s => ({ ...s, monto: parseFloat(document.getElementById('venta-' + s.id).value) || 0 }))
-    .filter(s => s.monto > 0);
-
-  if (!toRegistrar.length) {
+  if (!secciones.length) {
     showToast('Ingresa al menos una venta','error');
     return;
   }
@@ -1550,26 +1572,23 @@ async function guardarVentas() {
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> Guardando...';
 
-  // Registrar en paralelo
-  const resultados = await Promise.all(toRegistrar.map(s =>
-    callGAS({ action:'registrarVenta', local:CFG.local, fecha, seccion:s.nombre, venta:s.monto })
-  ));
+  // Sequencial — no race condition en GAS (busqueda primera fila vacía)
+  let errores = 0;
+  for (const s of secciones) {
+    const res = await callGAS({ action:'registrarVenta', local:CFG.local, fecha, seccion:s.nombre, venta:s.monto });
+    if (res && res.ok === false) errores++;
+    else STATE.ventas.push({ 'Fecha':fecha, 'Local':CFG.local, 'Seccion':s.nombre, 'Venta $':String(s.monto) });
+  }
 
   btn.disabled = false;
   btn.innerHTML = 'Registrar Ventas';
 
-  const errores = resultados.filter(r => r && r.ok === false);
-  if (errores.length) {
-    showToast('Error en ' + errores.length + ' sección(es)','error');
+  if (errores > 0) {
+    showToast('Error en ' + errores + ' sección(es)','error');
     return;
   }
 
-  showToast(`✅ ${toRegistrar.length} ventas registradas`,'success');
-
-  // Actualizar estado local
-  toRegistrar.forEach(s => {
-    STATE.ventas.push({ 'Fecha':fecha, 'Local':CFG.local, 'Seccion':s.nombre, 'Venta $':String(s.monto) });
-  });
+  showToast(`✅ ${secciones.length} ventas registradas`,'success');
 
   // Reset campos
   ['cafe','jugos','alimentos','helados'].forEach(id => {
