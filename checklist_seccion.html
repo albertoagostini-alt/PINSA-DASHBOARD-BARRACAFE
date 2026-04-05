@@ -368,6 +368,8 @@ var SECTOR=(params.get('sector')||'').trim().toLowerCase();
 var LABELS={cafe:'Barra Café',jugos:'Barra Jugos',alimentos:'Barra Alimentos',helados:'Barra Helados'};
 var SECCION_LABEL=LABELS[SECCION]||SECCION;
 var SECTOR_SECCIONES={liquidos:['cafe','jugos'],solidos:['alimentos','helados'],'':['cafe','jugos','alimentos','helados']};
+// Mappa chiave interna → valore reale nei fogli Google Sheets
+var SECCION_LABEL_SHEET={cafe:'Barra Cafe',jugos:'Barra Jugos',alimentos:'Barra Alimentos',helados:'Barra Helados'};
 var GAS_URL='https://script.google.com/macros/s/AKfycbyPiDPas-b0AAOaY4U1Fmq-ix-rfrb71GlK8IJi6szPiBvbm4fRWyJHGwcKoiy7dqoV9g/exec';
 var SESSION={};
 
@@ -740,7 +742,9 @@ function _splitCsvLine(line){
 }
 
 function cargarInsumosDinamicos(seccion){
-  // BD_INSUMOS col C (idx 2) = seccion; col A (0) = SKU; col B (1) = Descripcion; col P (15) = UTM
+  // BD_INSUMOS col C = "Barra Alimentos" (con virgola se multi-sezione)
+  // Usiamo contains match — un insumo appartiene alla sezione se il campo LA contiene
+  var labelSheet=SECCION_LABEL_SHEET[seccion]||seccion;
   fetch(CSV_BD_INSUMOS+'&t='+Date.now())
     .then(function(r){return r.text();})
     .then(function(txt){
@@ -750,16 +754,22 @@ function cargarInsumosDinamicos(seccion){
         if(idx===0||!line.trim())return;
         var c=_splitCsvLine(line);
         var sku=(c[0]||'').trim(), desc=(c[1]||'').trim();
-        var sec=(c[2]||'').trim().toLowerCase(), utm=(c[15]||'Gr').trim();
-        if(sku&&desc&&sec===seccion) lista.push({n:desc,sku:sku,utm:utm,tipo:'insumo'});
+        var sec=(c[2]||'').trim(), utm=(c[15]||'Gr').trim();
+        if(sku&&desc&&sec.indexOf(labelSheet)!==-1) lista.push({n:desc,sku:sku,utm:utm,tipo:'insumo'});
       });
-      if(lista.length>0) MR_INSUMOS_PER_SEC[seccion]=lista;
+      if(lista.length>0){
+        MR_INSUMOS_PER_SEC[seccion]=lista;
+        // Se tab merma già aperto su insumos, re-renderizza
+        var inp=document.getElementById('mr-search-input');
+        if(mrCurrentType==='insumo'&&inp) mrRenderList(inp.value);
+      }
     }).catch(function(){});
 }
 
 function cargarProductosDinamicos(seccion){
-  // RECETAS_MASTER (0-based): A=ID, B=Nombre, C=Tipo, D=Seccion, G=Estado, I=Unidad_salida
-  // RECETAS_DETALLE (0-based): A=ID_Receta, D=Descripcion, E=Q_Lote, F=UM
+  // RECETAS_MASTER col D(3) = "Barra Alimentos" (valor exacto del campo)
+  // Estado col G(6) = "ACTIVA_SIN_DATA" — incluimos todo excepto ARCHIVADA
+  var labelSheet=SECCION_LABEL_SHEET[seccion]||seccion;
   var maestro={};
   fetch(CSV_RECETAS_MASTER+'&t='+Date.now())
     .then(function(r){return r.text();})
@@ -769,10 +779,11 @@ function cargarProductosDinamicos(seccion){
         if(idx===0||!line.trim())return;
         var c=_splitCsvLine(line);
         var id=(c[0]||'').trim(), nombre=(c[1]||'').trim();
-        var tipo=(c[2]||'').trim().toUpperCase(), sec=(c[3]||'').trim().toLowerCase();
+        var tipo=(c[2]||'').trim().toUpperCase(), sec=(c[3]||'').trim();
         var estado=(c[6]||'').trim().toUpperCase(), utm=(c[8]||'unidad').trim();
         var tiposOk=['ENSAMBLE','SIMPLE','OFERTA','PINSA','BOWL','ENSALADA'];
-        if(id&&nombre&&sec===seccion&&estado==='ACTIVO'&&tiposOk.indexOf(tipo)!==-1)
+        // sec === labelSheet match exacto (campo D contiene "Barra Alimentos")
+        if(id&&nombre&&sec===labelSheet&&estado!=='ARCHIVADA'&&tiposOk.indexOf(tipo)!==-1)
           maestro[id]={n:nombre,sku:id,utm:utm,seccion:seccion,ing:[]};
       });
       return fetch(CSV_RECETAS_DETALLE+'&t='+Date.now());
@@ -792,6 +803,9 @@ function cargarProductosDinamicos(seccion){
       if(lista.length>0){
         MR_PRODUCTOS=MR_PRODUCTOS.filter(function(p){return p.seccion!==seccion;});
         MR_PRODUCTOS=MR_PRODUCTOS.concat(lista);
+        // Se tab merma già aperto su prodotti, re-renderizza
+        var inp=document.getElementById('mr-search-input');
+        if(mrCurrentType==='producto'&&inp) mrRenderList(inp.value);
       }
     }).catch(function(){});
 }
