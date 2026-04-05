@@ -456,15 +456,25 @@
           </div>
           <button class="btn btn-secondary btn-sm" onclick="clearMovSelected()" style="flex-shrink:0">✕</button>
         </div>
-        <!-- Badge UO explicativo -->
-        <div id="mov-uo-badge" style="margin-top:10px;padding:8px 10px;background:rgba(196,98,29,0.1);border:1px solid rgba(196,98,29,0.25);border-radius:6px;font-size:12px;color:var(--t2)">
-          <span style="color:var(--orange);font-weight:600">1 UO</span> = <span id="mov-uo-desc">—</span>
+      <!-- Selector UO / BO -->
+      <div id="mov-unidad-selector" style="margin-top:10px">
+        <div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px">¿Qué unidad entregas?</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button id="btn-uo" onclick="selectUnidad('UO')" style="flex:1;min-width:120px;padding:10px 12px;border-radius:8px;border:2px solid var(--border2);background:var(--bg3);cursor:pointer;text-align:left;transition:all .15s">
+            <div style="font-size:11px;font-weight:600;color:var(--orange);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px">UO</div>
+            <div id="uo-label" style="font-size:13px;color:var(--t1);font-weight:500">—</div>
+          </button>
+          <button id="btn-bo" onclick="selectUnidad('BO')" style="flex:1;min-width:120px;padding:10px 12px;border-radius:8px;border:2px solid var(--border2);background:var(--bg3);cursor:pointer;text-align:left;transition:all .15s;display:none">
+            <div style="font-size:11px;font-weight:600;color:var(--blue);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px">BO</div>
+            <div id="bo-label" style="font-size:13px;color:var(--t1);font-weight:500">—</div>
+          </button>
         </div>
       </div>
+      </div>
 
-      <!-- Cantidad + alerta OK -->
+      <!-- Quantità con unità selezionata -->
       <div class="field">
-        <label>Cantidad en UO</label>
+        <label>Cantidad en <span id="mov-unidad-label" style="color:var(--orange)">UO</span></label>
         <input type="number" id="mov-cantidad" min="0.01" step="0.01" placeholder="0.00" oninput="checkMovAlert()">
       </div>
       <div id="mov-alert" style="display:none;font-size:12px;padding:8px 12px;border-radius:6px;margin-bottom:12px"></div>
@@ -1095,19 +1105,55 @@ function buscarInsumoMov(q) {
 }
 
 function selectInsumoMov(sku, desc, utm, uoDesc) {
+  // Trova il record completo in bdInsumos per avere BO
+  const record = STATE.bdInsumos.find(r => String(r['SKU']) === String(sku)) || {};
+  const boActivo = (record['BO Activo'] || '').toString().trim().toUpperCase() === 'SI';
+  const boDesc   = record['Descripcion BO'] || '';
+  const boFactor = record['Factor BO - UTM'] || '';
+
   movSelectedSKU  = sku;
-  movSelectedData = { sku, desc, utm, uoDesc };
+  movSelectedData = { sku, desc, utm, uoDesc, boActivo, boDesc, boFactor, unidad: 'UO' };
 
   document.getElementById('mov-sel-sku').textContent  = sku;
   document.getElementById('mov-sel-desc').textContent = desc;
   document.getElementById('mov-sel-utm').textContent  = utm;
-  document.getElementById('mov-uo-desc').textContent  = uoDesc || utm || '—';
   document.getElementById('mov-search').value         = desc;
   document.getElementById('mov-search-results').innerHTML = '';
   document.getElementById('mov-selected-info').style.display = 'block';
   document.getElementById('btn-mov-guardar').disabled = false;
+
+  // Aggiorna bottoni UO/BO
+  document.getElementById('uo-label').textContent  = uoDesc || utm || '—';
+  document.getElementById('bo-label').textContent  = boDesc || '—';
+  document.getElementById('btn-bo').style.display  = boActivo ? 'flex' : 'none';
+
+  // Seleziona UO di default
+  selectUnidad('UO');
   document.getElementById('mov-cantidad').focus();
   checkMovAlert();
+}
+
+function selectUnidad(tipo) {
+  movSelectedData.unidad = tipo;
+  const btnUO = document.getElementById('btn-uo');
+  const btnBO = document.getElementById('btn-bo');
+  const label = document.getElementById('mov-unidad-label');
+
+  // Stile attivo/inattivo
+  if (tipo === 'UO') {
+    btnUO.style.borderColor = 'var(--orange)';
+    btnUO.style.background  = 'rgba(196,98,29,0.12)';
+    if (btnBO) { btnBO.style.borderColor = 'var(--border2)'; btnBO.style.background = 'var(--bg3)'; }
+    label.textContent = 'UO';
+    label.style.color = 'var(--orange)';
+  } else {
+    btnBO.style.borderColor = '#6BAEE0';
+    btnBO.style.background  = 'rgba(41,98,168,0.12)';
+    btnUO.style.borderColor = 'var(--border2)';
+    btnUO.style.background  = 'var(--bg3)';
+    label.textContent = 'BO';
+    label.style.color = '#6BAEE0';
+  }
 }
 
 function clearMovSelected() {
@@ -1190,7 +1236,8 @@ async function guardarMovimiento() {
     sku:         movSelectedSKU,
     desc:        movSelectedData.desc,
     utm:         movSelectedData.utm,
-    uoDesc:      movSelectedData.uoDesc,
+    unidad:      movSelectedData.unidad || 'UO',
+    uoDesc:      movSelectedData.unidad === 'BO' ? movSelectedData.boDesc : movSelectedData.uoDesc,
     cantidad:    cant,
     responsable: movOperador,
     obs:         obs
