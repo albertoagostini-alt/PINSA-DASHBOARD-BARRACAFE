@@ -439,7 +439,9 @@
     <!-- ORIGEN — solo visible si Proveedor -->
     <div class="field" id="mov-origen-field" style="display:none">
       <label>Proveedor / Origen</label>
-      <input type="text" id="mov-origen-text" placeholder="Nombre del proveedor...">
+      <select id="mov-origen-text">
+        <option value="">Selecciona proveedor...</option>
+      </select>
     </div>
 
     <!-- DESTINO — oculto para ajustes e ingresos -->
@@ -1092,6 +1094,9 @@ async function init() {
     }
   }
 
+  // Cargar proveedores desde CTRL_BC
+  cargarProveedores();
+
   // Conteo próximo
   calcProximoConteo();
 
@@ -1101,6 +1106,31 @@ async function init() {
 }
 
 // ════════════════════════════════════════════════════════
+// ── Carga proveedores desde CTRL_BC_2026 ─────────────────
+async function cargarProveedores() {
+  const TOKEN_BC = '2PACX-1vSHqqam0ulBIXIn_UNH50dEl2XX0RDAnMbI70phvGURduyKGoTpIkV8g-8k8p8pbIr42g6Nap3SE9tt';
+  const GID_PROV = '1453971067';
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/e/${TOKEN_BC}/pub?gid=${GID_PROV}&single=true&output=csv&t=${Date.now()}`;
+    const r   = await fetch(url);
+    const txt = await r.text();
+    if (txt.includes('<!DOCTYPE')) return;
+    const rows = parseCSV(txt);
+    const sel  = document.getElementById('mov-origen-text');
+    if (!sel) return;
+    rows.forEach(row => {
+      const nombre = (row['Nombre Proveedor'] || '').trim();
+      const nick   = (row['Nickname'] || '').trim();
+      if (!nombre || nombre.startsWith('⚠️')) return;
+      const label  = nick && nick !== nombre ? `${nick}  (${nombre})` : nombre;
+      const opt    = document.createElement('option');
+      opt.value    = nick || nombre;
+      opt.textContent = label;
+      sel.appendChild(opt);
+    });
+  } catch(e) { console.log('Proveedores no cargados:', e); }
+}
+
 // MÓDULO 1 — MOVIMIENTOS
 // ════════════════════════════════════════════════════════
 let movSelectedSKU  = null;
