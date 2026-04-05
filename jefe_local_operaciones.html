@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>PINSA · Jefe Local</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%234A6FA5'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='18' fill='white'>P</text></svg>">
+<title>PINSA · Panel Operativo · JL</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
@@ -339,44 +342,25 @@
 <!-- HEADER -->
 <div class="header">
   <div>
-    <div class="header-logo">PINSA.</div>
+    <div id="logo-op" style="width:72px;height:24px;background-size:contain;background-repeat:no-repeat;background-position:left center;"></div>
   </div>
   <div class="header-info">
     <strong id="hdr-local">Candelaria</strong>
-    <span><span class="live-dot"></span>Jefe Local</span>
+    <span><span class="live-dot"></span>Panel Operativo</span>
   </div>
 </div>
 
-<!-- BANNER ALERTAS -->
-<div class="banner" id="banner-alert">
-  <span class="banner-icon">⚠️</span>
-  <span id="banner-text">Sin registro hoy: Barra Cafe · Barra Jugos</span>
-</div>
 
 <!-- NAV TABS -->
 <div class="nav-scroll">
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="goTab('movimientos')">
-      <span class="tab-dot" id="dot-movimientos"></span>Movimientos
-    </button>
-    <button class="nav-tab" onclick="goTab('ventas')">
-      <span class="tab-dot" id="dot-ventas"></span>Ventas
-    </button>
-    <button class="nav-tab" onclick="goTab('solicitud')">
-      <span class="tab-dot" id="dot-solicitud"></span>Solicitud BC
-    </button>
-    <button class="nav-tab" onclick="goTab('recepcion')">
-      <span class="tab-dot" id="dot-recepcion"></span>Recepción
-    </button>
-    <button class="nav-tab" onclick="goTab('conteo')">
-      <span class="tab-dot" id="dot-conteo"></span>Conteo Físico
-    </button>
-    <button class="nav-tab" onclick="goTab('inventario')">
-      <span class="tab-dot" id="dot-inventario"></span>Inventario
-    </button>
-    <button class="nav-tab" onclick="goTab('analisis')">
-      <span class="tab-dot" id="dot-analisis"></span>Análisis
-    </button>
+    <button class="nav-tab active" onclick="goTab('movimientos')">Movimientos</button>
+    <button class="nav-tab" onclick="goTab('ventas')">Ventas</button>
+    <button class="nav-tab" onclick="goTab('solicitud')">Solicitud BC</button>
+    <button class="nav-tab" onclick="goTab('recepcion')">Recepción</button>
+    <button class="nav-tab" onclick="goTab('conteo')">Conteo Físico</button>
+    <button class="nav-tab" onclick="goTab('inventario')">Inventario</button>
+    <button class="nav-tab" onclick="goTab('analisis')">Análisis</button>
   </div>
 </div>
 
@@ -477,33 +461,7 @@
   <div class="section-title">Ventas Diarias</div>
   <div class="section-sub">
     <span class="tag tag-orange">REGISTRO</span>
-    Ingreso por sección · Tu bono depende de esto
-  </div>
-
-  <!-- KPI bono -->
-  <div class="kpi-grid">
-    <div class="kpi-card">
-      <div class="kpi-label">Venta semana</div>
-      <div class="kpi-value" id="kpi-venta-sem">—</div>
-      <div class="kpi-sub" id="kpi-venta-sub">Cargando...</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Estado bono</div>
-      <div class="kpi-value" id="kpi-bono-estado">—</div>
-      <div class="kpi-sub" id="kpi-bono-sub">—</div>
-    </div>
-  </div>
-  <div class="card" style="margin-bottom:16px">
-    <div class="card-title">Progreso semana hacia meta</div>
-    <div class="progress-wrap">
-      <div class="progress-label">
-        <span id="prog-venta-actual">$0</span>
-        <span id="prog-venta-meta">Meta: $—</span>
-      </div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="prog-venta-fill" style="width:0%"></div>
-      </div>
-    </div>
+    Ingreso por sección · cada día
   </div>
 
   <div class="card">
@@ -536,10 +494,10 @@
     </button>
   </div>
 
-  <!-- Historial semana -->
+  <!-- Confirmación registros hoy -->
   <div class="card">
-    <div class="card-title">Esta Semana</div>
-    <div id="ventas-semana-list">
+    <div class="card-title">Registrado hoy</div>
+    <div id="ventas-hoy-list">
       <div class="loading-card"><div class="spinner"></div></div>
     </div>
   </div>
@@ -933,7 +891,8 @@ function goTab(tab) {
 async function init() {
   // Header
   document.getElementById('hdr-local').textContent = CFG.local;
-  document.getElementById('footer-local').textContent = `PINSA · Jefe Local · ${CFG.local}`;
+  document.getElementById('footer-local').textContent = `PINSA · Panel Operativo · ${CFG.local}`;
+  document.getElementById('logo-op').style.backgroundImage = `url(${LOGO_BASE64})`;
 
   // Fecha hoy en ventas
   document.getElementById('venta-fecha').value = today();
@@ -977,49 +936,7 @@ async function init() {
 
   // Render módulo inicial
   renderMovRecientes();
-  updateBanner();
-  updateNavDots();
   updateKPIVentas();
-}
-
-// ════════════════════════════════════════════════════════
-// BANNER Y DOTS
-// ════════════════════════════════════════════════════════
-function updateBanner() {
-  // Verifica ventas de hoy
-  const hoy = today();
-  const sinReg = CFG.secciones.filter(s => {
-    return !STATE.ventas.some(v => v['Fecha'] && v['Seccion'] === s &&
-      new Date(v['Fecha']).toISOString().split('T')[0] === hoy);
-  });
-  if (sinReg.length > 0) {
-    document.getElementById('banner-text').textContent =
-      'Sin registro hoy: ' + sinReg.join(' · ') + ' — Bono en riesgo';
-    document.getElementById('banner-alert').classList.add('visible');
-  }
-}
-
-function updateNavDots() {
-  // Solicitud — quiebres
-  const quiebres = STATE.reposicion.filter(r => r['Estado'] === 'QUIEBRE').length;
-  setDot('dot-solicitud', quiebres > 0 ? 'err' : 'ok');
-
-  // Recepcion — pendientes
-  const pendRecep = STATE.confirmacion.filter(r => !r['Q Recibida UPC'] || r['Q Recibida UPC'] === '').length;
-  setDot('dot-recepcion', pendRecep > 0 ? 'warn' : 'ok');
-
-  // Inventario — críticos
-  const criticos = STATE.inventario.filter(r => {
-    const est = r['Estado'] || '';
-    return est === 'QUIEBRE' || est === 'CRITICO';
-  }).length;
-  setDot('dot-inventario', criticos > 0 ? 'err' : 'ok');
-}
-
-function setDot(id, state) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.className = 'tab-dot ' + (state === 'err' ? 'err' : state === 'warn' ? 'warn' : 'ok');
 }
 
 // ════════════════════════════════════════════════════════
@@ -1156,60 +1073,28 @@ function renderMovRecientes() {
 // ════════════════════════════════════════════════════════
 // MÓDULO 2 — VENTAS
 // ════════════════════════════════════════════════════════
-function updateKPIVentas() {
-  const lunes = getMondayOfWeek(new Date());
-  const ventasSem = STATE.ventas.filter(v => {
+function renderVentas() {
+  const hoy = today();
+  const ventasHoy = STATE.ventas.filter(v => {
     if (!v['Fecha']) return false;
-    try { return new Date(v['Fecha']).toISOString().split('T')[0] >= lunes; }
-    catch(e) { return false; }
+    try { return new Date(v['Fecha']).toISOString().split('T')[0] === hoy; }
+    catch(e){ return false; }
   });
 
-  const totalSem = ventasSem.reduce((s,v) => s + limpiarNum(v['Venta $']), 0);
-  const pct = Math.min(100, Math.round(totalSem / CFG.META_VENTAS_SEM * 100));
-
-  document.getElementById('kpi-venta-sem').textContent = fmtCLP(totalSem);
-  document.getElementById('kpi-venta-sem').className = 'kpi-value ' + (pct >= 100 ? 'ok' : pct >= 70 ? 'warn' : 'err');
-
-  document.getElementById('prog-venta-actual').textContent = fmtCLP(totalSem);
-  document.getElementById('prog-venta-meta').textContent   = 'Meta: ' + fmtCLP(CFG.META_VENTAS_SEM);
-  const fill = document.getElementById('prog-venta-fill');
-  fill.style.width = pct + '%';
-  fill.className = 'progress-fill ' + (pct >= 100 ? '' : pct >= 70 ? 'warn' : 'err');
-
-  if (pct >= 100) {
-    document.getElementById('kpi-bono-estado').textContent = '✅ Activo';
-    document.getElementById('kpi-bono-estado').className = 'kpi-value ok';
-    document.getElementById('kpi-bono-sub').textContent = 'Meta de ventas cumplida';
-  } else {
-    document.getElementById('kpi-bono-estado').textContent = pct + '%';
-    document.getElementById('kpi-bono-estado').className = 'kpi-value warn';
-    document.getElementById('kpi-bono-sub').textContent = 'Faltan ' + fmtCLP(CFG.META_VENTAS_SEM - totalSem);
-  }
-}
-
-function renderVentas() {
-  updateKPIVentas();
-  const lunes = getMondayOfWeek(new Date());
-  const semana = STATE.ventas.filter(v => {
-    if (!v['Fecha']) return false;
-    try { return new Date(v['Fecha']).toISOString().split('T')[0] >= lunes; }
-    catch(e){ return false; }
-  }).sort((a,b) => new Date(b['Fecha']) - new Date(a['Fecha']));
-
-  const el = document.getElementById('ventas-semana-list');
-  if (!semana.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-icon">📊</div>Sin ventas registradas esta semana</div>`;
+  const el = document.getElementById('ventas-hoy-list');
+  if (!el) return;
+  if (!ventasHoy.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📊</div>Sin ventas registradas hoy</div>`;
     return;
   }
-
-  el.innerHTML = semana.map(v => {
+  el.innerHTML = ventasHoy.map(v => {
     const monto = limpiarNum(v['Venta $']);
     return `<div class="semaforo-row">
       <div style="flex:1">
         <div style="font-size:13px;color:var(--t1);font-weight:500">${v['Seccion']||'—'}</div>
         <div style="font-size:11px;color:var(--t3)">${fmtDate(v['Fecha'])}</div>
       </div>
-      <div style="font-size:14px;font-weight:600;font-family:var(--mono);color:var(--t1)">${fmtCLP(monto)}</div>
+      <div style="font-size:14px;font-weight:600;font-family:var(--mono);color:var(--green2)">${fmtCLP(monto)}</div>
     </div>`;
   }).join('');
 }
@@ -1245,12 +1130,10 @@ async function guardarVenta() {
 
   if (res && res.ok) {
     showToast('✅ Venta registrada','success');
-    // Actualizar estado local
     STATE.ventas.push({'Fecha': fecha,'Local': CFG.local,'Seccion': seccion,'Venta $': String(monto)});
     document.getElementById('venta-monto').value = '';
     document.getElementById('venta-preview').textContent = '';
     renderVentas();
-    updateBanner();
   } else {
     showToast('Error: ' + (res?.error || 'sin respuesta'),'error');
   }
@@ -1713,6 +1596,8 @@ function filtrarAnalisis() {
 // ════════════════════════════════════════════════════════
 // ARRANQUE
 // ════════════════════════════════════════════════════════
+const LOGO_BASE64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/wAARCABAAFADASIAAhEBAxEB/8QAGwABAAMBAQEBAAAAAAAAAAAAAAQFBgMCAQf/xAAuEAACAQMCBAQGAwEAAAAAAAAAAQIDBAUREiExBhNBUWFxkaHBFCIjMlLR/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEC/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A/VAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGFWrTpR1VJxi/FgZgAAAAAAAAAAAAAAr5OoUqFbPuoxlHXB6vNhRin8k2n3K2a2oJNrFGnk8tNaafVv9Lx4kKFtUrz1yTUFwjl6Y7vuZCqnW0p1JOZV1lGPBQ8klu/MuaM9NClKW+FGT49SSGK23NXGi1oQjqqS3cfJed+wuSTlHlq2gGiMnGSlF4a4MiTgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//Z";
+
 init().catch(console.error);
 </script>
 </body>
