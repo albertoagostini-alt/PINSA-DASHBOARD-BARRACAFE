@@ -405,9 +405,9 @@
       <label>Tipo de movimiento</label>
       <select id="mov-tipo" onchange="onMovTipoChange()">
         <option value="">— Seleccionar —</option>
-        <option value="Entrega Seccion">📤 Entrega a Sección</option>
-        <option value="Devolucion Seccion">📥 Devolución de Sección</option>
-        <option value="Ingreso BC">🏭 Ingreso desde BC</option>
+        <option value="Entrega Secc">📤 Entrega a Sección</option>
+        <option value="Devolucion Secc">📥 Devolución de Sección</option>
+        <option value="Ingreso BLoc">🏭 Ingreso desde BC</option>
         <option value="Ingreso Proveedor">🚚 Ingreso desde Proveedor</option>
         <option value="Ajuste + mas">➕ Ajuste surplus</option>
         <option value="Ajuste - menos">➖ Ajuste pérdida</option>
@@ -465,7 +465,7 @@
             <div id="uo-label" style="font-size:13px;color:var(--t1);font-weight:500">—</div>
           </button>
           <button id="btn-bo" onclick="selectUnidad('BO')" style="flex:1;min-width:120px;padding:10px 12px;border-radius:8px;border:2px solid var(--border2);background:var(--bg3);cursor:pointer;text-align:left;transition:all .15s;display:none">
-            <div style="font-size:11px;font-weight:600;color:var(--blue);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px">BO</div>
+            <div style="font-size:11px;font-weight:600;color:#6BAEE0;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px">BO</div>
             <div id="bo-label" style="font-size:13px;color:var(--t1);font-weight:500">—</div>
           </button>
         </div>
@@ -1052,12 +1052,12 @@ function onMovTipoChange() {
   const origenF  = document.getElementById('mov-origen-field');
 
   // Destino visible solo para entregas y devoluciones
-  destinoF.style.display = (tipo === 'Entrega Seccion' || tipo === 'Devolucion Seccion') ? 'block' : 'none';
+  destinoF.style.display = (tipo === 'Entrega Secc' || tipo === 'Devolucion Secc') ? 'block' : 'none';
   // Origen visible solo para Proveedor
   origenF.style.display  = (tipo === 'Ingreso Proveedor') ? 'block' : 'none';
 
   // Reset destino a — Seleccionar —
-  if (tipo === 'Entrega Seccion' || tipo === 'Devolucion Seccion') {
+  if (tipo === 'Entrega Secc' || tipo === 'Devolucion Secc') {
     document.getElementById('mov-destino').value = '';
   }
   checkMovAlert();
@@ -1125,7 +1125,7 @@ function selectInsumoMov(sku, desc, utm, uoDesc) {
   // Aggiorna bottoni UO/BO
   document.getElementById('uo-label').textContent  = uoDesc || utm || '—';
   document.getElementById('bo-label').textContent  = boDesc || '—';
-  document.getElementById('btn-bo').style.display  = boActivo ? 'flex' : 'none';
+  document.getElementById('btn-bo').style.display  = boActivo ? 'block' : 'none';
 
   // Seleziona UO di default
   selectUnidad('UO');
@@ -1147,6 +1147,7 @@ function selectUnidad(tipo) {
     label.textContent = 'UO';
     label.style.color = 'var(--orange)';
   } else {
+    btnBO.style.display     = 'block';
     btnBO.style.borderColor = '#6BAEE0';
     btnBO.style.background  = 'rgba(41,98,168,0.12)';
     btnUO.style.borderColor = 'var(--border2)';
@@ -1176,7 +1177,7 @@ function checkMovAlert() {
   if (!tipo)           { alertEl.style.display = 'none'; return; }
 
   // Validazione destino per entrega
-  if ((tipo === 'Entrega Seccion' || tipo === 'Devolucion Seccion') && !destino) {
+  if ((tipo === 'Entrega Secc' || tipo === 'Devolucion Secc') && !destino) {
     alertEl.style.display = 'block';
     alertEl.style.background = 'rgba(212,134,10,0.12)';
     alertEl.style.border     = '1px solid rgba(212,134,10,0.3)';
@@ -1199,7 +1200,7 @@ function checkMovAlert() {
 
 // Origen derivato dal tipo
 function getOrigenFromTipo(tipo) {
-  if (tipo === 'Ingreso BC')         return 'Bodega Central';
+  if (tipo === 'Ingreso BLoc')         return 'Bodega Central';
   if (tipo === 'Ingreso Proveedor')  return (document.getElementById('mov-origen-text').value.trim() || 'Proveedor');
   return 'Bodega Local';
 }
@@ -1214,7 +1215,7 @@ async function guardarMovimiento() {
 
   if (!tipo)           { showToast('Selecciona el tipo de movimiento','error'); return; }
   if (!movSelectedSKU) { showToast('Busca y selecciona un producto','error');   return; }
-  if ((tipo === 'Entrega Seccion' || tipo === 'Devolucion Seccion') && !destino) {
+  if ((tipo === 'Entrega Secc' || tipo === 'Devolucion Secc') && !destino) {
     showToast('Selecciona la sección destino','error'); return;
   }
   if (!cant || cant <= 0) { showToast('Ingresa una cantidad válida','error'); return; }
@@ -1224,7 +1225,7 @@ async function guardarMovimiento() {
   btn.innerHTML = '<div class="spinner"></div> Guardando...';
 
   const origen  = getOrigenFromTipo(tipo);
-  const destinoFinal = (tipo === 'Ajuste + mas' || tipo === 'Ajuste - menos' || tipo === 'Ingreso BC' || tipo === 'Ingreso Proveedor')
+  const destinoFinal = (tipo === 'Ajuste + mas' || tipo === 'Ajuste - menos' || tipo === 'Ingreso BLoc' || tipo === 'Ingreso Proveedor')
     ? 'Bodega Local' : destino;
 
   const payload = {
@@ -1285,9 +1286,9 @@ function renderMovRecientes() {
   const counts = {};
   items.forEach(m => { counts[m.tipo] = (counts[m.tipo] || 0) + 1; });
   const tipoColors = {
-    'Entrega Seccion':    { bg:'rgba(196,98,29,0.15)',  color:'var(--orange2)' },
-    'Devolucion Seccion': { bg:'rgba(41,98,168,0.15)',  color:'#6BAEE0' },
-    'Ingreso BC':         { bg:'rgba(15,110,86,0.15)',  color:'var(--green2)' },
+    'Entrega Secc':    { bg:'rgba(196,98,29,0.15)',  color:'var(--orange2)' },
+    'Devolucion Secc': { bg:'rgba(41,98,168,0.15)',  color:'#6BAEE0' },
+    'Ingreso BLoc':         { bg:'rgba(15,110,86,0.15)',  color:'var(--green2)' },
     'Ingreso Proveedor':  { bg:'rgba(15,110,86,0.15)',  color:'var(--green2)' },
     'Ajuste + mas':       { bg:'rgba(90,158,122,0.15)', color:'#7EC49A' },
     'Ajuste - menos':     { bg:'rgba(192,57,43,0.15)',  color:'#E07070' },
