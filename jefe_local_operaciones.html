@@ -376,63 +376,98 @@
     Despacho entre bodega y secciones
   </div>
 
-  <div class="card">
+  <!-- Responsable activo -->
+  <div id="mov-responsable-banner" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:12px;color:var(--t2)">
+      <span style="color:var(--t3);font-size:11px;text-transform:uppercase;letter-spacing:0.4px">Operador activo · </span>
+      <span id="mov-resp-nombre" style="font-weight:600;color:var(--t1)">—</span>
+    </div>
+    <button onclick="cambiarOperador()" style="font-size:11px;color:var(--orange);background:none;border:none;cursor:pointer;padding:0">Cambiar</button>
+  </div>
+
+  <!-- Login operador (si no hay sesión) -->
+  <div id="mov-login-card" class="card" style="display:none">
+    <div class="card-title">¿Quién eres?</div>
+    <div class="field">
+      <label>Selecciona tu nombre</label>
+      <select id="mov-login-select">
+        <option value="">— Seleccionar —</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" onclick="confirmarOperador()">Confirmar</button>
+  </div>
+
+  <div class="card" id="mov-form-card">
     <div class="card-title">Nuevo Movimiento</div>
 
+    <!-- TIPO -->
     <div class="field">
       <label>Tipo de movimiento</label>
       <select id="mov-tipo" onchange="onMovTipoChange()">
         <option value="">— Seleccionar —</option>
-        <option value="Entrega Seccion">Entrega a Sección</option>
-        <option value="Devolucion Seccion">Devolución de Sección</option>
-        <option value="Ajuste + mas">Ajuste + (surplus)</option>
-        <option value="Ajuste - menos">Ajuste − (merma/pérdida)</option>
-        <option value="Consumo Interno">Consumo Interno</option>
+        <option value="Entrega Seccion">📤 Entrega a Sección</option>
+        <option value="Devolucion Seccion">📥 Devolución de Sección</option>
+        <option value="Ingreso BC">🏭 Ingreso desde BC</option>
+        <option value="Ingreso Proveedor">🚚 Ingreso desde Proveedor</option>
+        <option value="Ajuste + mas">➕ Ajuste surplus</option>
+        <option value="Ajuste - menos">➖ Ajuste pérdida</option>
       </select>
     </div>
 
-    <div class="field" id="mov-destino-field">
+    <!-- ORIGEN — solo visible si Proveedor -->
+    <div class="field" id="mov-origen-field" style="display:none">
+      <label>Proveedor / Origen</label>
+      <input type="text" id="mov-origen-text" placeholder="Nombre del proveedor...">
+    </div>
+
+    <!-- DESTINO — oculto para ajustes e ingresos -->
+    <div class="field" id="mov-destino-field" style="display:none">
       <label>Sección destino</label>
       <select id="mov-destino">
-        <option value="Bodega Local">Bodega Local</option>
+        <option value="">— Seleccionar —</option>
         <option value="Barra Cafe">Barra Café</option>
         <option value="Barra Jugos">Barra Jugos</option>
         <option value="Barra Alimentos">Barra Alimentos</option>
         <option value="Barra Helados">Barra Helados</option>
         <option value="Cocina Central">Cocina Central</option>
+        <option value="Pasteleria">Pastelería</option>
       </select>
     </div>
 
+    <!-- BUSCAR INSUMO -->
     <div class="field">
       <label>Buscar insumo</label>
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
-        <input type="text" id="mov-search" placeholder="Nombre o SKU..." oninput="buscarInsumoMov(this.value)">
+        <input type="text" id="mov-search" placeholder="Nombre o SKU..." oninput="buscarInsumoMov(this.value)" autocomplete="off">
       </div>
       <div id="mov-search-results"></div>
     </div>
 
+    <!-- INSUMO SELECCIONADO -->
     <div id="mov-selected-info" style="display:none">
-      <div class="list-item" style="margin-bottom:12px">
-        <div class="list-item-left">
-          <div class="list-item-name" id="mov-sel-desc">—</div>
-          <div class="list-item-sub">SKU: <span id="mov-sel-sku">—</span> · UTM: <span id="mov-sel-utm">—</span></div>
+
+      <!-- Card producto con badge UO/BO -->
+      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;margin-bottom:14px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:14px;font-weight:600;color:var(--t1)" id="mov-sel-desc">—</div>
+            <div style="font-size:11px;color:var(--t3);margin-top:3px">SKU: <span id="mov-sel-sku">—</span> · <span id="mov-sel-utm">—</span></div>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="clearMovSelected()" style="flex-shrink:0">✕</button>
         </div>
-        <button class="btn btn-secondary btn-sm" onclick="clearMovSelected()">✕</button>
+        <!-- Badge UO explicativo -->
+        <div id="mov-uo-badge" style="margin-top:10px;padding:8px 10px;background:rgba(196,98,29,0.1);border:1px solid rgba(196,98,29,0.25);border-radius:6px;font-size:12px;color:var(--t2)">
+          <span style="color:var(--orange);font-weight:600">1 UO</span> = <span id="mov-uo-desc">—</span>
+        </div>
       </div>
 
-      <div class="row2">
-        <div class="field">
-          <label>Cantidad (UO)</label>
-          <input type="number" id="mov-cantidad" min="0.01" step="0.01" placeholder="0.00">
-        </div>
-        <div class="field">
-          <label>Responsable</label>
-          <select id="mov-responsable">
-            <option value="">— Operador —</option>
-          </select>
-        </div>
+      <!-- Cantidad + alerta OK -->
+      <div class="field">
+        <label>Cantidad en UO</label>
+        <input type="number" id="mov-cantidad" min="0.01" step="0.01" placeholder="0.00" oninput="checkMovAlert()">
       </div>
+      <div id="mov-alert" style="display:none;font-size:12px;padding:8px 12px;border-radius:6px;margin-bottom:12px"></div>
 
       <div class="field">
         <label>Observación <span style="color:var(--t3)">(opcional)</span></label>
@@ -445,11 +480,17 @@
     </button>
   </div>
 
-  <!-- Últimos movimientos -->
+  <!-- Resumen movimientos hoy -->
   <div class="card">
-    <div class="card-title">Últimos Movimientos Hoy</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="card-title" style="margin:0">Hoy</div>
+      <div id="mov-hoy-total" style="font-size:12px;color:var(--t3)">0 movimientos</div>
+    </div>
+    <!-- Contadores por tipo -->
+    <div id="mov-hoy-counters" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px"></div>
+    <!-- Últimos 3 -->
     <div id="mov-recientes-list">
-      <div class="loading-card"><div class="spinner"></div></div>
+      <div class="empty" style="padding:20px"><div class="empty-icon">📦</div>Sin movimientos hoy</div>
     </div>
   </div>
 </div>
@@ -935,6 +976,7 @@ async function init() {
   calcProximoConteo();
 
   // Render módulo inicial
+  initMovimientosUI();
   renderMovRecientes();
   updateKPIVentas();
 }
@@ -942,98 +984,238 @@ async function init() {
 // ════════════════════════════════════════════════════════
 // MÓDULO 1 — MOVIMIENTOS
 // ════════════════════════════════════════════════════════
-let movSelectedSKU = null;
+let movSelectedSKU  = null;
+let movSelectedData = {}; // guarda tutti i dati dell'insumo selezionato
+let movOperador     = localStorage.getItem('jl_operador_' + CFG.local) || '';
+// Movimientos registrati in questa sessione (in attesa di CSV reale)
+let movHoySession   = JSON.parse(localStorage.getItem('mov_hoy_' + today()) || '[]');
+
+function initMovimientosUI() {
+  // Popola login select
+  const sel = document.getElementById('mov-login-select');
+  CFG.operadores.forEach(op => {
+    const o = document.createElement('option');
+    o.value = o.textContent = op;
+    sel.appendChild(o);
+  });
+  // Mostra stato operador
+  actualizarBannerOperador();
+}
+
+function actualizarBannerOperador() {
+  const banner   = document.getElementById('mov-responsable-banner');
+  const loginCard= document.getElementById('mov-login-card');
+  const formCard = document.getElementById('mov-form-card');
+  if (movOperador) {
+    banner.style.display = 'flex';
+    loginCard.style.display = 'none';
+    formCard.style.display = 'block';
+    document.getElementById('mov-resp-nombre').textContent = movOperador;
+  } else {
+    banner.style.display = 'none';
+    loginCard.style.display = 'block';
+    formCard.style.display = 'none';
+  }
+}
+
+function confirmarOperador() {
+  const sel = document.getElementById('mov-login-select').value;
+  if (!sel) { showToast('Selecciona tu nombre','error'); return; }
+  movOperador = sel;
+  localStorage.setItem('jl_operador_' + CFG.local, sel);
+  actualizarBannerOperador();
+}
+
+function cambiarOperador() {
+  movOperador = '';
+  localStorage.removeItem('jl_operador_' + CFG.local);
+  actualizarBannerOperador();
+}
 
 function onMovTipoChange() {
   const tipo = document.getElementById('mov-tipo').value;
-  const destField = document.getElementById('mov-destino-field');
-  destField.style.display = (tipo === 'Ajuste + mas' || tipo === 'Ajuste - menos') ? 'none' : 'block';
+  const destinoF = document.getElementById('mov-destino-field');
+  const origenF  = document.getElementById('mov-origen-field');
+
+  // Destino visible solo para entregas y devoluciones
+  destinoF.style.display = (tipo === 'Entrega Seccion' || tipo === 'Devolucion Seccion') ? 'block' : 'none';
+  // Origen visible solo para Proveedor
+  origenF.style.display  = (tipo === 'Ingreso Proveedor') ? 'block' : 'none';
+
+  // Reset destino a — Seleccionar —
+  if (tipo === 'Entrega Seccion' || tipo === 'Devolucion Seccion') {
+    document.getElementById('mov-destino').value = '';
+  }
+  checkMovAlert();
 }
 
 function buscarInsumoMov(q) {
   const res = document.getElementById('mov-search-results');
-  if (!q || q.length < 2) { res.innerHTML=''; return; }
+  if (!q || q.length < 2) { res.innerHTML = ''; return; }
+
+  // Filtra solo ACTIVOS (col AG = "Si" o "SI")
   const matches = STATE.bdInsumos.filter(r => {
+    const activo = (r['Activo'] || r['AG'] || '').toString().toUpperCase();
+    if (activo !== 'SI' && activo !== 'S' && activo !== '1' && activo !== 'TRUE') {
+      // fallback: se non troviamo col Activo, prendiamo tutti
+    }
     const desc = (r['Descripcion'] || r['UPC Descripcion'] || '').toLowerCase();
     const sku  = (r['SKU'] || '').toString();
     return desc.includes(q.toLowerCase()) || sku.includes(q);
-  }).slice(0,6);
+  }).slice(0, 7);
 
-  if (!matches.length) { res.innerHTML=`<div style="font-size:12px;color:var(--t3);padding:8px 0">Sin resultados</div>`; return; }
+  if (!matches.length) {
+    res.innerHTML = `<div style="font-size:12px;color:var(--t3);padding:8px 0">Sin resultados para "${q}"</div>`;
+    return;
+  }
 
   res.innerHTML = matches.map(r => {
-    const desc = r['Descripcion'] || r['UPC Descripcion'] || '—';
-    const sku  = r['SKU'] || '—';
-    const utm  = r['UTM'] || '';
-    return `<div class="list-item" style="cursor:pointer;margin-bottom:6px" onclick="selectInsumoMov('${sku}','${desc.replace(/'/g,"\\'")}','${utm}')">
+    const desc    = r['Descripcion'] || r['UPC Descripcion'] || '—';
+    const sku     = r['SKU'] || '—';
+    const utm     = r['UTM'] || '';
+    const uoDesc  = r['UO o BO'] || r['Descripcion UO'] || r['Unidad Operativa'] || '';
+    const skuSafe = sku.toString().replace(/'/g, "\\'");
+    const dSafe   = desc.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    const uSafe   = uoDesc.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    return `<div class="list-item" style="cursor:pointer;margin-bottom:6px" onclick="selectInsumoMov('${skuSafe}','${dSafe}','${utm}','${uSafe}')">
       <div class="list-item-left">
         <div class="list-item-name">${desc}</div>
-        <div class="list-item-sub">SKU: ${sku} · ${utm}</div>
+        <div class="list-item-sub" style="display:flex;gap:8px;flex-wrap:wrap">
+          <span>SKU: ${sku}</span>
+          <span style="color:var(--orange)">·</span>
+          <span>${utm}</span>
+          ${uoDesc ? `<span style="color:var(--orange)">·</span><span style="color:var(--t2)">${uoDesc}</span>` : ''}
+        </div>
       </div>
       <span style="color:var(--orange);font-size:18px">›</span>
     </div>`;
   }).join('');
 }
 
-function selectInsumoMov(sku, desc, utm) {
-  movSelectedSKU = sku;
-  document.getElementById('mov-sel-sku').textContent = sku;
+function selectInsumoMov(sku, desc, utm, uoDesc) {
+  movSelectedSKU  = sku;
+  movSelectedData = { sku, desc, utm, uoDesc };
+
+  document.getElementById('mov-sel-sku').textContent  = sku;
   document.getElementById('mov-sel-desc').textContent = desc;
-  document.getElementById('mov-sel-utm').textContent = utm;
-  document.getElementById('mov-search').value = desc;
+  document.getElementById('mov-sel-utm').textContent  = utm;
+  document.getElementById('mov-uo-desc').textContent  = uoDesc || utm || '—';
+  document.getElementById('mov-search').value         = desc;
   document.getElementById('mov-search-results').innerHTML = '';
   document.getElementById('mov-selected-info').style.display = 'block';
   document.getElementById('btn-mov-guardar').disabled = false;
   document.getElementById('mov-cantidad').focus();
+  checkMovAlert();
 }
 
 function clearMovSelected() {
-  movSelectedSKU = null;
+  movSelectedSKU  = null;
+  movSelectedData = {};
   document.getElementById('mov-search').value = '';
   document.getElementById('mov-selected-info').style.display = 'none';
   document.getElementById('btn-mov-guardar').disabled = true;
   document.getElementById('mov-search-results').innerHTML = '';
+  document.getElementById('mov-alert').style.display = 'none';
+}
+
+function checkMovAlert() {
+  const alertEl = document.getElementById('mov-alert');
+  const tipo    = document.getElementById('mov-tipo').value;
+  const destino = document.getElementById('mov-destino').value;
+  const cant    = parseFloat(document.getElementById('mov-cantidad').value);
+
+  if (!movSelectedSKU) { alertEl.style.display = 'none'; return; }
+  if (!tipo)           { alertEl.style.display = 'none'; return; }
+
+  // Validazione destino per entrega
+  if ((tipo === 'Entrega Seccion' || tipo === 'Devolucion Seccion') && !destino) {
+    alertEl.style.display = 'block';
+    alertEl.style.background = 'rgba(212,134,10,0.12)';
+    alertEl.style.border     = '1px solid rgba(212,134,10,0.3)';
+    alertEl.style.color      = '#E0A030';
+    alertEl.textContent = '⚠️ Selecciona la sección destino';
+    return;
+  }
+  // Quantità negativa o zero
+  if (cant !== null && !isNaN(cant) && cant <= 0) {
+    alertEl.style.display = 'block';
+    alertEl.style.background = 'rgba(192,57,43,0.12)';
+    alertEl.style.border     = '1px solid rgba(192,57,43,0.3)';
+    alertEl.style.color      = '#E07070';
+    alertEl.textContent = '❌ La cantidad debe ser mayor a 0';
+    return;
+  }
+
+  alertEl.style.display = 'none';
+}
+
+// Origen derivato dal tipo
+function getOrigenFromTipo(tipo) {
+  if (tipo === 'Ingreso BC')         return 'Bodega Central';
+  if (tipo === 'Ingreso Proveedor')  return (document.getElementById('mov-origen-text').value.trim() || 'Proveedor');
+  return 'Bodega Local';
 }
 
 async function guardarMovimiento() {
-  const tipo     = document.getElementById('mov-tipo').value;
-  const destino  = document.getElementById('mov-destino').value;
-  const cantidad = parseFloat(document.getElementById('mov-cantidad').value);
-  const resp     = document.getElementById('mov-responsable').value;
-  const obs      = document.getElementById('mov-obs').value;
+  if (!movOperador) { showToast('Confirma tu nombre primero','error'); return; }
 
-  if (!tipo)              { showToast('Selecciona el tipo de movimiento','error'); return; }
-  if (!movSelectedSKU)    { showToast('Busca y selecciona un producto','error'); return; }
-  if (!cantidad || cantidad <= 0) { showToast('Ingresa una cantidad válida','error'); return; }
-  if (!resp)              { showToast('Selecciona el responsable','error'); return; }
+  const tipo    = document.getElementById('mov-tipo').value;
+  const destino = document.getElementById('mov-destino').value;
+  const cant    = parseFloat(document.getElementById('mov-cantidad').value);
+  const obs     = document.getElementById('mov-obs').value;
+
+  if (!tipo)           { showToast('Selecciona el tipo de movimiento','error'); return; }
+  if (!movSelectedSKU) { showToast('Busca y selecciona un producto','error');   return; }
+  if ((tipo === 'Entrega Seccion' || tipo === 'Devolucion Seccion') && !destino) {
+    showToast('Selecciona la sección destino','error'); return;
+  }
+  if (!cant || cant <= 0) { showToast('Ingresa una cantidad válida','error'); return; }
 
   const btn = document.getElementById('btn-mov-guardar');
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> Guardando...';
 
-  const desc = document.getElementById('mov-sel-desc').textContent;
-  const utm  = document.getElementById('mov-sel-utm').textContent;
+  const origen  = getOrigenFromTipo(tipo);
+  const destinoFinal = (tipo === 'Ajuste + mas' || tipo === 'Ajuste - menos' || tipo === 'Ingreso BC' || tipo === 'Ingreso Proveedor')
+    ? 'Bodega Local' : destino;
 
-  const res = await callGAS({
-    action:     'registrarMovimiento',
-    local:      CFG.local,
-    tipo:       tipo,
-    destino:    (tipo === 'Ajuste + mas' || tipo === 'Ajuste - menos') ? 'Bodega Local' : destino,
-    sku:        movSelectedSKU,
-    desc:       desc,
-    utm:        utm,
-    cantidad:   cantidad,
-    responsable:resp,
-    obs:        obs
-  });
+  const payload = {
+    action:      'registrarMovimiento',
+    local:       CFG.local,
+    origen:      origen,
+    tipo:        tipo,
+    destino:     destinoFinal,
+    sku:         movSelectedSKU,
+    desc:        movSelectedData.desc,
+    utm:         movSelectedData.utm,
+    uoDesc:      movSelectedData.uoDesc,
+    cantidad:    cant,
+    responsable: movOperador,
+    obs:         obs
+  };
+
+  const res = await callGAS(payload);
 
   btn.disabled = false;
   btn.innerHTML = 'Registrar Movimiento';
 
   if (res && res.ok) {
     showToast('✅ Movimiento registrado','success');
+    // Salva in session locale
+    movHoySession.push({
+      hora:    new Date().toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'}),
+      tipo,
+      destino: destinoFinal,
+      desc:    movSelectedData.desc,
+      sku:     movSelectedSKU,
+      cant,
+      resp:    movOperador
+    });
+    localStorage.setItem('mov_hoy_' + today(), JSON.stringify(movHoySession));
+    // Reset form
     clearMovSelected();
     document.getElementById('mov-tipo').value = '';
+    document.getElementById('mov-destino-field').style.display = 'none';
     document.getElementById('mov-cantidad').value = '';
     document.getElementById('mov-obs').value = '';
     renderMovRecientes();
@@ -1043,31 +1225,51 @@ async function guardarMovimiento() {
 }
 
 function renderMovRecientes() {
-  // Lee los ultimos movimientos del dia de inventario
-  const hoy = today();
-  const recent = STATE.inventario.slice(0,10); // placeholder con inventario
-  const el = document.getElementById('mov-recientes-list');
+  const el       = document.getElementById('mov-recientes-list');
+  const totalEl  = document.getElementById('mov-hoy-total');
+  const countEl  = document.getElementById('mov-hoy-counters');
+  const items    = movHoySession;
 
-  // Filtra ventas de hoy como proxy (en producción leer Movimientos_BLocal via CSV)
-  const movHoy = STATE.ventas.filter(v => {
-    if (!v['Fecha']) return false;
-    try { return new Date(v['Fecha']).toISOString().split('T')[0] === hoy; }
-    catch(e) { return false; }
-  });
+  totalEl.textContent = items.length + (items.length === 1 ? ' movimiento' : ' movimientos');
 
-  if (!movHoy.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-icon">📦</div>Sin movimientos registrados hoy</div>`;
+  // Contatori per tipo
+  const counts = {};
+  items.forEach(m => { counts[m.tipo] = (counts[m.tipo] || 0) + 1; });
+  const tipoColors = {
+    'Entrega Seccion':    { bg:'rgba(196,98,29,0.15)',  color:'var(--orange2)' },
+    'Devolucion Seccion': { bg:'rgba(41,98,168,0.15)',  color:'#6BAEE0' },
+    'Ingreso BC':         { bg:'rgba(15,110,86,0.15)',  color:'var(--green2)' },
+    'Ingreso Proveedor':  { bg:'rgba(15,110,86,0.15)',  color:'var(--green2)' },
+    'Ajuste + mas':       { bg:'rgba(90,158,122,0.15)', color:'#7EC49A' },
+    'Ajuste - menos':     { bg:'rgba(192,57,43,0.15)',  color:'#E07070' },
+  };
+  countEl.innerHTML = Object.entries(counts).map(([tipo, n]) => {
+    const c = tipoColors[tipo] || { bg:'var(--bg3)', color:'var(--t2)' };
+    const label = tipo.replace(' Seccion','').replace('Ingreso ','↓').replace('Entrega','↑').replace('Devolucion','↩').replace('Ajuste + mas','➕').replace('Ajuste - menos','➖');
+    return `<div style="padding:5px 10px;border-radius:6px;font-size:12px;font-weight:500;background:${c.bg};color:${c.color}">${label} <strong>${n}</strong></div>`;
+  }).join('');
+
+  if (!items.length) {
+    el.innerHTML = `<div class="empty" style="padding:16px"><div class="empty-icon">📦</div>Sin movimientos hoy</div>`;
     return;
   }
-  el.innerHTML = movHoy.map(v =>
+
+  // Ultimi 3 in ordine inverso
+  const last3 = [...items].reverse().slice(0, 3);
+  el.innerHTML = last3.map(m =>
     `<div class="semaforo-row">
-      <div style="flex:1">
-        <div style="font-size:13px;color:var(--t1)">${v['Seccion']||'—'}</div>
-        <div style="font-size:11px;color:var(--t3)">${fmtDate(v['Fecha'])}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.desc}</div>
+        <div style="font-size:11px;color:var(--t3)">${m.tipo} → ${m.destino} · ${m.resp}</div>
       </div>
-      <span class="status status-ok">Registrado</span>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:14px;font-weight:700;font-family:var(--mono);color:var(--t1)">${m.cant}</div>
+        <div style="font-size:10px;color:var(--t3)">${m.hora}</div>
+      </div>
     </div>`
-  ).join('');
+  ).join('') + (items.length > 3
+    ? `<div style="text-align:center;padding-top:10px;font-size:12px;color:var(--t3)">${items.length - 3} más registrados hoy</div>`
+    : '');
 }
 
 // ════════════════════════════════════════════════════════
