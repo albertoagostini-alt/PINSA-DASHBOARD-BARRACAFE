@@ -961,8 +961,15 @@ function splitCSVLine(line) {
 
 function limpiarNum(v) {
   if (!v) return 0;
-  const s = v.toString().replace(/[$\s]/g,'').replace(/\./g,'').replace(',','.');
-  return parseFloat(s) || 0;
+  const s = v.toString().trim();
+  // Rimuove $ e spazi
+  const clean = s.replace(/[$\s]/g, '');
+  // Formato americano: $3,526,470 o $1,337,391.23
+  if (/^[\d,]+(\.\d+)?$/.test(clean)) {
+    return parseFloat(clean.replace(/,/g, '')) || 0;
+  }
+  // Formato CLP: $3.526.470 o 3.526.470
+  return parseFloat(clean.replace(/\./g, '').replace(',', '.')) || 0;
 }
 
 function fmtCLP(n) {
