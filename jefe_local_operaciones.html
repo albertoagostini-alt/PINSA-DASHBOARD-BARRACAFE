@@ -551,34 +551,66 @@
   <!-- ── PANEL SECCIONES ── -->
   <div id="vpanel-normal">
     <div class="card">
-      <div class="card-title">Registrar Venta</div>
-      <div class="row2">
-        <div class="field">
-          <label>Fecha</label>
-          <input type="date" id="venta-fecha">
-        </div>
-        <div class="field">
-          <label>Sección</label>
-          <select id="venta-seccion">
-            <option value="Barra Cafe">Barra Café</option>
-            <option value="Barra Jugos">Barra Jugos</option>
-            <option value="Barra Alimentos">Barra Alimentos</option>
-            <option value="Barra Helados">Barra Helados</option>
-          </select>
-        </div>
-      </div>
+      <div class="card-title">Registrar Ventas del Día</div>
+
       <div class="field">
-        <label>Venta total $ (CLP)</label>
-        <input type="number" id="venta-monto" min="0" step="1" placeholder="0" oninput="formatVentaPreview()">
-        <div id="venta-preview" style="font-size:11px;color:var(--t3);margin-top:5px;font-family:var(--mono)"></div>
+        <label>Fecha</label>
+        <input type="date" id="venta-fecha">
       </div>
-      <button class="btn btn-primary" onclick="guardarVenta()">Registrar Venta</button>
+
+      <!-- 4 secciones en grid 2x2 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+
+        <div class="field" style="margin:0">
+          <label style="display:flex;align-items:center;gap:6px">
+            <span style="width:8px;height:8px;border-radius:50%;background:#C4621D;display:inline-block"></span>
+            Barra Café
+          </label>
+          <input type="number" id="venta-cafe" min="0" step="1" placeholder="$0"
+            oninput="updateVentaTotal()">
+        </div>
+
+        <div class="field" style="margin:0">
+          <label style="display:flex;align-items:center;gap:6px">
+            <span style="width:8px;height:8px;border-radius:50%;background:#1A9070;display:inline-block"></span>
+            Barra Jugos
+          </label>
+          <input type="number" id="venta-jugos" min="0" step="1" placeholder="$0"
+            oninput="updateVentaTotal()">
+        </div>
+
+        <div class="field" style="margin:0">
+          <label style="display:flex;align-items:center;gap:6px">
+            <span style="width:8px;height:8px;border-radius:50%;background:#6BAEE0;display:inline-block"></span>
+            Barra Alimentos
+          </label>
+          <input type="number" id="venta-alimentos" min="0" step="1" placeholder="$0"
+            oninput="updateVentaTotal()">
+        </div>
+
+        <div class="field" style="margin:0">
+          <label style="display:flex;align-items:center;gap:6px">
+            <span style="width:8px;height:8px;border-radius:50%;background:#D4860A;display:inline-block"></span>
+            Barra Helados
+          </label>
+          <input type="number" id="venta-helados" min="0" step="1" placeholder="$0"
+            oninput="updateVentaTotal()">
+        </div>
+      </div>
+
+      <!-- Total preview -->
+      <div id="venta-total-preview" style="display:none;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:12px;color:var(--t3)">Total del día</span>
+        <span id="venta-total-num" style="font-size:16px;font-weight:700;font-family:var(--mono);color:var(--t1)">$0</span>
+      </div>
+
+      <button class="btn btn-primary" onclick="guardarVentas()">Registrar Ventas</button>
     </div>
 
     <div class="card">
       <div class="card-title">Registrado hoy</div>
       <div id="ventas-hoy-list">
-        <div class="loading-card"><div class="spinner"></div></div>
+        <div class="empty"><div class="empty-icon">📊</div>Sin ventas registradas hoy</div>
       </div>
     </div>
   </div>
@@ -1446,13 +1478,26 @@ function renderVentas() {
     el.innerHTML = `<div class="empty"><div class="empty-icon">📊</div>Sin ventas registradas hoy</div>`;
     return;
   }
+
+  const colors = {
+    'Barra Cafe':      '#C4621D',
+    'Barra Jugos':     '#1A9070',
+    'Barra Alimentos': '#6BAEE0',
+    'Barra Helados':   '#D4860A',
+    'Eventos - Servicios': '#6A6460',
+  };
+
   const totalHoy = ventasHoy.reduce((s,v) => s + limpiarNum(v['Venta $']), 0);
   el.innerHTML = ventasHoy.map(v => {
     const monto = limpiarNum(v['Venta $']);
+    const color = colors[v['Seccion']] || 'var(--t2)';
     return `<div class="semaforo-row">
-      <div style="flex:1">
-        <div style="font-size:13px;color:var(--t1);font-weight:500">${v['Seccion']||'—'}</div>
-        <div style="font-size:11px;color:var(--t3)">${fmtDate(v['Fecha'])}</div>
+      <div style="display:flex;align-items:center;gap:8px;flex:1">
+        <span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0"></span>
+        <div>
+          <div style="font-size:13px;color:var(--t1);font-weight:500">${v['Seccion']||'—'}</div>
+          <div style="font-size:11px;color:var(--t3)">${fmtDate(v['Fecha'])}</div>
+        </div>
       </div>
       <div style="font-size:14px;font-weight:600;font-family:var(--mono);color:var(--green2)">${fmtCLP(monto)}</div>
     </div>`;
@@ -1463,39 +1508,79 @@ function renderVentas() {
   </div>`;
 }
 
-function formatVentaPreview() {
-  const v = parseFloat(document.getElementById('venta-monto').value);
-  const p = document.getElementById('venta-preview');
-  p.textContent = (!isNaN(v) && v > 0) ? fmtCLP(v) : '';
+function updateVentaTotal() {
+  const vals = ['cafe','jugos','alimentos','helados'].map(s =>
+    parseFloat(document.getElementById('venta-' + s).value) || 0
+  );
+  const total = vals.reduce((a,b) => a+b, 0);
+  const previewEl = document.getElementById('venta-total-preview');
+  const numEl     = document.getElementById('venta-total-num');
+  if (total > 0) {
+    previewEl.style.display = 'flex';
+    numEl.textContent = fmtCLP(total);
+  } else {
+    previewEl.style.display = 'none';
+  }
 }
 
-async function guardarVenta() {
-  const fecha   = document.getElementById('venta-fecha').value;
-  const seccion = document.getElementById('venta-seccion').value;
-  const monto   = parseFloat(document.getElementById('venta-monto').value);
+// mantener compatibilidad si algo llama formatVentaPreview
+function formatVentaPreview() { updateVentaTotal(); }
 
-  if (!fecha)               { showToast('Selecciona la fecha','error'); return; }
-  if (!monto || monto <= 0) { showToast('Ingresa un monto válido','error'); return; }
+async function guardarVentas() {
+  const fecha = document.getElementById('venta-fecha').value;
+  if (!fecha) { showToast('Selecciona la fecha','error'); return; }
+
+  const secciones = [
+    { id: 'cafe',      nombre: 'Barra Cafe' },
+    { id: 'jugos',     nombre: 'Barra Jugos' },
+    { id: 'alimentos', nombre: 'Barra Alimentos' },
+    { id: 'helados',   nombre: 'Barra Helados' },
+  ];
+
+  const toRegistrar = secciones
+    .map(s => ({ ...s, monto: parseFloat(document.getElementById('venta-' + s.id).value) || 0 }))
+    .filter(s => s.monto > 0);
+
+  if (!toRegistrar.length) {
+    showToast('Ingresa al menos una venta','error');
+    return;
+  }
 
   const btn = document.querySelector('#vpanel-normal .btn-primary');
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> Guardando...';
 
-  const res = await callGAS({ action:'registrarVenta', local:CFG.local, fecha, seccion, venta:monto });
+  // Registrar en paralelo
+  const resultados = await Promise.all(toRegistrar.map(s =>
+    callGAS({ action:'registrarVenta', local:CFG.local, fecha, seccion:s.nombre, venta:s.monto })
+  ));
 
   btn.disabled = false;
-  btn.innerHTML = 'Registrar Venta';
+  btn.innerHTML = 'Registrar Ventas';
 
-  if (res && res.ok !== false) {
-    showToast('✅ Venta registrada','success');
-    STATE.ventas.push({'Fecha':fecha,'Local':CFG.local,'Seccion':seccion,'Venta $':String(monto)});
-    document.getElementById('venta-monto').value = '';
-    document.getElementById('venta-preview').textContent = '';
-    renderVentas();
-  } else {
-    showToast('Error: ' + (res?.error || 'sin respuesta'),'error');
+  const errores = resultados.filter(r => r && r.ok === false);
+  if (errores.length) {
+    showToast('Error en ' + errores.length + ' sección(es)','error');
+    return;
   }
+
+  showToast(`✅ ${toRegistrar.length} ventas registradas`,'success');
+
+  // Actualizar estado local
+  toRegistrar.forEach(s => {
+    STATE.ventas.push({ 'Fecha':fecha, 'Local':CFG.local, 'Seccion':s.nombre, 'Venta $':String(s.monto) });
+  });
+
+  // Reset campos
+  ['cafe','jugos','alimentos','helados'].forEach(id => {
+    document.getElementById('venta-' + id).value = '';
+  });
+  document.getElementById('venta-total-preview').style.display = 'none';
+  renderVentas();
 }
+
+// mantener compatibilidad con guardarVenta singular
+async function guardarVenta() { await guardarVentas(); }
 
 // ── Eventos ──────────────────────────────────────────────
 async function cargarEventos() {
