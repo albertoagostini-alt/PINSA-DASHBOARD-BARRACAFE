@@ -918,7 +918,7 @@ const CFG = {
 
   // Token 2PACX publicado de CONTROL_CANDELARIA_2026 ✅ verificado
   TOKEN: '2PACX-1vQBpTFb7zww_hk_f9tstZLBbY9VP08mnPaEzQbrDFZ7faDSU9RoShxt5c5Y79NwsFgLD3nvfkUm_da-',
-  TOKEN_MAESTRO: '', // pendiente — publicar CONTROL_MAESTRO_2026
+  TOKEN_MAESTRO: '2PACX-1vRKfymDMvJd6XSSnfxuq2entJff2QwmEyKyvRRiiYVqNlwEA_rY7GXv0xVGC4k6746-EVAuLodfS9nt', // CONTROL_MAESTRO_2026 ✅
 
   // GID de cada hoja — verificados con curl
   GID: {
@@ -969,6 +969,17 @@ function csvUrl(gid) {
 async function loadCSV(gid) {
   try {
     const r = await fetch(csvUrl(gid));
+    if (!r.ok) return [];
+    const txt = await r.text();
+    if (txt.includes('<!DOCTYPE')) return [];
+    return parseCSV(txt);
+  } catch(e) { return []; }
+}
+
+async function loadCSVMaestro(gid) {
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/e/${CFG.TOKEN_MAESTRO}/pub?gid=${gid}&single=true&output=csv&t=${Date.now()}`;
+    const r = await fetch(url);
     if (!r.ok) return [];
     const txt = await r.text();
     if (txt.includes('<!DOCTYPE')) return [];
@@ -1108,7 +1119,7 @@ async function init() {
     loadCSV(CFG.GID.conteo),
     loadCSV(CFG.GID.movimientos),
     loadCSV(CFG.GID.analisis),
-    loadCSV(CFG.GID.bd_insumos),
+    loadCSVMaestro(CFG.GID.bd_insumos),
     loadCSV(CFG.GID.inventario),
   ]);
 
