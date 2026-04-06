@@ -2263,12 +2263,6 @@ function filtrarAnalisis() {
 }
 
 // ════════════════════════════════════════════════════════
-// ARRANQUE
-// ════════════════════════════════════════════════════════
-
-init().catch(console.error);
-
-// ════════════════════════════════════════════════════════
 // SESSIONE GLOBALE — login/logout
 // ════════════════════════════════════════════════════════
 let SESSION = null;
@@ -2362,6 +2356,21 @@ function confirmLogout() {
   document.getElementById('ls-err').classList.remove('show');
   document.getElementById('login-screen').classList.remove('hidden');
 }
+
+// ════════════════════════════════════════════════════════
+// ARRANQUE
+// ════════════════════════════════════════════════════════
+
+// Safety net: popola il login anche se init() crasha o è lento
+window.addEventListener('DOMContentLoaded', () => {
+  if (typeof EQUIPO_FALLBACK !== 'undefined') {
+    USUARIOS_LS = [...EQUIPO_FALLBACK];
+    poblarSelectLogin();
+  }
+  const lsLogo = document.getElementById('ls-logo');
+  if (lsLogo && typeof LOGO_SRC_OP !== 'undefined') lsLogo.style.backgroundImage = 'url(' + LOGO_SRC_OP + ')';
+});
+
+init().catch(console.error);
+
 </script>
-</body>
-</html>
