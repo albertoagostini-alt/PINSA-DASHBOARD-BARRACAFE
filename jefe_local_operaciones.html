@@ -1980,8 +1980,7 @@ function renderSolicitudList(items, q) {
   if (solFiltroActivo === 'editados') {
     filtered = items.filter(r => {
       const sku = r['SKU']||r['SKU.1']||'';
-      const sug = parseFloat(r['Pedido en UO']||r['Pedido Sugerido en UO']||r['Pedido Confirmado en UO']||r['Cantidad a Pedir UTM']||0);
-      return STATE.solicitudQtys[sku] !== undefined && STATE.solicitudQtys[sku] !== sug;
+      return STATE.solicitudQtys[sku] !== undefined && STATE.solicitudQtys[sku] > 0;
     });
   }
   // Search
@@ -2004,8 +2003,8 @@ function renderSolicitudList(items, q) {
     const sug  = parseFloat(r['Pedido en UO'] || r['Pedido Sugerido en UO'] || r['Pedido Confirmado en UO'] || r['Cantidad a Pedir UTM'] || 0);
     const utm  = r['UTM'] || r['UTM.1'] || '';
     const fmt  = r['Pedido Formateado'] || r['Pedido Formateado.1'] || r['Pedido Formateado.2'] || '';
-    const cur  = STATE.solicitudQtys[sku] !== undefined ? STATE.solicitudQtys[sku] : sug;
-    const isEdited = cur !== sug;
+    const cur  = STATE.solicitudQtys[sku] !== undefined ? STATE.solicitudQtys[sku] : 0;
+    const isEdited = STATE.solicitudQtys[sku] !== undefined && cur !== 0;
     const isZero   = cur === 0;
     const badgeClass = est === 'QUIEBRE' ? 'status-err' : 'status-warn';
     const uoLabel = isZero ? '<span class="sol-uo nopedir">no pedir</span>'
