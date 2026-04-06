@@ -894,6 +894,9 @@
     </div>
   </div>
 
+  <!-- Resumen estadístico (aparece al contar) -->
+  <div id="cteo-resumen" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0 0"></div>
+
   <!-- Lista productos -->
   <div id="cteo-list" style="padding-top:10px;padding-bottom:80px">
     <div class="loading-card"><div class="spinner"></div></div>
@@ -2367,6 +2370,349 @@ function calcProximoConteo() {
 // MÓDULO 5 — CONTEO FÍSICO
 // ════════════════════════════════════════════════════════
 let cteoTab = 'pendientes';
+
+function renderConteo() {
+  const items = STATE.conteo.filter(r => r['SKU'] && r['SKU'] !== '');
+  document.getElementById('cteo-total-num').textContent = items.length;
+  cteoFiltrar('');
+}
+
+function cteoSetTab(tab) {
+  cteoTab = tab;
+  const pend = document.getElementById('cteo-tab-pend');
+  const done = document.getElementById('cteo-tab-done');
+  if (tab === 'pendientes') {
+    pend.style.background = 'var(--bg)'; pend.style.color = 'var(--t1)'; pend.style.fontWeight = '600';
+    done.style.background = 'transparent'; done.style.color = 'var(--t3)'; done.style.fontWeight = '400';
+  } else {
+    done.style.background = 'var(--bg)'; done.style.color = 'var(--t1)'; done.style.fontWeight = '600';
+    pend.style.background = 'transparent'; pend.style.color = 'var(--t3)'; pend.style.fontWeight = '400';
+  }
+  cteoFiltrar(document.getElementById('conteo-search').value || '');
+}
+
+function cteoGetMetodo(r) {
+  const como = (r['Como Contar'] || '').toLowerCase();
+  if (como.includes('nivel')) return 'nivel';
+  if (como.includes('pesa') || como.includes('peso') || como.includes('gr')) return 'peso';
+  return 'sellado';
+}
+
+function cteoGetFactor(sku) {
+  const inv = STATE.inventario.find(x => String(x['SKU']||'') === String(sku));
+  if (!inv) return 1;
+  const f = parseFloat(inv['I'] || inv['Factor UO'] || 0);
+  return f > 0 ? f : 1;
+}
+
+function cteoGetBO(sku) {
+  // Ritorna {activo, factorBO, descBO} dalla col K e L di Inventario_BLocal
+  const inv = STATE.inventario.find(x => String(x['SKU']||'') === String(sku));
+  if (!inv) return { activo: false, factorBO: 0, descBO: '' };
+  const factorBO = parseFloat(inv['K'] || 0);
+  const descBO   = inv['L'] || '';
+  return { activo: factorBO > 0, factorBO, descBO };
+}
+
+function cteoFiltrar(q) {
+  const all  = STATE.conteo.filter(r => r['SKU'] && r['SKU'] !== '');
+  const done = new Set(Object.keys(STATE.conteoInputs));
+
+  let items = cteoTab === 'pendientes'
+    ? all.filter(r => !done.has(String(r['SKU'])))
+    : all.filter(r =>  done.has(String(r['SKU'])));
+
+  if (q) items = items.filter(r =>
+    (r['Descripcion UPC']||'').toLowerCase().includes(q.toLowerCase()) ||
+    String(r['SKU']||'').includes(q)
+  );
+
+  document.getElementById('cteo-n-pend').textContent = all.filter(r => !done.has(String(r['SKU']))).length;
+  document.getElementById('cteo-n-done').textContent = done.size;
+  document.getElementById('cteo-prog-num').innerHTML = done.size + '/<span id="cteo-total-num">' + all.length + '</span>';
+  const pct = all.length > 0 ? Math.round(done.size / all.length * 100) : 0;
+  document.getElementById('cteo-prog-bar').style.width = pct + '%';
+  document.getElementById('btn-conteo-registrar').disabled = done.size === 0;
+
+  // Resumen stats
+  cteoRenderResumen(all);
+
+  const el = document.getElementById('cteo-list');
+  if (!items.length) {
+    el.innerHTML = cteoTab === 'pendientes'
+      ? `<div class="empty"><div class="empty-icon">✅</div>Todos contados</div>`
+      : `<div class="empty"><div class="empty-icon">📋</div>Aún no hay productos contados</div>`;
+    return;
+  }
+
+  el.innerHTML = items.map(r => {
+    const sku    = String(r['SKU'] || '—');
+    const desc   = r['Descripcion UPC'] || '—';
+    const metodo = cteoGetMetodo(r);
+    const utm    = r['UTM'] || '';
+    const descUO = r['Descripcion UO'] || '';
+    const factor = cteoGetFactor(sku);
+    const isDone = STATE.conteoInputs[sku] !== undefined;
+    const data   = isDone ? STATE.conteoInputs[sku] : null;
+
+    const metodoBadge = metodo === 'nivel'
+      ? `<span style="background:rgba(15,110,86,0.15);color:var(--green2);font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600">Nivel</span>`
+      : metodo === 'peso'
+      ? `<span style="background:rgba(212,134,10,0.15);color:var(--amber);font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600">Peso</span>`
+      : `<span style="background:rgba(74,111,165,0.15);color:var(--blue2);font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600">Sellado</span>`;
+
+    // Input según método
+    let inputHtml = '';
+    if (metodo === 'nivel') {
+      const niveles = [0,25,50,75,100];
+      const curPct  = isDone ? data.rawUO : null;
+      inputHtml = `<div style="display:flex;gap:5px;margin:10px 0 8px">
+        ${niveles.map(n => `<div onclick="cteoSetNivel('${sku}',${n})"
+          style="flex:1;padding:9px 0;border:1px solid ${curPct===n?'var(--green2)':'var(--border2)'};
+          border-radius:6px;background:${curPct===n?'rgba(15,110,86,0.15)':'var(--bg3)'};
+          color:${curPct===n?'var(--green2)':'var(--t3)'};font-size:12px;font-weight:600;
+          text-align:center;cursor:pointer">${n}%</div>`).join('')}
+      </div>`;
+    } else if (metodo === 'peso') {
+      const curGr  = isDone ? data.rawUO  : '';
+      const curBO  = isDone ? (data.rawBO || '') : '';
+      const bo     = cteoGetBO(sku);
+      inputHtml = `
+        <div style="font-size:11px;color:var(--t3);margin:10px 0 6px">
+          Unidades completas (${descUO || 'UO'}) · Factor: ${factor} ${utm}
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:${bo.activo?'10':'8'}px">
+          <input type="number" id="cteo-input-${sku}" value="${curGr}" placeholder="0"
+            min="0" step="1" inputmode="decimal"
+            oninput="cteoSetPeso('${sku}',this.value,document.getElementById('cteo-bo-${sku}')?.value||0)"
+            style="flex:1;padding:10px;font-size:20px;font-weight:600;text-align:center;
+            background:var(--bg3);border:1px solid var(--border2);border-radius:6px;
+            color:var(--t1);font-family:var(--mono);outline:none">
+          <span style="font-size:13px;color:var(--t3);min-width:24px">${utm}</span>
+        </div>
+        ${bo.activo ? `
+        <div style="font-size:11px;color:var(--amber);margin-bottom:6px">
+          + BO parcial abierto (${bo.descBO}) · Factor: ${bo.factorBO} ${utm}
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+          <input type="number" id="cteo-bo-${sku}" value="${curBO}" placeholder="0"
+            min="0" step="1" inputmode="decimal"
+            oninput="cteoSetPeso('${sku}',document.getElementById('cteo-input-${sku}')?.value||0,this.value)"
+            style="flex:1;padding:10px;font-size:20px;font-weight:600;text-align:center;
+            background:var(--bg3);border:1px solid rgba(212,134,10,0.3);border-radius:6px;
+            color:var(--amber);font-family:var(--mono);outline:none">
+          <span style="font-size:13px;color:var(--t3);min-width:24px">${utm}</span>
+        </div>` : ''}`;
+    } else {
+      const curU = isDone ? data.raw : '';
+      inputHtml = `<div style="display:flex;gap:8px;align-items:center;margin:10px 0 8px">
+        <input type="number" id="cteo-input-${sku}" value="${curU}" placeholder="0"
+          min="0" step="1" inputmode="decimal"
+          oninput="cteoSetSellado('${sku}',this.value)"
+          style="flex:1;padding:10px;font-size:20px;font-weight:600;text-align:center;
+          background:var(--bg3);border:1px solid var(--border2);border-radius:6px;
+          color:var(--t1);font-family:var(--mono);outline:none">
+        <span style="font-size:13px;color:var(--t3);min-width:50px">${descUO||'UO'}</span>
+      </div>`;
+    }
+
+    // Confirmación si ya contado
+    let confirmHtml = '';
+    if (isDone) {
+      const uo = data.uo;
+      const esFrac = (uo > 0) && (Math.abs(uo - Math.round(uo)) > 0.01);
+      confirmHtml = `
+        <div style="background:rgba(15,110,86,0.1);border:1px solid var(--green2);border-radius:6px;
+          padding:8px 12px;margin:6px 0 10px;display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:12px;color:var(--green2)">✓ Contado</div>
+          <div style="font-size:16px;font-weight:700;color:var(--green2);font-family:var(--mono)">${uo.toFixed(2)} UO</div>
+        </div>
+        ${esFrac ? `<div style="font-size:11px;color:var(--amber);background:rgba(212,134,10,0.1);
+          border:1px solid rgba(212,134,10,0.3);border-radius:6px;padding:6px 10px;margin-bottom:10px">
+          ⚠️ UO fraccionada — se reportará al JO como BO abierto</div>` : ''}
+        <button onclick="cteoDeshacer('${sku}')"
+          style="width:100%;padding:7px;background:transparent;border:1px solid var(--border2);
+          border-radius:7px;color:var(--t3);font-size:12px;cursor:pointer">Deshacer</button>`;
+    }
+
+    const borderColor = isDone ? 'var(--green2)' : 'var(--border)';
+
+    return `<div style="background:var(--bg2);border:1px solid ${borderColor};border-radius:10px;
+      padding:12px 14px;margin-bottom:8px" id="cteo-card-${sku}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${desc}</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:2px">
+            <span style="font-family:var(--mono);color:var(--blue2)">${sku}</span>
+            ${descUO ? ' · ' + descUO : ''}
+          </div>
+        </div>
+        <div style="margin-left:8px;flex-shrink:0">${metodoBadge}</div>
+      </div>
+      ${inputHtml}
+      ${confirmHtml}
+    </div>`;
+  }).join('');
+}
+
+function cteoRenderResumen(all) {
+  const done = Object.keys(STATE.conteoInputs);
+  if (done.length === 0) {
+    document.getElementById('cteo-resumen').style.display = 'none';
+    return;
+  }
+  let cuadrado = 0, inferior = 0, superior = 0, boAbiertos = 0;
+  done.forEach(sku => {
+    const r = all.find(x => String(x['SKU']||'') === sku);
+    if (!r) return;
+    const teorico = parseFloat(r['Stock Teorico UO']||0);
+    const uo = STATE.conteoInputs[sku].uo;
+    const bo = cteoGetBO(sku);
+    const delta = uo - teorico;
+    if (Math.abs(delta) < 0.01) cuadrado++;
+    else if (delta < 0) inferior++;
+    else superior++;
+    const boAbierto = bo.activo && STATE.conteoInputs[sku].rawBO > 0 && bo.factorBO > 0 &&
+                      (Math.abs(STATE.conteoInputs[sku].rawBO % bo.factorBO) > 0.01);
+    if (boAbierto) boAbiertos++;
+  });
+  const pctError = done.length > 0 ? Math.round((inferior + superior) / done.length * 100) : 0;
+  const el = document.getElementById('cteo-resumen');
+  el.style.display = 'block';
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
+      <div style="background:rgba(15,110,86,0.1);border:1px solid var(--green2);border-radius:8px;padding:8px;text-align:center">
+        <div style="font-size:18px;font-weight:700;color:var(--green2);font-family:var(--mono)">${cuadrado}</div>
+        <div style="font-size:10px;color:var(--t3)">Cuadrado</div>
+      </div>
+      <div style="background:rgba(192,57,43,0.1);border:1px solid var(--red);border-radius:8px;padding:8px;text-align:center">
+        <div style="font-size:18px;font-weight:700;color:var(--red);font-family:var(--mono)">${inferior}</div>
+        <div style="font-size:10px;color:var(--t3)">Inferior</div>
+      </div>
+      <div style="background:rgba(74,111,165,0.1);border:1px solid var(--blue2);border-radius:8px;padding:8px;text-align:center">
+        <div style="font-size:18px;font-weight:700;color:var(--blue2);font-family:var(--mono)">${superior}</div>
+        <div style="font-size:10px;color:var(--t3)">Superior</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--t3)">
+      <span>% error: <strong style="color:${pctError>15?'var(--red)':pctError>5?'var(--amber)':'var(--green2)'}">${pctError}%</strong></span>
+      ${boAbiertos > 0 ? `<span style="color:var(--amber)">⚠️ ${boAbiertos} BO abierto${boAbiertos>1?'s':''}</span>` : ''}
+    </div>`;
+}
+
+function cteoSetNivel(sku, pct) {
+  STATE.conteoInputs[sku] = { rawUO: pct, rawBO: 0, uo: pct / 100 };
+  cteoFiltrar(document.getElementById('conteo-search').value || '');
+}
+
+function cteoSetPeso(sku, valUO, valBO) {
+  const grUO   = parseFloat(valUO) || 0;
+  const grBO   = parseFloat(valBO) || 0;
+  const factor = cteoGetFactor(sku);
+  const bo     = cteoGetBO(sku);
+  // UO completas + fracción BO convertida a UTM
+  const totalUTM = (grUO) + (grBO);
+  const uo = factor > 0 ? totalUTM / factor : 0;
+  if (grUO > 0 || grBO > 0) {
+    STATE.conteoInputs[sku] = { rawUO: grUO, rawBO: grBO, uo };
+  } else {
+    delete STATE.conteoInputs[sku];
+  }
+  // Detecta BO abierto: si hay grBO > 0 y no es múltiplo de factorBO
+  const boAbierto = bo.activo && grBO > 0 && bo.factorBO > 0 &&
+                    (Math.abs(grBO % bo.factorBO) > 0.01);
+  cteoUpdateConfirm(sku, uo, grUO > 0 || grBO > 0, boAbierto);
+}
+
+function cteoSetSellado(sku, val) {
+  const u = parseFloat(val) || 0;
+  if (u > 0) {
+    STATE.conteoInputs[sku] = { rawUO: u, rawBO: 0, uo: u };
+  } else {
+    delete STATE.conteoInputs[sku];
+  }
+  cteoUpdateConfirm(sku, u, u > 0, false);
+}
+
+function cteoUpdateConfirm(sku, uo, hasVal, boAbierto) {
+  const card = document.getElementById('cteo-card-' + sku);
+  if (!card) return;
+  card.style.borderColor = hasVal ? 'var(--green2)' : 'var(--border)';
+  let conf = card.querySelector('.cteo-confirm');
+  if (!conf) {
+    conf = document.createElement('div');
+    conf.className = 'cteo-confirm';
+    card.appendChild(conf);
+  }
+  if (!hasVal) { conf.innerHTML = ''; return; }
+  conf.innerHTML = `
+    <div style="background:rgba(15,110,86,0.1);border:1px solid var(--green2);border-radius:6px;
+      padding:8px 12px;margin-top:6px;display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:12px;color:var(--green2)">✓ Contado</div>
+      <div style="font-size:16px;font-weight:700;color:var(--green2);font-family:var(--mono)">${uo.toFixed(3)} UO</div>
+    </div>
+    ${boAbierto ? `<div style="font-size:11px;color:var(--amber);background:rgba(212,134,10,0.1);
+      border:1px solid rgba(212,134,10,0.3);border-radius:6px;padding:6px 10px;margin-top:6px">
+      ⚠️ BO fraccionado abierto — se reportará al JO</div>` : ''}`;
+  document.getElementById('btn-conteo-registrar').disabled = Object.keys(STATE.conteoInputs).length === 0;
+  cteoRenderResumen(STATE.conteo.filter(r => r['SKU'] && r['SKU'] !== ''));
+}
+
+function cteoDeshacer(sku) {
+  delete STATE.conteoInputs[sku];
+  cteoFiltrar(document.getElementById('conteo-search').value || '');
+}
+
+function updateConteoInfo() {}
+function filtrarConteo(q) { cteoFiltrar(q); }
+function updateConteoProgress() {}
+
+async function registrarConteo() {
+  const all   = STATE.conteo.filter(r => r['SKU'] && r['SKU'] !== '');
+  const items = Object.entries(STATE.conteoInputs).map(([sku, data]) => {
+    const r       = all.find(x => String(x['SKU']||'') === sku);
+    const teorico = r ? parseFloat(r['Stock Teorico UO']||0) : 0;
+    const uo      = data.uo;
+    const bo      = cteoGetBO(sku);
+    const boAbierto = bo.activo && data.rawBO > 0 && bo.factorBO > 0 &&
+                      (Math.abs(data.rawBO % bo.factorBO) > 0.01);
+    return {
+      sku,
+      desc:      r ? (r['Descripcion UPC']||'—') : '—',
+      qty:       uo,
+      teorico,
+      delta:     uo - teorico,
+      boAbierto
+    };
+  });
+
+  if (!items.length) { showToast('No hay datos de conteo','error'); return; }
+
+  const btn = document.getElementById('btn-conteo-registrar');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Registrando...';
+
+  const res = await callGAS({
+    action:   'registrarAjustesCandelaria',
+    local:    CFG.local,
+    items,
+    operador: STATE.operador || ''
+  });
+
+  btn.disabled = false;
+  btn.innerHTML = 'Registrar ajustes y enviar PDF';
+
+  if (res && res.ok) {
+    const boCount = items.filter(i => i.boAbierto).length;
+    let msg = `✅ ${items.length} ajustes registrados`;
+    if (boCount > 0) msg += ` · ${boCount} BO abierto${boCount>1?'s':''} reportados al JO`;
+    showToast(msg, 'success');
+    STATE.conteoInputs = {};
+    cteoFiltrar('');
+  } else {
+    showToast('Error: ' + (res?.error || 'sin respuesta'), 'error');
+  }
+}
 
 function renderConteo() {
   const items = STATE.conteo.filter(r => r['SKU'] && r['SKU'] !== '');
