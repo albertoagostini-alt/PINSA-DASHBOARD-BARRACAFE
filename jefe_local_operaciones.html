@@ -375,6 +375,38 @@
   .lm-cancel{padding:10px;background:transparent;border:1px solid var(--border2);border-radius:8px;color:var(--t2);font-family:var(--font);font-size:12px;cursor:pointer}
   .lm-confirm{padding:10px;background:var(--red);border:none;border-radius:8px;color:#fff;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer}
   .salir-btn{padding:4px 12px;background:transparent;border:1px solid rgba(192,57,43,.35);border-radius:6px;color:var(--red);font-family:var(--font);font-size:10px;letter-spacing:.8px;text-transform:uppercase;cursor:pointer}
+
+  /* ── SOLICITUD BC v2 ── */
+  .sol-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .sol-pill{font-size:11px;padding:4px 10px;border-radius:20px;cursor:pointer;border:1px solid var(--border2);background:var(--bg2);color:var(--t3);transition:all .15s}
+  .sol-pill.active{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:600}
+  .sol-pill.q-pill{background:rgba(192,57,43,.12);border-color:var(--red);color:var(--red)}
+  .sol-pill.a-pill{background:rgba(212,134,10,.12);border-color:var(--amber);color:var(--amber)}
+  .sol-item{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:8px;transition:border-color .15s}
+  .sol-item.modified{border-color:var(--orange)}
+  .sol-item.zero{opacity:.55}
+  .sol-info{flex:1;min-width:0}
+  .sol-name{font-size:13px;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sol-meta{font-size:11px;color:var(--t3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sol-qty{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+  .sol-sug{font-size:10px;color:var(--t3);white-space:nowrap}
+  .sol-sug span{color:var(--t2);font-weight:600}
+  .sol-row{display:flex;align-items:center;gap:3px}
+  .sol-btn{width:26px;height:26px;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;color:var(--t2);font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:600;user-select:none;-webkit-user-select:none}
+  .sol-btn:active{background:var(--bg4)}
+  .sol-num{width:38px;height:26px;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;color:var(--t1);font-size:12px;font-weight:600;text-align:center;font-family:var(--mono);outline:none}
+  .sol-num.edited{border-color:var(--orange);color:var(--orange2)}
+  .sol-uo{font-size:10px;color:var(--t3);white-space:nowrap;text-align:right}
+  .sol-uo.edited{color:var(--orange)}
+  .sol-uo.nopedir{color:var(--red)}
+  .sol-resumen{background:var(--bg2);border:1px solid var(--orange);border-radius:8px;padding:10px 14px;margin:10px 0 8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .sol-resumen-val{font-size:14px;font-weight:700;color:var(--orange2);font-family:var(--mono);white-space:nowrap}
+  /* confirm modal inline */
+  .sol-confirm{background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:16px;margin-top:6px;display:none}
+  .sol-confirm.show{display:block}
+  .sol-confirm-detail{background:var(--bg3);border-radius:6px;padding:8px 10px;margin:10px 0;font-size:11px;color:var(--t2);line-height:1.8}
+  .sol-confirm-row{display:flex;justify-content:space-between}
+  .sol-confirm-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 </style>
 </head>
 <body>
@@ -698,20 +730,51 @@
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">Productos a pedir</div>
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="sol-search" placeholder="Filtrar productos..." oninput="filtrarSolicitud(this.value)">
-    </div>
-    <div id="sol-list">
-      <div class="loading-card"><div class="spinner"></div></div>
-    </div>
+  <!-- Filtros rápidos -->
+  <div class="sol-filters" id="sol-filters">
+    <div class="sol-pill active" onclick="solSetFilter('todos',this)">Todos (<span id="sol-f-todos">0</span>)</div>
+    <div class="sol-pill q-pill" onclick="solSetFilter('QUIEBRE',this)">Quiebre (<span id="sol-f-quiebre">0</span>)</div>
+    <div class="sol-pill a-pill" onclick="solSetFilter('ATENCION',this)">Atención (<span id="sol-f-atencion">0</span>)</div>
+    <div class="sol-pill" id="sol-f-pill-edit" onclick="solSetFilter('editados',this)" style="display:none">Editados (<span id="sol-f-edit">0</span>)</div>
   </div>
 
-  <button class="btn btn-primary" id="btn-enviar-solicitud" onclick="enviarSolicitud()" style="margin-bottom:16px" disabled>
-    Enviar Solicitud a BC (<span id="sol-count">0</span> productos)
+  <!-- Search -->
+  <div class="search-wrap" style="margin-bottom:10px">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="sol-search" placeholder="Buscar producto..." oninput="filtrarSolicitud(this.value)">
+  </div>
+
+  <!-- Lista -->
+  <div id="sol-list">
+    <div class="loading-card"><div class="spinner"></div></div>
+  </div>
+
+  <!-- Resumen -->
+  <div class="sol-resumen" id="sol-resumen" style="display:none">
+    <div style="flex:1;min-width:0">
+      <div style="font-size:12px;font-weight:600;color:var(--t1)">Pedido confirmado</div>
+      <div style="font-size:11px;color:var(--t3);margin-top:1px" id="sol-resumen-sub">—</div>
+    </div>
+    <div class="sol-resumen-val" id="sol-resumen-val">0 UO</div>
+  </div>
+
+  <button class="btn btn-primary" id="btn-enviar-solicitud" onclick="solAskConfirm()" style="margin-bottom:6px" disabled>
+    Enviar Solicitud a BC
   </button>
+  <button class="btn" id="btn-reset-solicitud" onclick="solReset()" style="margin-bottom:16px">
+    Restablecer sugeridos
+  </button>
+
+  <!-- Confirm inline -->
+  <div class="sol-confirm" id="sol-confirm">
+    <div style="font-size:14px;font-weight:600;color:var(--t1);margin-bottom:4px">Confirmar envío a BC</div>
+    <div style="font-size:12px;color:var(--t3)">Revisa el resumen. Esta acción no se puede deshacer.</div>
+    <div class="sol-confirm-detail" id="sol-confirm-detail">—</div>
+    <div class="sol-confirm-btns">
+      <button class="btn" onclick="solCancelConfirm()">Cancelar</button>
+      <button class="btn btn-primary" onclick="enviarSolicitud()">Enviar ahora</button>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════ -->
@@ -1816,107 +1879,218 @@ async function registrarEvento(idCot) {
 // ════════════════════════════════════════════════════════
 // MÓDULO 3 — SOLICITUD A BC
 // ════════════════════════════════════════════════════════
-function renderSolicitud() {
-  // Productos en quiebre o atención (VISTA ORDENADA cols M+)
-  const reps = STATE.reposicion.filter(r => {
+// ── estado filtro solicitud ──
+let solFiltroActivo = 'todos';
+
+function solGetReps() {
+  return STATE.reposicion.filter(r => {
     const est = r['Estado'] || r['Estado.1'] || '';
     return est === 'QUIEBRE' || est === 'ATENCION' || est === 'CRITICO';
   });
+}
 
-  const quiebres  = reps.filter(r => (r['Estado']||r['Estado.1']||'') === 'QUIEBRE').length;
+function renderSolicitud() {
+  const reps = solGetReps();
+  const quiebres   = reps.filter(r => (r['Estado']||r['Estado.1']||'') === 'QUIEBRE').length;
   const atenciones = reps.filter(r => (r['Estado']||r['Estado.1']||'') === 'ATENCION').length;
 
   document.getElementById('sol-quiebre').textContent  = quiebres;
   document.getElementById('sol-atencion').textContent = atenciones;
+  document.getElementById('sol-f-todos').textContent  = reps.length;
+  document.getElementById('sol-f-quiebre').textContent = quiebres;
+  document.getElementById('sol-f-atencion').textContent = atenciones;
 
-  renderSolicitudList(reps, '');
+  renderSolicitudList(reps, document.getElementById('sol-search').value || '');
+}
+
+function solSetFilter(filter, el) {
+  solFiltroActivo = filter;
+  document.querySelectorAll('.sol-pill').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderSolicitudList(solGetReps(), document.getElementById('sol-search').value || '');
 }
 
 function renderSolicitudList(items, q) {
-  const filtered = q ? items.filter(r =>
+  // Aplica filtro activo
+  let filtered = items;
+  if (solFiltroActivo === 'QUIEBRE')  filtered = items.filter(r => (r['Estado']||r['Estado.1']||'') === 'QUIEBRE');
+  if (solFiltroActivo === 'ATENCION') filtered = items.filter(r => (r['Estado']||r['Estado.1']||'') === 'ATENCION');
+  if (solFiltroActivo === 'editados') {
+    filtered = items.filter(r => {
+      const sku = r['SKU']||r['SKU.1']||'';
+      const sug = parseFloat(r['Pedido en UO']||r['Pedido Sugerido en UO']||0);
+      return STATE.solicitudQtys[sku] !== undefined && STATE.solicitudQtys[sku] !== sug;
+    });
+  }
+  // Search
+  if (q) filtered = filtered.filter(r =>
     (r['Descripcion']||'').toLowerCase().includes(q.toLowerCase()) ||
     (r['SKU']||'').toString().includes(q)
-  ) : items;
+  );
 
   const el = document.getElementById('sol-list');
   if (!filtered.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-icon">✅</div>Sin productos críticos</div>`;
-    document.getElementById('btn-enviar-solicitud').disabled = true;
+    el.innerHTML = `<div class="empty"><div class="empty-icon">✅</div>Sin productos en esta categoría</div>`;
+    solActualizarResumen(items);
     return;
   }
 
   el.innerHTML = filtered.map(r => {
-    const sku   = r['SKU'] || r['SKU.1'] || '—';
-    const desc  = r['Descripcion'] || r['Descripcion.1'] || '—';
-    const est   = r['Estado'] || r['Estado.1'] || '';
-    const sug   = r['Pedido en UO'] || r['Pedido Sugerido en UO'] || '0';
-    const fmt   = r['Pedido Formateado'] || r['Pedido Formateado.1'] || '';
-    const utm   = r['UTM'] || r['UTM.1'] || '';
-    const key   = 'sol-' + sku;
+    const sku  = r['SKU'] || r['SKU.1'] || '—';
+    const desc = r['Descripcion'] || r['Descripcion.1'] || '—';
+    const est  = r['Estado'] || r['Estado.1'] || '';
+    const sug  = parseFloat(r['Pedido en UO'] || r['Pedido Sugerido en UO'] || 0);
+    const utm  = r['UTM'] || r['UTM.1'] || '';
+    const fmt  = r['Pedido Formateado'] || r['Pedido Formateado.1'] || '';
+    const cur  = STATE.solicitudQtys[sku] !== undefined ? STATE.solicitudQtys[sku] : sug;
+    const isEdited = cur !== sug;
+    const isZero   = cur === 0;
+    const badgeClass = est === 'QUIEBRE' ? 'status-err' : 'status-warn';
+    const uoLabel = isZero ? '<span class="sol-uo nopedir">no pedir</span>'
+                  : isEdited ? '<span class="sol-uo edited">UO · editado</span>'
+                  : '<span class="sol-uo">UO</span>';
 
-    const curVal = STATE.solicitudQtys[sku] !== undefined ? STATE.solicitudQtys[sku] : (parseFloat(sug)||0);
-    const estClass = est === 'QUIEBRE' ? 'status-err' : 'status-warn';
-
-    return `<div class="list-item" id="sol-item-${sku}">
-      <div class="list-item-left">
-        <div class="list-item-name">${desc}</div>
-        <div class="list-item-sub">SKU: ${sku} · ${utm} · Sug: ${fmt}</div>
-        <span class="status ${estClass}" style="margin-top:4px;display:inline-flex">${est}</span>
+    return `<div class="sol-item${isEdited?' modified':''}${isZero?' zero':''}" id="sol-item-${sku}">
+      <div class="sol-info">
+        <div class="sol-name">${desc}</div>
+        <div class="sol-meta"><span style="font-family:var(--mono);color:var(--blue2);font-size:10px">${sku}</span> · ${utm} · ${fmt}</div>
+        <span class="status ${badgeClass}" style="margin-top:4px;display:inline-flex">${est}</span>
       </div>
-      <div class="list-item-right">
-        <input class="inline-input" id="${key}" type="number" min="0" step="0.5"
-          value="${curVal}" onchange="updateSolQty('${sku}', this.value)" style="width:72px">
-        <div style="font-size:10px;color:var(--t3);margin-top:3px;text-align:center">UO</div>
+      <div class="sol-qty">
+        <div class="sol-sug">Sug <span>${sug}</span></div>
+        <div class="sol-row">
+          <div class="sol-btn" onclick="solStep('${sku}',-1)">−</div>
+          <input class="sol-num${isEdited?' edited':''}" id="sol-${sku}" type="number" min="0" step="0.5"
+            value="${cur}" onchange="updateSolQty('${sku}',this.value)">
+          <div class="sol-btn" onclick="solStep('${sku}',1)">+</div>
+        </div>
+        ${uoLabel}
       </div>
     </div>`;
   }).join('');
 
-  updateSolicitudCount();
+  solActualizarResumen(items);
+}
+
+function solStep(sku, delta) {
+  const input = document.getElementById('sol-' + sku);
+  if (!input) return;
+  const cur = parseFloat(input.value) || 0;
+  const next = Math.max(0, cur + delta);
+  input.value = next;
+  updateSolQty(sku, next);
 }
 
 function filtrarSolicitud(q) {
-  const reps = STATE.reposicion.filter(r => {
-    const est = r['Estado'] || r['Estado.1'] || '';
-    return est === 'QUIEBRE' || est === 'ATENCION' || est === 'CRITICO';
-  });
-  renderSolicitudList(reps, q);
+  renderSolicitudList(solGetReps(), q);
 }
 
 function updateSolQty(sku, val) {
   STATE.solicitudQtys[sku] = parseFloat(val) || 0;
-  updateSolicitudCount();
+  // Aggiorna visuale card
+  const item = document.getElementById('sol-item-' + sku);
+  const input = document.getElementById('sol-' + sku);
+  const r = STATE.reposicion.find(x => (x['SKU']||x['SKU.1']||'') === sku);
+  const sug = r ? parseFloat(r['Pedido en UO']||r['Pedido Sugerido en UO']||0) : 0;
+  const cur = STATE.solicitudQtys[sku];
+  if (item) {
+    item.classList.toggle('modified', cur !== sug);
+    item.classList.toggle('zero', cur === 0);
+  }
+  if (input) input.classList.toggle('edited', cur !== sug);
+  solActualizarResumen(solGetReps());
+  // Aggiorna counter pill editados
+  const editados = Object.entries(STATE.solicitudQtys).filter(([s,v]) => {
+    const rr = STATE.reposicion.find(x => (x['SKU']||x['SKU.1']||'') === s);
+    const ss = rr ? parseFloat(rr['Pedido en UO']||rr['Pedido Sugerido en UO']||0) : 0;
+    return v !== ss;
+  }).length;
+  const pillEdit = document.getElementById('sol-f-pill-edit');
+  const editEl   = document.getElementById('sol-f-edit');
+  if (pillEdit && editEl) {
+    editEl.textContent = editados;
+    pillEdit.style.display = editados > 0 ? '' : 'none';
+  }
 }
 
-function updateSolicitudCount() {
-  const count = Object.values(STATE.solicitudQtys).filter(v => v > 0).length;
-  // También cuenta los que tienen valor default
-  const reps = STATE.reposicion.filter(r => {
-    const est = r['Estado'] || r['Estado.1'] || '';
-    return (est === 'QUIEBRE' || est === 'ATENCION') &&
-      (STATE.solicitudQtys[r['SKU']||r['SKU.1']] > 0 ||
-       parseFloat(r['Pedido en UO']||r['Pedido Sugerido en UO']||0) > 0);
-  }).length;
-  document.getElementById('sol-count').textContent = count || reps;
-  document.getElementById('btn-enviar-solicitud').disabled = (count + reps) === 0;
+function solActualizarResumen(reps) {
+  let totalProd = 0, totalUO = 0, editados = 0, omitidos = 0;
+  reps.forEach(r => {
+    const sku = r['SKU']||r['SKU.1']||'';
+    const sug = parseFloat(r['Pedido en UO']||r['Pedido Sugerido en UO']||0);
+    const cur = STATE.solicitudQtys[sku] !== undefined ? STATE.solicitudQtys[sku] : sug;
+    if (cur > 0) { totalProd++; totalUO += cur; }
+    else omitidos++;
+    if (STATE.solicitudQtys[sku] !== undefined && cur !== sug) editados++;
+  });
+
+  const resumen = document.getElementById('sol-resumen');
+  const subEl   = document.getElementById('sol-resumen-sub');
+  const valEl   = document.getElementById('sol-resumen-val');
+  const btn     = document.getElementById('btn-enviar-solicitud');
+
+  if (resumen) resumen.style.display = totalProd > 0 ? 'flex' : 'none';
+  if (subEl)  subEl.textContent = `${totalProd} productos${editados?' · '+editados+' editados':''}${omitidos?' · '+omitidos+' omitidos':''}`;
+  if (valEl)  valEl.textContent = totalUO + ' UO';
+  if (btn)    btn.disabled = totalProd === 0;
+}
+
+function solReset() {
+  STATE.solicitudQtys = {};
+  renderSolicitudList(solGetReps(), document.getElementById('sol-search').value||'');
+}
+
+function solAskConfirm() {
+  // Costruisci riepilogo
+  const items = [];
+  let editados = [], omitidos = [];
+  solGetReps().forEach(r => {
+    const sku  = r['SKU']||r['SKU.1']||'';
+    const desc = r['Descripcion']||r['Descripcion.1']||'';
+    const sug  = parseFloat(r['Pedido en UO']||r['Pedido Sugerido en UO']||0);
+    const cur  = STATE.solicitudQtys[sku] !== undefined ? STATE.solicitudQtys[sku] : sug;
+    const utm  = r['UTM']||r['UTM.1']||'';
+    if (cur > 0) {
+      items.push({sku, desc, utm, qty:cur});
+      if (cur !== sug) editados.push(`${desc} (${cur} UO)`);
+    } else {
+      omitidos.push(desc);
+    }
+  });
+  if (!items.length) { showToast('Confirma al menos una cantidad','error'); return; }
+  const totalUO = items.reduce((s,i)=>s+i.qty,0);
+  const detailEl = document.getElementById('sol-confirm-detail');
+  if (detailEl) {
+    detailEl.innerHTML =
+      `<div class="sol-confirm-row"><span style="color:var(--t3)">Productos</span><span>${items.length} ítems</span></div>` +
+      (editados.length ? `<div class="sol-confirm-row"><span style="color:var(--t3)">Editados</span><span style="color:var(--orange2)">${editados.join(', ')}</span></div>` : '') +
+      (omitidos.length ? `<div class="sol-confirm-row"><span style="color:var(--t3)">Omitidos</span><span style="color:var(--t3)">${omitidos.length}</span></div>` : '') +
+      `<div class="sol-confirm-row" style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px"><span style="color:var(--t2);font-weight:600">Total UO</span><span style="font-family:var(--mono);font-weight:700;color:var(--orange2)">${totalUO} UO</span></div>`;
+  }
+  document.getElementById('sol-confirm').classList.add('show');
+  // Scroll alla conferma
+  document.getElementById('sol-confirm').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function solCancelConfirm() {
+  document.getElementById('sol-confirm').classList.remove('show');
 }
 
 async function enviarSolicitud() {
-  // Recolectar qtys confirmadas
   const items = [];
-  STATE.reposicion.forEach(r => {
-    const sku   = r['SKU'] || r['SKU.1'] || '';
-    const desc  = r['Descripcion'] || r['Descripcion.1'] || '';
-    const utm   = r['UTM'] || r['UTM.1'] || '';
-    const est   = r['Estado'] || r['Estado.1'] || '';
+  solGetReps().forEach(r => {
+    const sku  = r['SKU']||r['SKU.1']||'';
+    const desc = r['Descripcion']||r['Descripcion.1']||'';
+    const utm  = r['UTM']||r['UTM.1']||'';
+    const sug  = parseFloat(r['Pedido en UO']||r['Pedido Sugerido en UO']||0);
     if (!sku) return;
-    if (est !== 'QUIEBRE' && est !== 'ATENCION') return;
-    const input = document.getElementById('sol-' + sku);
-    const qty   = input ? parseFloat(input.value) || 0 : parseFloat(r['Pedido en UO']||0);
-    if (qty > 0) items.push({ sku, desc, utm, qty });
+    const cur = STATE.solicitudQtys[sku] !== undefined ? STATE.solicitudQtys[sku] : sug;
+    if (cur > 0) items.push({ sku, desc, utm, qty:cur });
   });
 
   if (!items.length) { showToast('Confirma al menos una cantidad','error'); return; }
 
+  solCancelConfirm();
   const btn = document.getElementById('btn-enviar-solicitud');
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> Enviando...';
@@ -1928,11 +2102,12 @@ async function enviarSolicitud() {
   });
 
   btn.disabled = false;
-  btn.innerHTML = `Enviar Solicitud a BC (<span id="sol-count">${items.length}</span> productos)`;
+  btn.innerHTML = 'Enviar Solicitud a BC';
 
   if (res && res.ok) {
-    showToast(`✅ Solicitud enviada — ${items.length} productos`,'success');
+    showToast('✅ Solicitud enviada — ' + items.length + ' productos','success');
     STATE.solicitudQtys = {};
+    renderSolicitud();
   } else {
     showToast('Error: ' + (res?.error || 'sin respuesta'),'error');
   }
