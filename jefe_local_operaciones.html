@@ -412,29 +412,37 @@
   .sol-confirm-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 
   /* ── SOLICITUD sticky header ── */
-  /* Il modulo occupa tutto lo spazio sotto header+nav (52px+42px=94px) */
   #mod-solicitud{
     display:none;
     flex-direction:column;
-    /* altezza viewport meno header(52) + nav(42) + padding main top(16) */
-    height:calc(100vh - 110px);
+    position:fixed;
+    top:94px; /* header 52 + nav 42 */
+    left:0; right:0; bottom:0;
+    background:var(--bg);
+    z-index:50;
     overflow:hidden;
   }
   #mod-solicitud.active{display:flex}
   .sol-sticky{
     flex-shrink:0;
     background:var(--bg);
-    padding:12px 0 10px;
+    padding:12px 16px 10px;
     border-bottom:1px solid var(--border);
-    box-shadow:0 4px 12px 0 var(--bg);
-    /* Nessun position:sticky – non serve più, è già in cima al flex */
+    box-shadow:0 6px 16px 0 var(--bg);
+    max-width:680px;
+    width:100%;
+    margin:0 auto;
+    box-sizing:border-box;
   }
   .sol-scroll{
     flex:1;
     overflow-y:auto;
-    padding-top:10px;
-    /* Scroll fluido su iOS */
+    padding:10px 16px 32px;
     -webkit-overflow-scrolling:touch;
+    max-width:680px;
+    width:100%;
+    margin:0 auto;
+    box-sizing:border-box;
   }
   /* label sugerido più grande */
   .sol-sug{font-size:11px;color:var(--t3);white-space:nowrap;font-weight:500}
@@ -750,72 +758,68 @@
 
   <!-- ▸ STICKY HEADER ─────────────────────────────────── -->
   <div class="sol-sticky">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+
+    <!-- Título + botón enviar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <div>
-        <div class="section-title" style="margin:0">Solicitud a BC</div>
+        <div class="section-title" style="margin:0">Pedido a BC</div>
         <div style="font-size:11px;color:var(--t3);margin-top:1px">
           <span class="tag tag-green" style="font-size:9px;padding:1px 6px">PEDIDOS</span>
-          Revisar stock · Confirmar · Enviar
+          <span id="sol-header-sub">Busca y agrega productos</span>
         </div>
       </div>
-      <!-- KPIs compactos -->
-      <div style="display:flex;gap:8px">
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;text-align:center;min-width:52px">
-          <div class="kpi-value err" id="sol-quiebre" style="font-size:18px;line-height:1.2">—</div>
-          <div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px">Quiebre</div>
-        </div>
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;text-align:center;min-width:52px">
-          <div class="kpi-value warn" id="sol-atencion" style="font-size:18px;line-height:1.2">—</div>
-          <div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px">Atención</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Filtros -->
-    <div class="sol-filters" id="sol-filters">
-      <div class="sol-pill active" onclick="solSetFilter('todos',this)">Todos (<span id="sol-f-todos">0</span>)</div>
-      <div class="sol-pill q-pill" onclick="solSetFilter('QUIEBRE',this)">Quiebre (<span id="sol-f-quiebre">0</span>)</div>
-      <div class="sol-pill a-pill" onclick="solSetFilter('ATENCION',this)">Atención (<span id="sol-f-atencion">0</span>)</div>
-      <div class="sol-pill" id="sol-f-pill-edit" onclick="solSetFilter('editados',this)" style="display:none">Editados (<span id="sol-f-edit">0</span>)</div>
-    </div>
-
-    <!-- Search -->
-    <div class="search-wrap" style="margin:8px 0 0">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="sol-search" placeholder="Buscar producto..." oninput="filtrarSolicitud(this.value)">
-    </div>
-
-    <!-- Resumen + Botones siempre visibles -->
-    <div class="sol-resumen" id="sol-resumen" style="display:none;margin-top:8px;margin-bottom:0">
-      <div style="flex:1;min-width:0">
-        <div style="font-size:11px;font-weight:600;color:var(--t1)" id="sol-resumen-title">Pedido confirmado</div>
-        <div style="font-size:10px;color:var(--t3);margin-top:1px" id="sol-resumen-sub">—</div>
-      </div>
-      <div style="text-align:right;flex-shrink:0">
-        <div class="sol-resumen-val" id="sol-resumen-val" style="font-size:13px">0 UO</div>
-        <div id="sol-resumen-prod" style="font-size:10px;color:var(--t3);margin-top:1px">— productos</div>
-      </div>
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-      <button class="btn btn-ghost" id="btn-reset-solicitud" onclick="solReset()">
-        Restablecer
-      </button>
-      <button class="btn btn-primary" id="btn-enviar-solicitud" onclick="solAskConfirm()" disabled>
+      <button class="btn btn-primary btn-sm" id="btn-enviar-solicitud" onclick="solAskConfirm()" disabled style="min-width:110px">
         Enviar a BC
       </button>
     </div>
+
+    <!-- Barra búsqueda catálogo completo -->
+    <div class="search-wrap" style="margin-bottom:6px">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="sol-search" placeholder="Buscar producto para agregar al pedido..." oninput="solBuscar(this.value)" autocomplete="off">
+    </div>
+
+    <!-- Resultados búsqueda (dropdown) -->
+    <div id="sol-search-results" style="display:none;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;margin-bottom:6px;max-height:200px;overflow-y:auto"></div>
+
+    <!-- Resumen carrito -->
+    <div id="sol-carrito-bar" style="display:none;background:rgba(196,98,29,0.08);border:1px solid rgba(196,98,29,0.3);border-radius:8px;padding:8px 12px;display:none;justify-content:space-between;align-items:center">
+      <div style="font-size:12px;color:var(--t2)">
+        🛒 <span id="sol-carrito-count">0</span> productos · <span id="sol-carrito-uo" style="color:var(--orange2);font-weight:700;font-family:var(--mono)">0</span> UO
+      </div>
+      <button onclick="solReset()" style="font-size:10px;color:var(--t3);background:none;border:none;cursor:pointer;padding:2px 6px">Vaciar</button>
+    </div>
+
   </div>
   <!-- ▸ FIN STICKY ──────────────────────────────────────── -->
 
-  <!-- Lista con scroll -->
+  <!-- Scroll area -->
   <div class="sol-scroll">
-    <div id="sol-list">
-      <div class="loading-card"><div class="spinner"></div></div>
+
+    <!-- CARRITO — productos agregados -->
+    <div id="sol-carrito-section" style="display:none">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--orange);margin-bottom:8px">En tu pedido</div>
+      <div id="sol-carrito-list"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 20px">
+        <button class="btn btn-ghost" onclick="solReset()">Vaciar pedido</button>
+        <button class="btn btn-primary" id="btn-enviar-solicitud2" onclick="solAskConfirm()" disabled>Enviar a BC</button>
+      </div>
     </div>
+
+    <!-- ALERTAS — sugeridos por el sistema -->
+    <div id="sol-alertas-section">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:8px">
+        El sistema recomienda pedir
+        <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t3)"> · toca para agregar al pedido</span>
+      </div>
+      <div id="sol-alertas-list">
+        <div class="loading-card"><div class="spinner"></div></div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Confirm inline -->
+  <!-- Modal confirmar envío -->
   <div class="sol-confirm" id="sol-confirm">
     <div style="font-size:14px;font-weight:600;color:var(--t1);margin-bottom:4px">Confirmar envío a BC</div>
     <div style="font-size:12px;color:var(--t3)">Revisa el resumen. Esta acción no se puede deshacer.</div>
@@ -825,6 +829,7 @@
       <button class="btn btn-primary" onclick="enviarSolicitud()">Enviar ahora</button>
     </div>
   </div>
+
 </div>
 
 <!-- ══════════════════════════════════════════════════════ -->
@@ -1181,6 +1186,15 @@ function goTab(tab) {
   const idx = ['movimientos','ventas','solicitud','recepcion','conteo','inventario','analisis'].indexOf(tab);
   document.querySelectorAll('.nav-tab')[idx].classList.add('active');
   document.getElementById('mod-'+tab).classList.add('active');
+  // Calcola top dinamico per mod-solicitud (header + nav reali)
+  if (tab === 'solicitud') {
+    const hdr = document.querySelector('.header');
+    const nav = document.querySelector('.nav-scroll');
+    if (hdr && nav) {
+      const top = hdr.offsetHeight + nav.offsetHeight;
+      document.getElementById('mod-solicitud').style.top = top + 'px';
+    }
+  }
 
   STATE.tab = tab;
   if (tab === 'solicitud')   renderSolicitud();
@@ -1936,254 +1950,309 @@ async function registrarEvento(idCot) {
 }
 
 // ════════════════════════════════════════════════════════
-// MÓDULO 3 — SOLICITUD A BC
+// MÓDULO 3 — SOLICITUD A BC  (lógica e-commerce interno)
 // ════════════════════════════════════════════════════════
-// ── estado filtro solicitud ──
-let solFiltroActivo = 'todos';
 
-function solGetReps() {
-  return STATE.reposicion.filter(r => {
-    const est  = r['Estado'] || r['Estado.1'] || '';
-    const desc = (r['Descripcion'] || r['Descripcion.1'] || '').trim();
-    const sku  = (r['SKU'] || r['SKU.1'] || '').toString().trim();
-    // Esclude righe senza descrizione o SKU (intestazioni di sezione ecc)
-    if (!desc || !sku || sku === '—') return false;
-    return est === 'QUIEBRE' || est === 'ATENCION' || est === 'CRITICO';
-  });
+// ── Helpers datos ──
+function solGetInsumo(sku) {
+  // Busca en inventario (tiene stock) o bd_insumos (catálogo completo)
+  const inv = STATE.inventario.find(r => String(r['SKU']||'') === String(sku));
+  const bdi = STATE.bdInsumos.find(r  => String(r['SKU']||'') === String(sku));
+  return inv || bdi || null;
 }
 
-function renderSolicitud() {
-  const reps = solGetReps();
-  const quiebres   = reps.filter(r => (r['Estado']||r['Estado.1']||'') === 'QUIEBRE').length;
-  const atenciones = reps.filter(r => (r['Estado']||r['Estado.1']||'') === 'ATENCION').length;
-
-  document.getElementById('sol-quiebre').textContent  = quiebres;
-  document.getElementById('sol-atencion').textContent = atenciones;
-  document.getElementById('sol-f-todos').textContent  = reps.length;
-  document.getElementById('sol-f-quiebre').textContent = quiebres;
-  document.getElementById('sol-f-atencion').textContent = atenciones;
-
-  renderSolicitudList(reps, document.getElementById('sol-search').value || '');
+function solGetDesc(sku) {
+  const r = solGetInsumo(sku);
+  return r ? (r['Descripcion'] || r['Descripcion.1'] || '—') : '—';
 }
 
-function solSetFilter(filter, el) {
-  solFiltroActivo = filter;
-  document.querySelectorAll('.sol-pill').forEach(p => p.classList.remove('active'));
-  if (el) el.classList.add('active');
-  renderSolicitudList(solGetReps(), document.getElementById('sol-search').value || '');
+function solGetUTM(sku) {
+  const r = solGetInsumo(sku);
+  return r ? (r['UTM'] || r['C'] || '') : '';
 }
 
-function renderSolicitudList(items, q) {
-  // Aplica filtro activo
-  let filtered = items;
-  if (solFiltroActivo === 'QUIEBRE')  filtered = items.filter(r => (r['Estado']||r['Estado.1']||'') === 'QUIEBRE');
-  if (solFiltroActivo === 'ATENCION') filtered = items.filter(r => (r['Estado']||r['Estado.1']||'') === 'ATENCION');
-  if (solFiltroActivo === 'editados') {
-    filtered = items.filter(r => {
-      const sku = r['SKU']||r['SKU.1']||'';
-      return STATE.solicitudQtys[sku] !== undefined && STATE.solicitudQtys[sku] > 0;
-    });
+function solGetDescUO(sku) {
+  const r = solGetInsumo(sku);
+  return r ? (r['Descripcion UO'] || r['H'] || '') : '';
+}
+
+function solGetStock(sku) {
+  const r = STATE.inventario.find(x => String(x['SKU']||'') === String(sku));
+  return r ? (parseFloat(r['Stock Actual UO'] || r['G'] || 0)) : 0;
+}
+
+function solGetEstado(sku) {
+  const r = STATE.reposicion.find(x => String(x['SKU']||x['SKU.1']||'') === String(sku));
+  return r ? (r['Estado']||r['Estado.1']||'') : '';
+}
+
+function solGetSugerido(sku) {
+  const r = STATE.reposicion.find(x => String(x['SKU']||x['SKU.1']||'') === String(sku));
+  if (!r) return 0;
+  return parseFloat(r['Pedido en UO']||r['Pedido Sugerido en UO']||r['Pedido Confirmado en UO']||0);
+}
+
+// ── Carrito ──
+function solUpdateCarritoBar() {
+  const skus  = Object.keys(STATE.solicitudQtys).filter(s => STATE.solicitudQtys[s] > 0);
+  const total = skus.reduce((a,s) => a + STATE.solicitudQtys[s], 0);
+  const bar   = document.getElementById('sol-carrito-bar');
+  const sec   = document.getElementById('sol-carrito-section');
+  const btn1  = document.getElementById('btn-enviar-solicitud');
+  const btn2  = document.getElementById('btn-enviar-solicitud2');
+
+  if (skus.length > 0) {
+    document.getElementById('sol-carrito-count').textContent = skus.length;
+    document.getElementById('sol-carrito-uo').textContent   = total;
+    if (bar) bar.style.display = 'flex';
+    if (sec) sec.style.display = 'block';
+    if (btn1) { btn1.disabled = false; btn1.innerHTML = `Enviar · ${skus.length} prod`; }
+    if (btn2) btn2.disabled = false;
+  } else {
+    if (bar) bar.style.display = 'none';
+    if (sec) sec.style.display = 'none';
+    if (btn1) { btn1.disabled = true; btn1.innerHTML = 'Enviar a BC'; }
+    if (btn2) btn2.disabled = true;
   }
-  // Search
-  if (q) filtered = filtered.filter(r =>
-    (r['Descripcion']||'').toLowerCase().includes(q.toLowerCase()) ||
-    (r['SKU']||'').toString().includes(q)
-  );
+  solRenderCarrito();
+}
 
-  const el = document.getElementById('sol-list');
-  if (!filtered.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-icon">✅</div>Sin productos en esta categoría</div>`;
-    solActualizarResumen(items);
+function solRenderCarrito() {
+  const el = document.getElementById('sol-carrito-list');
+  if (!el) return;
+  const skus = Object.keys(STATE.solicitudQtys).filter(s => STATE.solicitudQtys[s] > 0);
+  if (!skus.length) { el.innerHTML = ''; return; }
+
+  el.innerHTML = skus.map(sku => {
+    const desc   = solGetDesc(sku);
+    const descUO = solGetDescUO(sku);
+    const qty    = STATE.solicitudQtys[sku];
+    const est    = solGetEstado(sku);
+    const badge  = est === 'QUIEBRE' ? `<span class="status status-err" style="font-size:9px;padding:2px 6px">${est}</span>`
+                 : est === 'ATENCION' ? `<span class="status status-warn" style="font-size:9px;padding:2px 6px">${est}</span>` : '';
+    return `<div class="sol-item modified" id="sol-item-${sku}">
+      <div class="sol-info">
+        <div class="sol-name">${desc}</div>
+        <div class="sol-meta"><span style="font-family:var(--mono);color:var(--blue2);font-size:10px">${sku}</span>${descUO ? ' · '+descUO : ''} ${badge}</div>
+      </div>
+      <div class="sol-qty">
+        <div class="sol-row">
+          <div class="sol-btn" onclick="solStep('${sku}',-1)">−</div>
+          <input class="sol-num edited" id="sol-${sku}" type="number" inputmode="decimal" min="0" step="0.5"
+            value="${qty}" onchange="updateSolQty('${sku}',this.value)" onclick="this.select()" onfocus="this.select()">
+          <div class="sol-btn" onclick="solStep('${sku}',1)">+</div>
+        </div>
+        <div style="font-size:10px;color:var(--t3);text-align:right;margin-top:2px">UO</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Búsqueda catálogo completo ──
+function solBuscar(q) {
+  const res = document.getElementById('sol-search-results');
+  if (!q || q.length < 2) { res.style.display = 'none'; return; }
+
+  const matches = STATE.inventario.filter(r => {
+    const desc = (r['Descripcion']||'').toLowerCase();
+    const sku  = String(r['SKU']||'');
+    return desc.includes(q.toLowerCase()) || sku.includes(q);
+  }).slice(0, 12);
+
+  if (!matches.length) {
+    res.style.display = 'block';
+    res.innerHTML = `<div style="padding:12px;font-size:12px;color:var(--t3)">Sin resultados para "${q}"</div>`;
     return;
   }
 
-  el.innerHTML = filtered.map(r => {
-    const sku  = r['SKU'] || r['SKU.1'] || '—';
-    const desc = r['Descripcion'] || r['Descripcion.1'] || '—';
-    const est  = r['Estado'] || r['Estado.1'] || '';
-    const sug  = parseFloat(r['Pedido en UO'] || r['Pedido Sugerido en UO'] || r['Pedido Confirmado en UO'] || r['Cantidad a Pedir UTM'] || 0);
-    const utm  = r['UTM'] || r['UTM.1'] || '';
-    const fmt  = r['Pedido Formateado'] || r['Pedido Formateado.1'] || r['Pedido Formateado.2'] || '';
-    const cur  = STATE.solicitudQtys[sku] !== undefined ? STATE.solicitudQtys[sku] : 0;
-    const isEdited = cur > 0;
-    const isZero   = cur === 0;
-    const badgeClass = est === 'QUIEBRE' ? 'status-err' : 'status-warn';
-    const uoLabel = isZero ? '<span class="sol-uo nopedir">no pedir</span>'
-                  : isEdited ? '<span class="sol-uo edited">UO · editado</span>'
-                  : '<span class="sol-uo">UO</span>';
+  res.style.display = 'block';
+  res.innerHTML = matches.map(r => {
+    const sku    = String(r['SKU']||'');
+    const desc   = r['Descripcion'] || '—';
+    const stock  = parseFloat(r['Stock Actual UO']||r['G']||0);
+    const descUO = r['Descripcion UO'] || r['H'] || '';
+    const est    = solGetEstado(sku);
+    const inCart = STATE.solicitudQtys[sku] > 0;
+    const estColor = est === 'QUIEBRE' ? 'var(--red)' : est === 'ATENCION' ? 'var(--amber)' : 'var(--t3)';
+    return `<div onclick="solAgregar('${sku}')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px"
+      onmouseover="this.style.background='var(--bg4)'" onmouseout="this.style.background=''">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${desc}</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:1px">
+          <span style="font-family:var(--mono);color:var(--blue2)">${sku}</span>
+          ${descUO ? ' · '+descUO : ''}
+          ${est ? `<span style="color:${estColor};font-weight:600;margin-left:4px">${est}</span>` : ''}
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:11px;color:var(--t3)">Stock: <span style="color:${stock>0?'var(--green2)':'var(--red)'};font-weight:600">${stock} UO</span></div>
+        ${inCart ? `<div style="font-size:10px;color:var(--orange2);margin-top:1px">✓ en pedido</div>` : `<div style="font-size:10px;color:var(--blue2);margin-top:1px">+ agregar</div>`}
+      </div>
+    </div>`;
+  }).join('');
+}
 
-    // Descrizione UO senza il numero iniziale (col X ha "8 Balde 4000 gr" → vogliamo solo "Balde 4000 gr")
-    const fmtClean = fmt.replace(/^\d+([.,]\d+)?\s*/, '').trim() || fmt;
-    return `<div class="sol-item${isEdited?' modified':''}${isZero?' zero':''}" id="sol-item-${sku}">
+function solAgregar(sku) {
+  // Si ya está en carrito solo sube el cursor al carrito
+  if (!STATE.solicitudQtys[sku]) {
+    const sug = solGetSugerido(sku);
+    STATE.solicitudQtys[sku] = sug > 0 ? sug : 1;
+  }
+  // Cierra búsqueda
+  document.getElementById('sol-search').value = '';
+  document.getElementById('sol-search-results').style.display = 'none';
+  solUpdateCarritoBar();
+  // Scroll al item en carrito
+  setTimeout(() => {
+    const el = document.getElementById('sol-item-' + sku);
+    if (el) el.scrollIntoView({ behavior:'smooth', block:'center' });
+  }, 100);
+}
+
+// ── Alertas sugeridas ──
+function renderSolicitud() {
+  const alertas = STATE.reposicion.filter(r => {
+    const est  = r['Estado']||r['Estado.1']||'';
+    const desc = (r['Descripcion']||r['Descripcion.1']||'').trim();
+    const sku  = (r['SKU']||r['SKU.1']||'').toString().trim();
+    if (!desc || !sku || sku==='—') return false;
+    return est === 'QUIEBRE' || est === 'ATENCION' || est === 'CRITICO';
+  });
+
+  const el = document.getElementById('sol-alertas-list');
+  if (!el) return;
+
+  if (!alertas.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">✅</div>Sin alertas de stock</div>`;
+    return;
+  }
+
+  el.innerHTML = alertas.map(r => {
+    const sku  = String(r['SKU']||r['SKU.1']||'');
+    const desc = r['Descripcion']||r['Descripcion.1']||'—';
+    const est  = r['Estado']||r['Estado.1']||'';
+    const sug  = solGetSugerido(sku);
+    const descUO = solGetDescUO(sku);
+    const inCart = STATE.solicitudQtys[sku] > 0;
+    const badgeClass = est === 'QUIEBRE' ? 'status-err' : 'status-warn';
+
+    return `<div class="sol-item${inCart?' modified':''}" id="sol-alerta-${sku}" onclick="solAlertaTap('${sku}')"
+      style="cursor:pointer;${inCart?'':'opacity:0.75'}">
       <div class="sol-info">
         <div class="sol-name">${desc}</div>
-        <div class="sol-meta"><span style="font-family:var(--mono);color:var(--blue2);font-size:10px">${sku}</span>${fmtClean ? ' · ' + fmtClean : ''}</div>
+        <div class="sol-meta">
+          <span style="font-family:var(--mono);color:var(--blue2);font-size:10px">${sku}</span>
+          ${descUO ? ' · '+descUO : ''}
+        </div>
         <span class="status ${badgeClass}" style="margin-top:4px;display:inline-flex">${est}</span>
       </div>
-      <div class="sol-qty">
-        <div class="sol-sug">Sugerido <span>${sug || '—'}</span></div>
-        <div class="sol-row">
-          <div class="sol-btn" onclick="solStep('${sku}',-1)">−</div>
-          <input class="sol-num${isEdited?' edited':''}" id="sol-${sku}" type="number" inputmode="decimal" min="0" step="0.5"
-            value="${cur}" onchange="updateSolQty('${sku}',this.value)" onclick="this.select()" onfocus="this.select()">
-          <div class="sol-btn" onclick="solStep('${sku}',1)">+</div>
-        </div>
+      <div style="flex-shrink:0;text-align:right">
+        ${inCart
+          ? `<div style="font-size:12px;color:var(--orange2);font-weight:700">✓ ${STATE.solicitudQtys[sku]} UO<br><span style="font-size:10px;color:var(--t3)">en pedido</span></div>`
+          : `<div style="font-size:11px;color:var(--t3)">Sug. <span style="color:var(--t2);font-weight:600">${sug||'—'}</span> UO</div>
+             <div style="font-size:11px;color:var(--blue2);margin-top:4px">+ agregar</div>`
+        }
       </div>
     </div>`;
   }).join('');
 
-  solActualizarResumen(items);
+  solUpdateCarritoBar();
 }
 
+function solAlertaTap(sku) {
+  if (STATE.solicitudQtys[sku] > 0) {
+    // Ya está — scroll al carrito
+    const el = document.getElementById('sol-item-' + sku);
+    if (el) el.scrollIntoView({ behavior:'smooth', block:'center' });
+  } else {
+    solAgregar(sku);
+    renderSolicitud(); // refresca badge en alertas
+  }
+}
+
+// ── Controles cantidad ──
 function solStep(sku, delta) {
   const input = document.getElementById('sol-' + sku);
   if (!input) return;
-  const cur = parseFloat(input.value) || 0;
-  const next = Math.max(0, cur + delta);
+  const next = Math.max(0, (parseFloat(input.value)||0) + delta);
   input.value = next;
   updateSolQty(sku, next);
 }
 
-function filtrarSolicitud(q) {
-  renderSolicitudList(solGetReps(), q);
-}
-
 function updateSolQty(sku, val) {
-  STATE.solicitudQtys[sku] = parseFloat(val) || 0;
-  // Aggiorna visuale card
-  const item = document.getElementById('sol-item-' + sku);
-  const input = document.getElementById('sol-' + sku);
-  const r = STATE.reposicion.find(x => (x['SKU']||x['SKU.1']||'') === sku);
-  const sug = r ? parseFloat(r['Pedido en UO']||r['Pedido Sugerido en UO']||0) : 0;
-  const cur = STATE.solicitudQtys[sku];
-  if (item) {
-    item.classList.toggle('modified', cur > 0);
-    item.classList.toggle('zero', cur === 0 || cur === undefined);
-  }
-  if (input) input.classList.toggle('edited', cur > 0);
-  solActualizarResumen(solGetReps());
-  // Aggiorna counter pill editados
-  const editados = Object.entries(STATE.solicitudQtys).filter(([s,v]) => {
-    const rr = STATE.reposicion.find(x => (x['SKU']||x['SKU.1']||'') === s);
-    const ss = rr ? parseFloat(rr['Pedido en UO']||rr['Pedido Sugerido en UO']||0) : 0;
-    return v !== ss;
-  }).length;
-  const pillEdit = document.getElementById('sol-f-pill-edit');
-  const editEl   = document.getElementById('sol-f-edit');
-  if (pillEdit && editEl) {
-    editEl.textContent = editados;
-    pillEdit.style.display = editados > 0 ? '' : 'none';
-  }
-}
-
-function solActualizarResumen(reps) {
-  let totalProd = 0, totalUO = 0, editados = 0, omitidos = 0;
-  reps.forEach(r => {
-    const sku = r['SKU']||r['SKU.1']||'';
-    // Solo conta ciò che l'operatore ha ESPLICITAMENTE impostato > 0
-    const cur = STATE.solicitudQtys[sku] !== undefined ? STATE.solicitudQtys[sku] : 0;
-    if (cur > 0) { totalProd++; totalUO += cur; editados++; }
-    else omitidos++;
-  });
-
-  const resumen = document.getElementById('sol-resumen');
-  const subEl   = document.getElementById('sol-resumen-sub');
-  const valEl   = document.getElementById('sol-resumen-val');
-  const btn     = document.getElementById('btn-enviar-solicitud');
-
-  const prodEl  = document.getElementById('sol-resumen-prod');
-  if (prodEl) prodEl.textContent = totalProd + ' productos';
-  if (resumen) resumen.style.display = totalProd > 0 ? 'flex' : 'none';
-  if (subEl) {
-    let parts = [];
-    if (editados)  parts.push(`${editados} confirmados`);
-    if (omitidos)  parts.push(`${omitidos} sin pedir`);
-    subEl.textContent = parts.length ? parts.join(' · ') : 'Sin productos';
-  }
-  if (valEl)  valEl.textContent = totalUO + ' UO';
-  if (btn)    btn.disabled = totalProd === 0;
-  // Actualiza label del botón Enviar con el conteo
-  if (btn && totalProd > 0) btn.innerHTML = `Enviar a BC · ${totalProd} prod`;
-  else if (btn) btn.innerHTML = 'Enviar a BC';
+  const qty = parseFloat(val) || 0;
+  STATE.solicitudQtys[sku] = qty;
+  if (qty === 0) delete STATE.solicitudQtys[sku];
+  solUpdateCarritoBar();
+  renderSolicitud();
 }
 
 function solReset() {
   STATE.solicitudQtys = {};
-  renderSolicitudList(solGetReps(), document.getElementById('sol-search').value||'');
+  document.getElementById('sol-search').value = '';
+  document.getElementById('sol-search-results').style.display = 'none';
+  solUpdateCarritoBar();
+  renderSolicitud();
 }
 
+// ── Confirmar y enviar ──
 function solAskConfirm() {
-  // Costruisci riepilogo
-  const items = [];
-  let editados = [], omitidos = [];
-  solGetReps().forEach(r => {
-    const sku  = r['SKU']||r['SKU.1']||'';
-    const desc = r['Descripcion']||r['Descripcion.1']||'';
-    const sug  = parseFloat(r['Pedido en UO']||r['Pedido Sugerido en UO']||r['Pedido Confirmado en UO']||r['Cantidad a Pedir UTM']||0);
-    const cur  = STATE.solicitudQtys[sku] !== undefined ? STATE.solicitudQtys[sku] : 0;
-    const utm  = r['UTM']||r['UTM.1']||'';
-    if (cur > 0) {
-      items.push({sku, desc, utm, qty:cur});
-      if (cur !== sug) editados.push(`${desc} (${cur} UO)`);
-    } else {
-      omitidos.push(desc);
-    }
-  });
-  if (!items.length) { showToast('Confirma al menos una cantidad','error'); return; }
-  const totalUO = items.reduce((s,i)=>s+i.qty,0);
-  const detailEl = document.getElementById('sol-confirm-detail');
-  if (detailEl) {
-    detailEl.innerHTML =
-      `<div class="sol-confirm-row"><span style="color:var(--t3)">Productos</span><span>${items.length} ítems</span></div>` +
-      (editados.length ? `<div class="sol-confirm-row"><span style="color:var(--t3)">Editados</span><span style="color:var(--orange2)">${editados.join(', ')}</span></div>` : '') +
-      (omitidos.length ? `<div class="sol-confirm-row"><span style="color:var(--t3)">Omitidos</span><span style="color:var(--t3)">${omitidos.length}</span></div>` : '') +
-      `<div class="sol-confirm-row" style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px"><span style="color:var(--t2);font-weight:600">Total UO</span><span style="font-family:var(--mono);font-weight:700;color:var(--orange2)">${totalUO} UO</span></div>`;
-  }
-  document.getElementById('sol-confirm').classList.add('show');
-  // Scroll alla conferma
-  document.getElementById('sol-confirm').scrollIntoView({behavior:'smooth',block:'center'});
+  const skus  = Object.keys(STATE.solicitudQtys).filter(s => STATE.solicitudQtys[s] > 0);
+  if (!skus.length) return;
+
+  const detalle = skus.map(sku => {
+    const desc = solGetDesc(sku);
+    const qty  = STATE.solicitudQtys[sku];
+    return `${desc}: ${qty} UO`;
+  }).join('\n');
+
+  const confirmEl = document.getElementById('sol-confirm');
+  const detailEl  = document.getElementById('sol-confirm-detail');
+  if (detailEl) detailEl.textContent = detalle;
+  if (confirmEl) confirmEl.classList.add('show');
+  confirmEl.scrollIntoView({ behavior:'smooth' });
 }
 
 function solCancelConfirm() {
-  document.getElementById('sol-confirm').classList.remove('show');
+  const el = document.getElementById('sol-confirm');
+  if (el) el.classList.remove('show');
 }
 
 async function enviarSolicitud() {
-  const items = [];
-  solGetReps().forEach(r => {
-    const sku  = r['SKU']||r['SKU.1']||'';
-    const desc = r['Descripcion']||r['Descripcion.1']||'';
-    const utm  = r['UTM']||r['UTM.1']||'';
-    const sug  = parseFloat(r['Pedido en UO']||r['Pedido Sugerido en UO']||r['Pedido Confirmado en UO']||r['Cantidad a Pedir UTM']||0);
-    if (!sku) return;
-    const cur = STATE.solicitudQtys[sku] !== undefined ? STATE.solicitudQtys[sku] : sug;
-    if (cur > 0) items.push({ sku, desc, utm, qty:cur });
-  });
+  const skus  = Object.keys(STATE.solicitudQtys).filter(s => STATE.solicitudQtys[s] > 0);
+  if (!skus.length) return;
 
-  if (!items.length) { showToast('Confirma al menos una cantidad','error'); return; }
+  const btn = document.querySelector('#sol-confirm .btn-primary');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>'; }
 
-  solCancelConfirm();
-  const btn = document.getElementById('btn-enviar-solicitud');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> Enviando...';
+  const items = skus.map(sku => ({
+    sku,
+    descripcion: solGetDesc(sku),
+    utm: solGetUTM(sku),
+    qty: STATE.solicitudQtys[sku]
+  }));
 
   const res = await callGAS({
-    action: 'enviarSolicitud',
-    local:  CFG.local,
-    items:  items
+    action: 'inviarSolicitud',
+    local:  CFG.LOCAL,
+    items,
+    operador: STATE.operador || '',
+    fecha: today()
   });
 
-  btn.disabled = false;
-  btn.innerHTML = 'Enviar Solicitud a BC';
+  if (btn) { btn.disabled = false; btn.innerHTML = 'Enviar ahora'; }
 
   if (res && res.ok) {
-    showToast('✅ Solicitud enviada — ' + items.length + ' productos','success');
+    showToast('✅ Solicitud enviada — ' + items.length + ' productos', 'success');
     STATE.solicitudQtys = {};
+    document.getElementById('sol-confirm').classList.remove('show');
+    solUpdateCarritoBar();
     renderSolicitud();
   } else {
-    showToast('Error: ' + (res?.error || 'sin respuesta'),'error');
+    showToast('Error: ' + (res?.error || 'sin respuesta'), 'error');
   }
 }
+
 
 // ════════════════════════════════════════════════════════
 // MÓDULO 4 — RECEPCIÓN
