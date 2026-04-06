@@ -787,10 +787,13 @@
     <!-- Resumen + Botones siempre visibles -->
     <div class="sol-resumen" id="sol-resumen" style="display:none;margin-top:8px;margin-bottom:0">
       <div style="flex:1;min-width:0">
-        <div style="font-size:11px;font-weight:600;color:var(--t1)">Pedido confirmado</div>
+        <div style="font-size:11px;font-weight:600;color:var(--t1)" id="sol-resumen-title">Pedido confirmado</div>
         <div style="font-size:10px;color:var(--t3);margin-top:1px" id="sol-resumen-sub">—</div>
       </div>
-      <div class="sol-resumen-val" id="sol-resumen-val" style="font-size:13px">0 UO</div>
+      <div style="text-align:right;flex-shrink:0">
+        <div class="sol-resumen-val" id="sol-resumen-val" style="font-size:13px">0 UO</div>
+        <div id="sol-resumen-prod" style="font-size:10px;color:var(--t3);margin-top:1px">— productos</div>
+      </div>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
@@ -2021,8 +2024,8 @@ function renderSolicitudList(items, q) {
         <div class="sol-sug">Sugerido <span>${sug || '—'}</span></div>
         <div class="sol-row">
           <div class="sol-btn" onclick="solStep('${sku}',-1)">−</div>
-          <input class="sol-num${isEdited?' edited':''}" id="sol-${sku}" type="number" min="0" step="0.5"
-            value="${cur}" onchange="updateSolQty('${sku}',this.value)">
+          <input class="sol-num${isEdited?' edited':''}" id="sol-${sku}" type="number" inputmode="decimal" min="0" step="0.5"
+            value="${cur}" onchange="updateSolQty('${sku}',this.value)" onclick="this.select()" onfocus="this.select()">
           <div class="sol-btn" onclick="solStep('${sku}',1)">+</div>
         </div>
       </div>
@@ -2089,10 +2092,20 @@ function solActualizarResumen(reps) {
   const valEl   = document.getElementById('sol-resumen-val');
   const btn     = document.getElementById('btn-enviar-solicitud');
 
+  const prodEl  = document.getElementById('sol-resumen-prod');
+  if (prodEl) prodEl.textContent = totalProd + ' productos';
   if (resumen) resumen.style.display = totalProd > 0 ? 'flex' : 'none';
-  if (subEl)  subEl.textContent = `${totalProd} productos${editados?' · '+editados+' editados':''}${omitidos?' · '+omitidos+' omitidos':''}`;
+  if (subEl) {
+    let parts = [];
+    if (editados)  parts.push(`${editados} editados`);
+    if (omitidos)  parts.push(`${omitidos} sin pedir`);
+    subEl.textContent = parts.length ? parts.join(' · ') : 'Cantidades confirmadas';
+  }
   if (valEl)  valEl.textContent = totalUO + ' UO';
   if (btn)    btn.disabled = totalProd === 0;
+  // Actualiza label del botón Enviar con el conteo
+  if (btn && totalProd > 0) btn.innerHTML = `Enviar a BC · ${totalProd} prod`;
+  else if (btn) btn.innerHTML = 'Enviar a BC';
 }
 
 function solReset() {
