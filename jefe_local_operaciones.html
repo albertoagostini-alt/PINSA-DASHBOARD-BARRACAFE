@@ -120,6 +120,8 @@
   /* ── MODULE ── */
   .module { display: none; }
   .module.active { display: block; }
+  /* Eccezione: solicitud usa flex per il layout sticky+scroll interno */
+  #mod-solicitud.active { display: flex; }
 
   /* ── SECTION TITLE ── */
   .section-title {
@@ -409,8 +411,30 @@
   .sol-confirm-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 
   /* ── SOLICITUD sticky header ── */
-  .sol-sticky{position:sticky;top:94px;z-index:80;background:var(--bg);padding:12px 0 10px;border-bottom:1px solid var(--border);box-shadow:0 4px 0 0 var(--bg)}
-  .sol-scroll{overflow-y:auto;padding-top:10px}
+  /* Il modulo occupa tutto lo spazio sotto header+nav (52px+42px=94px) */
+  #mod-solicitud{
+    display:none;
+    flex-direction:column;
+    /* altezza viewport meno header(52) + nav(42) + padding main top(16) */
+    height:calc(100vh - 110px);
+    overflow:hidden;
+  }
+  #mod-solicitud.active{display:flex}
+  .sol-sticky{
+    flex-shrink:0;
+    background:var(--bg);
+    padding:12px 0 10px;
+    border-bottom:1px solid var(--border);
+    box-shadow:0 4px 12px 0 var(--bg);
+    /* Nessun position:sticky – non serve più, è già in cima al flex */
+  }
+  .sol-scroll{
+    flex:1;
+    overflow-y:auto;
+    padding-top:10px;
+    /* Scroll fluido su iOS */
+    -webkit-overflow-scrolling:touch;
+  }
   /* label sugerido più grande */
   .sol-sug{font-size:11px;color:var(--t3);white-space:nowrap;font-weight:500}
   .sol-sug span{color:var(--t2);font-weight:700;font-size:12px}
