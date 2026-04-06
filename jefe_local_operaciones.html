@@ -385,8 +385,9 @@
   .sol-pill.q-pill{background:rgba(192,57,43,.12);border-color:var(--red);color:var(--red)}
   .sol-pill.a-pill{background:rgba(212,134,10,.12);border-color:var(--amber);color:var(--amber)}
   .sol-item{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:8px;transition:border-color .15s}
-  .sol-item.modified{border-color:var(--orange)}
-  .sol-item.zero{opacity:.55}
+  .sol-item.modified{border-color:rgba(196,98,29,0.5);background:rgba(196,98,29,0.05)}
+  .sol-item.zero{opacity:.45}
+  .sol-item:focus-within{border-color:var(--orange) !important;opacity:1 !important;background:rgba(196,98,29,0.08) !important}
   .sol-info{flex:1;min-width:0}
   .sol-name{font-size:13px;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .sol-meta{font-size:11px;color:var(--t3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -2004,7 +2005,7 @@ function renderSolicitudList(items, q) {
     const utm  = r['UTM'] || r['UTM.1'] || '';
     const fmt  = r['Pedido Formateado'] || r['Pedido Formateado.1'] || r['Pedido Formateado.2'] || '';
     const cur  = STATE.solicitudQtys[sku] !== undefined ? STATE.solicitudQtys[sku] : 0;
-    const isEdited = STATE.solicitudQtys[sku] !== undefined && cur !== 0;
+    const isEdited = cur > 0;
     const isZero   = cur === 0;
     const badgeClass = est === 'QUIEBRE' ? 'status-err' : 'status-warn';
     const uoLabel = isZero ? '<span class="sol-uo nopedir">no pedir</span>'
@@ -2056,10 +2057,10 @@ function updateSolQty(sku, val) {
   const sug = r ? parseFloat(r['Pedido en UO']||r['Pedido Sugerido en UO']||0) : 0;
   const cur = STATE.solicitudQtys[sku];
   if (item) {
-    item.classList.toggle('modified', cur !== sug);
-    item.classList.toggle('zero', cur === 0);
+    item.classList.toggle('modified', cur > 0);
+    item.classList.toggle('zero', cur === 0 || cur === undefined);
   }
-  if (input) input.classList.toggle('edited', cur !== sug);
+  if (input) input.classList.toggle('edited', cur > 0);
   solActualizarResumen(solGetReps());
   // Aggiorna counter pill editados
   const editados = Object.entries(STATE.solicitudQtys).filter(([s,v]) => {
@@ -2079,11 +2080,10 @@ function solActualizarResumen(reps) {
   let totalProd = 0, totalUO = 0, editados = 0, omitidos = 0;
   reps.forEach(r => {
     const sku = r['SKU']||r['SKU.1']||'';
-    const sug = parseFloat(r['Pedido en UO']||r['Pedido Sugerido en UO']||r['Pedido Confirmado en UO']||r['Cantidad a Pedir UTM']||0);
-    const cur = STATE.solicitudQtys[sku] !== undefined ? STATE.solicitudQtys[sku] : sug;
-    if (cur > 0) { totalProd++; totalUO += cur; }
+    // Solo conta ciò che l'operatore ha ESPLICITAMENTE impostato > 0
+    const cur = STATE.solicitudQtys[sku] !== undefined ? STATE.solicitudQtys[sku] : 0;
+    if (cur > 0) { totalProd++; totalUO += cur; editados++; }
     else omitidos++;
-    if (STATE.solicitudQtys[sku] !== undefined && cur !== sug) editados++;
   });
 
   const resumen = document.getElementById('sol-resumen');
@@ -2096,9 +2096,9 @@ function solActualizarResumen(reps) {
   if (resumen) resumen.style.display = totalProd > 0 ? 'flex' : 'none';
   if (subEl) {
     let parts = [];
-    if (editados)  parts.push(`${editados} editados`);
+    if (editados)  parts.push(`${editados} confirmados`);
     if (omitidos)  parts.push(`${omitidos} sin pedir`);
-    subEl.textContent = parts.length ? parts.join(' · ') : 'Cantidades confirmadas';
+    subEl.textContent = parts.length ? parts.join(' · ') : 'Sin productos';
   }
   if (valEl)  valEl.textContent = totalUO + ' UO';
   if (btn)    btn.disabled = totalProd === 0;
@@ -2120,7 +2120,7 @@ function solAskConfirm() {
     const sku  = r['SKU']||r['SKU.1']||'';
     const desc = r['Descripcion']||r['Descripcion.1']||'';
     const sug  = parseFloat(r['Pedido en UO']||r['Pedido Sugerido en UO']||r['Pedido Confirmado en UO']||r['Cantidad a Pedir UTM']||0);
-    const cur  = STATE.solicitudQtys[sku] !== undefined ? STATE.solicitudQtys[sku] : sug;
+    const cur  = STATE.solicitudQtys[sku] !== undefined ? STATE.solicitudQtys[sku] : 0;
     const utm  = r['UTM']||r['UTM.1']||'';
     if (cur > 0) {
       items.push({sku, desc, utm, qty:cur});
