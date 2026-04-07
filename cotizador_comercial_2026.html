@@ -163,6 +163,54 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
 
 /* TOAST */
 .toast{position:fixed;bottom:20px;right:20px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:10px 16px;font-size:12px;z-index:300;display:none;}
+
+/* ── CONTACTOS ─────────────────────────────────────────────── */
+.ctt-list{display:flex;flex-direction:column;gap:5px;margin-bottom:6px;}
+.ctt-item{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 10px;display:flex;align-items:center;gap:8px;font-size:12px;}
+.ctt-item-star{color:var(--amber);font-size:11px;}
+.ctt-item-info{flex:1;display:flex;flex-direction:column;gap:1px;}
+.ctt-item-name{font-weight:500;color:var(--t1);}
+.ctt-item-tipo{font-size:10px;color:var(--fu-soft);text-transform:uppercase;letter-spacing:.05em;}
+.ctt-item-del{background:none;border:none;color:var(--t3);cursor:pointer;font-size:12px;padding:2px 4px;border-radius:3px;}
+.ctt-item-del:hover{color:var(--red);}
+.btn-add-ctt{background:var(--bg3);border:1px dashed var(--border);color:var(--fu-soft);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;width:100%;text-align:center;margin-top:3px;transition:.15s;}
+.btn-add-ctt:hover{border-color:var(--fu-soft);color:var(--fu);}
+/* ── PAGO ──────────────────────────────────────────────────── */
+.pago-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+.pago-tag.NO_PAGADO{background:rgba(239,68,68,.12);color:#EF4444;}
+.pago-tag.PAGO_PARCIAL{background:rgba(245,158,11,.12);color:#F59E0B;}
+.pago-tag.PAGADO{background:rgba(34,197,94,.12);color:#22C55E;}
+/* ── INCIDENCIAS ───────────────────────────────────────────── */
+.inc-list{display:flex;flex-direction:column;gap:5px;margin-bottom:8px;}
+.inc-item{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:7px 10px;}
+.inc-item-header{display:flex;align-items:center;gap:6px;margin-bottom:2px;}
+.inc-tipo{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:1px 6px;border-radius:3px;}
+.inc-tipo.OPERATIVO{background:rgba(168,85,247,.12);color:#A855B5;}
+.inc-tipo.COMERCIAL{background:rgba(59,130,246,.12);color:#3B82F6;}
+.inc-tipo.LOGISTICO{background:rgba(245,158,11,.12);color:#F59E0B;}
+.inc-tipo.OTRO{background:rgba(120,120,120,.12);color:#888;}
+.inc-impacto{font-family:'DM Mono',monospace;font-size:11px;font-weight:600;margin-left:auto;}
+.inc-impacto.neg{color:var(--red);}
+.inc-impacto.pos{color:var(--green);}
+.inc-desc{font-size:11px;color:var(--t2);}
+.inc-meta{font-size:9px;color:var(--t3);margin-top:2px;}
+.inc-empty{font-size:11px;color:var(--t3);text-align:center;padding:10px 0;font-style:italic;}
+/* ── BREAK-EVEN ────────────────────────────────────────────── */
+.be-panel{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-top:8px;}
+.be-title{font-size:9px;font-weight:600;color:var(--fu-soft);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.be-title::before{content:'';display:inline-block;width:2px;height:9px;background:var(--fu-soft);border-radius:2px;}
+.be-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.be-kpi{text-align:center;}
+.be-kpi-val{font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:var(--t1);}
+.be-kpi-val.ok{color:var(--green);}
+.be-kpi-val.warn{color:var(--amber);}
+.be-kpi-val.bad{color:var(--red);}
+.be-kpi-lbl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;}
+.be-bar-wrap{margin-top:7px;background:var(--bg4);border-radius:4px;height:6px;overflow:hidden;}
+.be-bar-fill{height:100%;border-radius:4px;background:var(--green);transition:width .3s;}
+.be-bar-fill.warn{background:var(--amber);}
+.be-bar-fill.bad{background:var(--red);}
+.be-hint{font-size:10px;color:var(--t3);margin-top:5px;text-align:center;}
 .toast.ok{border-color:var(--green);color:var(--green);} .toast.err{border-color:var(--red);color:var(--red);}
 
 .dd-overlay{position:fixed;inset:0;z-index:99;display:none;}
@@ -218,6 +266,10 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
         </div>
       </div>
       <div class="fg"><label>Ubicación</label><input type="text" id="ubicacion" placeholder="Dirección o nombre del lugar"></div>
+      <div class="fr">
+        <div class="fg"><label>N° O/C Cliente</label><input type="text" id="n-oc-cliente" placeholder="ej. OC-10900"></div>
+        <div class="fg" id="fg-fecha-oc" style="display:none"><label>Fecha O/C</label><input type="date" id="fecha-oc-campo"></div>
+      </div>
       <div class="fg"><label>Notas especiales</label><textarea id="notas" rows="2" placeholder="Instrucciones cocina, alergias, peticiones..."></textarea></div>
     </div>
 
@@ -236,6 +288,15 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
       </div>
       <div class="cli-info" id="cli-info"></div>
       <button class="btn-nc" onclick="abrirModal('modal-cliente')">+ Nuevo cliente</button>
+    </div>
+
+    <!-- SEZIONE CONTACTOS -->
+    <div class="sec" id="sec-contactos" style="display:none">
+      <div class="sec-t">Contactos del Cliente</div>
+      <div class="ctt-list" id="ctt-list">
+        <div class="inc-empty">Selecciona un cliente para ver sus contactos</div>
+      </div>
+      <button class="btn-add-ctt" onclick="abrirModalContacto()">+ Agregar Contacto</button>
     </div>
 
     <div class="sec" style="flex:1">
@@ -335,6 +396,72 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
 
       </div><!-- fine scroll -->
 
+      <!-- SEZIONE PAGO (visibile solo da ADJUDICADA) -->
+      <div id="sec-pago" style="display:none;flex-shrink:0;border-top:1px solid var(--border);margin-top:10px;padding-top:10px">
+        <div class="pr-sec-t" style="margin-bottom:8px">Facturación y Pago</div>
+        <div class="fr">
+          <div class="fg">
+            <label>Estado Pago</label>
+            <select id="estado-pago" onchange="toggleMontoParcial(this.value)">
+              <option value="NO_PAGADO">No Pagado</option>
+              <option value="PAGO_PARCIAL">Pago Parcial</option>
+              <option value="PAGADO">Pagado</option>
+            </select>
+          </div>
+          <div class="fg" id="fg-monto-pagado" style="display:none">
+            <label>Monto Pagado $</label>
+            <input type="text" id="monto-pagado" placeholder="$0">
+          </div>
+        </div>
+        <div class="fr">
+          <div class="fg">
+            <label>Empresa Factura</label>
+            <select id="empresa-factura" onchange="toggleFacturaTexto(this.value)">
+              <option value="">Sin factura aún</option>
+              <option value="PINSA">PINSA</option>
+              <option value="EXO">EXO</option>
+              <option value="BKS">BKS</option>
+              <option value="OTRO">Otro</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>N° Factura</label>
+            <input type="text" id="n-factura" placeholder="Ej. 001234">
+          </div>
+        </div>
+        <div class="fg" id="fg-factura-texto" style="display:none">
+          <label>Nombre Factura (otro)</label>
+          <input type="text" id="factura-texto" placeholder="Empresa que factura...">
+        </div>
+        <button class="btn btn-secondary" style="width:100%;margin-top:4px;font-size:11px" onclick="guardarPago()">💳 Guardar Pago</button>
+      </div>
+
+      <!-- SEZIONE INCIDENCIAS (visibile solo da ADJUDICADA) -->
+      <div id="sec-incidencias" style="display:none;flex-shrink:0;border-top:1px solid var(--border);margin-top:10px;padding-top:10px">
+        <div class="pr-sec-t" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+          <span>Imprevistos / Incidencias</span>
+          <button onclick="abrirModal('modal-incidencia')" style="background:rgba(245,158,11,.12);border:1px solid #92400E;color:#F59E0B;border-radius:5px;padding:3px 8px;font-size:10px;font-weight:600;cursor:pointer">+ Registrar</button>
+        </div>
+        <div class="inc-list" id="inc-list"><div class="inc-empty">Sin incidencias registradas</div></div>
+      </div>
+
+      <!-- BREAK-EVEN PANEL -->
+      <div class="be-panel" id="be-panel" style="flex-shrink:0">
+        <div class="be-title">Break-Even del Evento</div>
+        <div class="be-grid">
+          <div class="be-kpi">
+            <div class="be-kpi-val" id="be-min-val">—</div>
+            <div class="be-kpi-lbl">Personas mínimas</div>
+          </div>
+          <div class="be-kpi">
+            <div class="be-kpi-val" id="be-actual-val">—</div>
+            <div class="be-kpi-lbl">Personas cotizadas</div>
+          </div>
+        </div>
+        <div class="be-bar-wrap"><div class="be-bar-fill" id="be-bar" style="width:0%"></div></div>
+        <div class="be-hint" id="be-hint">Agrega productos para calcular el punto de equilibrio</div>
+      </div>
+
     </div>
   </div>
 
@@ -362,6 +489,16 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
     <div class="fg"><label>Dirección</label><input type="text" id="nc-dir"></div>
     <div class="fr">
       <div class="fg"><label>Empresa Grupo</label><select id="nc-grupo"><option value="PINSA">PINSA</option><option value="EXO">EXO</option><option value="BKS">BKS</option></select></div>
+      <div class="fg"><label>Tipo Cliente</label>
+        <select id="nc-tipo-cliente">
+          <option value="">Sin clasificar</option>
+          <option value="MARCA">Marca</option>
+          <option value="PRODUCTORA">Productora</option>
+          <option value="AGENCIA">Agencia</option>
+          <option value="EMPRESA">Empresa</option>
+          <option value="OTRO">Otro</option>
+        </select>
+      </div>
       <div class="fg"><label>VIP</label><select id="nc-vip"><option value="NO">No</option><option value="SI">Sí</option></select></div>
     </div>
     <div class="fg"><label>Notas</label><textarea id="nc-notas" rows="2"></textarea></div>
@@ -456,6 +593,65 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
     <div class="modal-act">
       <button class="btn btn-secondary" onclick="cerrarModal('modal-adjudicar')">Cancelar</button>
       <button class="btn" style="background:#1E3A5F;color:#60A5FA;border:1px solid #1D4ED8" onclick="confirmarAdjudicacion()">✓ Confirmar Adjudicación</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONTACTO -->
+<div class="modal-ov" id="modal-contacto">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-t">Contacto del Cliente</div>
+    <input type="hidden" id="ctt-id-edit">
+    <div class="fr">
+      <div class="fg"><label>Nombre *</label><input type="text" id="ctt-nombre" placeholder="Nombre completo"></div>
+      <div class="fg"><label>Tipo</label>
+        <select id="ctt-tipo">
+          <option value="COMERCIAL">Comercial</option>
+          <option value="RRHH">RRHH</option>
+          <option value="MARKETING">Marketing</option>
+          <option value="ADMINISTRACION">Administración</option>
+          <option value="GERENCIA">Gerencia</option>
+          <option value="OTRO">Otro</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Email</label><input type="email" id="ctt-email" placeholder="email@empresa.com"></div>
+      <div class="fg"><label>Teléfono</label><input type="text" id="ctt-tel" placeholder="+56 9 XXXX XXXX"></div>
+    </div>
+    <div class="fg" style="display:flex;align-items:center;gap:8px;margin-top:4px">
+      <input type="checkbox" id="ctt-principal" style="width:auto;margin:0">
+      <label for="ctt-principal" style="text-transform:none;font-size:12px;color:var(--t2)">Contacto principal del cliente</label>
+    </div>
+    <div class="modal-act">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-contacto')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarContacto()">Guardar Contacto</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL INCIDENCIA -->
+<div class="modal-ov" id="modal-incidencia">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-t" style="color:#F59E0B">⚠ Registrar Incidencia</div>
+    <p style="font-size:11px;color:var(--t2);margin-bottom:12px">Registra cualquier imprevisto operativo, comercial o logístico del evento.</p>
+    <div class="fr">
+      <div class="fg"><label>Tipo *</label>
+        <select id="inc-tipo">
+          <option value="OPERATIVO">Operativo</option>
+          <option value="COMERCIAL">Comercial</option>
+          <option value="LOGISTICO">Logístico</option>
+          <option value="OTRO">Otro</option>
+        </select>
+      </div>
+      <div class="fg"><label>Impacto $ <span style="font-size:9px;color:var(--t3)">(- = costo extra)</span></label>
+        <input type="number" id="inc-impacto" placeholder="ej. -50000" step="1000">
+      </div>
+    </div>
+    <div class="fg"><label>Descripción *</label><textarea id="inc-desc-input" rows="3" placeholder="Describe el imprevisto..."></textarea></div>
+    <div class="modal-act">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-incidencia')">Cancelar</button>
+      <button class="btn" style="background:#451A03;color:#F59E0B;border:1px solid #92400E" onclick="guardarIncidencia()">⚠ Registrar</button>
     </div>
   </div>
 </div>
@@ -682,10 +878,7 @@ function actualizarPV(id,val,inputEl){
     inputEl.classList.remove('error','warn');
     l.pv_u=pvNew;
   }
-  /* Aggiorna Total PV in-place senza re-render — preserva il focus */
-  const pvTot=document.getElementById("pvt-"+id);
-  if(pvTot) pvTot.textContent=fmtCLP(l.q*l.pv_u);
-  updateResumenTotals();recalc();
+  renderResumen();recalc();
 }
 
 // ── RENDER RESUMEN ─────────────────────────────────
@@ -731,7 +924,7 @@ function lineaHTML(l){
     <div class="cot-name" title="${l.descripcion}">${l.descripcion}</div>
     <div><input class="cot-input" type="number" value="${l.q}" min="1" oninput="actualizarQ(${l.id},this.value,this)" style="width:100%"></div>
     <div style="text-align:right">
-      <input class="cot-input ${errClass}" type="number" value="${Math.round(l.pv_u)}" min="0" onchange="actualizarPV(${l.id},this.value,this)" onblur="actualizarPV(${l.id},this.value,this)" style="width:100%;text-align:right">
+      <input class="cot-input ${errClass}" type="number" value="${Math.round(l.pv_u)}" min="0" oninput="actualizarPV(${l.id},this.value,this)" style="width:100%;text-align:right">
       ${errClass==='error'?`<div class="pv-min-hint">mín: ${fmtCLP(pvMin)}</div>`:''}</div>
     <div class="cot-pv-total" id="pvt-${l.id}">${fmtCLP(l.q*l.pv_u)}</div>
     <div><button class="btn-del" onclick="eliminarLinea(${l.id})">✕</button></div>
@@ -826,6 +1019,7 @@ async function guardarNuevoCliente(){
         rut:document.getElementById('nc-rut').value,
         empresa_grupo:document.getElementById('nc-grupo').value,
         flag_vip:document.getElementById('nc-vip').value,
+        tipo_cliente:document.getElementById('nc-tipo-cliente')?.value||'',
         notas:document.getElementById('nc-notas').value}})});
     const d=await r.json();
     if(d.ok){
@@ -899,6 +1093,15 @@ async function cargarCotizacion(id, readOnly){
     document.getElementById('ubicacion').value=cot.ubicacion||'';
     document.getElementById('empresa-grupo').value=cot.empresa_grupo||'PINSA';
     document.getElementById('notas').value=cot.notas||'';
+    // ── Campi v3 ──
+    const nOCEl=document.getElementById('n-oc-cliente');
+    if(nOCEl) nOCEl.value=cot.n_oc_cliente||'';
+    const fechaOCEl=document.getElementById('fecha-oc-campo');
+    if(fechaOCEl) fechaOCEl.value=cot.fecha_oc||'';
+    // Mostra sezioni adjudicada
+    mostrarSeccionesAdjudicada(cot.estado||'');
+    // Carica dati pago
+    cargarDatosPago(cot);
     if(cot.creado_por){
       const sel=document.getElementById('creado-por');
       let found=false;
@@ -911,6 +1114,9 @@ async function cargarCotizacion(id, readOnly){
     document.getElementById('cli-sel-name').textContent=cot.cliente_nombre;
     document.getElementById('cli-sel').style.display='flex';
     document.getElementById('cli-info').style.display='none';
+    // v3: carica contactos
+    if(cot.id_cliente){ document.getElementById('sec-contactos').style.display=''; cargarContactosCliente(cot.id_cliente); }
+    if(cot.id_contacto) CTT_SEL_ID=cot.id_contacto;
 
     /* Popola linee */
     LINEAS=lineas.map((l,i)=>({id:Date.now()+i,tipo:l.tipo,id_ref:l.id_ref,descripcion:l.descripcion,q:l.q,costo_u:l.costo_u,pv_u:l.pv_u}));
@@ -1052,6 +1258,8 @@ async function guardarCotizacion(){
       notas:document.getElementById('notas').value,
       motivo_margen_especial:motivo,
       creado_por:document.getElementById('creado-por').value||'GC',
+      n_oc_cliente:document.getElementById('n-oc-cliente')?.value||'',
+      id_contacto:CTT_SEL_ID||'',
       lineas:LINEAS.map(l=>({tipo:l.tipo,id_ref:l.id_ref,descripcion:l.descripcion,q:l.q,costo_u:l.costo_u,pv_u:l.pv_u}))
     };
     /* Se COT_ID esiste → aggiorna, altrimenti crea nuovo */
@@ -1139,6 +1347,14 @@ async function confirmarAdjudicacion(){
       document.getElementById('cot-badge').style.background='var(--green-dim)';
       document.getElementById('cot-badge').style.color='var(--green)';
       document.getElementById('btn-adjudicar').style.display='none';
+      /* Sync campo OC sempre visibile */
+      const nOCEl=document.getElementById('n-oc-cliente');
+      if(nOCEl) nOCEl.value=oc;
+      const fechaOCEl=document.getElementById('fecha-oc-campo');
+      if(fechaOCEl){ fechaOCEl.value=fecha; document.getElementById('fg-fecha-oc').style.display=''; }
+      /* Mostra sezioni v3 */
+      mostrarSeccionesAdjudicada('ADJUDICADA');
+      cargarIncidencias(COT_ID);
       /* Genera PDF Operativo automaticamente */
       setTimeout(()=>generarPDFOperativo(), 400);
     } else { showToast('Error: '+(d.error||'?'),'err'); }
@@ -1304,8 +1520,9 @@ function generarPDFOperativo(){
 function resetForm(){
   if(LINEAS.length&&!confirm('¿Nueva cotización? Se perderán los datos.'))return;
   LINEAS=[];COT_ID=null;CLI_SEL=null;
+  CONTACTOS_CLI=[];CTT_SEL_ID='';INCIDENCIAS_COT=[];
   renderResumen();recalc();limpiarCliente();
-  ['tipo-evento','n-personas','fecha-evento','ubicacion','notas','creado-por','motivo-alerta','motivo-bloqueo'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
+  ['tipo-evento','n-personas','fecha-evento','ubicacion','notas','creado-por','motivo-alerta','motivo-bloqueo','n-oc-cliente','fecha-oc-campo'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('cot-badge').textContent='Nueva';
   document.getElementById('cot-badge').className='badge badge-new';
   document.getElementById('btn-pdf-c').disabled=true;
@@ -1314,6 +1531,13 @@ function resetForm(){
   document.getElementById('btn-perder').style.display='none';
   document.getElementById('btn-guardar').disabled=false;
   document.getElementById('btn-guardar').innerHTML='💾 Guardar';
+  // Reset sezioni v3
+  mostrarSeccionesAdjudicada('CREADA');
+  const secCtt=document.getElementById('sec-contactos');
+  if(secCtt) secCtt.style.display='none';
+  const incList=document.getElementById('inc-list');
+  if(incList) incList.innerHTML='<div class="inc-empty">Sin incidencias registradas</div>';
+  calcBreakEven();
   /* Rimuovi ?id= dall URL senza ricaricare la pagina */
   if(window.history.replaceState) window.history.replaceState({},'',window.location.pathname);
 }
@@ -1436,6 +1660,386 @@ function parseCsv(txt){
     r.push(cur.trim());return r;
   });
 }
+
+// ══════════════════════════════════════════════════════════════
+// NUOVE FUNZIONALITÀ v3
+// ══════════════════════════════════════════════════════════════
+
+// ── STATO GLOBALE v3 ──────────────────────────────────────────
+let CONTACTOS_CLI = [];   // contatti del cliente selezionato
+let CTT_SEL_ID = '';      // ID contatto selezionato come principale per l'evento
+let INCIDENCIAS_COT = []; // incidencias della cotizacion aperta
+
+// ── CONTACTOS ─────────────────────────────────────────────────
+async function cargarContactosCliente(id_cliente){
+  if(!id_cliente){ renderContactos([]); return; }
+  try{
+    const r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'getContactosByCliente',payload:{id_cliente}})});
+    const d=await r.json();
+    CONTACTOS_CLI = d.ok ? (d.contactos||[]) : [];
+    renderContactos(CONTACTOS_CLI);
+  }catch(e){ CONTACTOS_CLI=[]; renderContactos([]); }
+}
+
+function renderContactos(list){
+  const sec = document.getElementById('sec-contactos');
+  const wrap = document.getElementById('ctt-list');
+  if(!wrap) return;
+  // Mostra sezione solo se c'è un cliente selezionato
+  sec.style.display = CLI_SEL?.id_cliente ? '' : 'none';
+  if(!list.length){
+    wrap.innerHTML='<div class="inc-empty">Sin contactos — agrega el primero</div>';
+    return;
+  }
+  wrap.innerHTML = list.map(c=>`
+    <div class="ctt-item" onclick="selContacto('${c.id_contacto}')" style="cursor:pointer;${CTT_SEL_ID===c.id_contacto?'border-color:var(--fu-soft);background:var(--fu-dim)':''}">
+      <span class="ctt-item-star">${c.es_principal==='SI'?'★':'☆'}</span>
+      <div class="ctt-item-info">
+        <div class="ctt-item-name">${c.nombre}${CTT_SEL_ID===c.id_contacto?' <span style="font-size:9px;color:var(--fu-soft)">(evento)</span>':''}</div>
+        <div class="ctt-item-tipo">${c.tipo}${c.email?' · '+c.email:''}${c.telefono?' · '+c.telefono:''}</div>
+      </div>
+      <button class="ctt-item-del" onclick="event.stopPropagation();editarContacto('${c.id_contacto}')" title="Editar">✎</button>
+    </div>`).join('');
+}
+
+function selContacto(id){
+  CTT_SEL_ID = CTT_SEL_ID===id ? '' : id; // toggle
+  renderContactos(CONTACTOS_CLI);
+}
+
+function editarContacto(id){
+  const c = CONTACTOS_CLI.find(x=>x.id_contacto===id);
+  if(!c) return;
+  document.getElementById('ctt-id-edit').value = c.id_contacto;
+  document.getElementById('ctt-nombre').value = c.nombre;
+  document.getElementById('ctt-tipo').value = c.tipo||'OTRO';
+  document.getElementById('ctt-email').value = c.email||'';
+  document.getElementById('ctt-tel').value = c.telefono||'';
+  document.getElementById('ctt-principal').checked = c.es_principal==='SI';
+  abrirModal('modal-contacto');
+}
+
+function abrirModalContacto(){
+  document.getElementById('ctt-id-edit').value='';
+  document.getElementById('ctt-nombre').value='';
+  document.getElementById('ctt-tipo').value='COMERCIAL';
+  document.getElementById('ctt-email').value='';
+  document.getElementById('ctt-tel').value='';
+  document.getElementById('ctt-principal').checked=false;
+  abrirModal('modal-contacto');
+}
+
+async function guardarContacto(){
+  const nombre = document.getElementById('ctt-nombre').value.trim();
+  if(!nombre){ showToast('Nombre obligatorio','err'); return; }
+  if(!CLI_SEL?.id_cliente){ showToast('Selecciona un cliente primero','err'); return; }
+  const payload={
+    id_contacto: document.getElementById('ctt-id-edit').value||undefined,
+    id_cliente: CLI_SEL.id_cliente,
+    nombre,
+    tipo: document.getElementById('ctt-tipo').value,
+    email: document.getElementById('ctt-email').value.trim(),
+    telefono: document.getElementById('ctt-tel').value.trim(),
+    es_principal: document.getElementById('ctt-principal').checked ? 'SI' : 'NO'
+  };
+  try{
+    const r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'saveContacto',payload})});
+    const d=await r.json();
+    if(d.ok){
+      showToast('✓ Contacto guardado','ok');
+      cerrarModal('modal-contacto');
+      await cargarContactosCliente(CLI_SEL.id_cliente);
+    }else{ showToast('Error: '+(d.error||'?'),'err'); }
+  }catch(e){ showToast('Error conexión','err'); }
+}
+
+// ── PAGO ──────────────────────────────────────────────────────
+function toggleMontoParcial(val){
+  document.getElementById('fg-monto-pagado').style.display = val==='PAGO_PARCIAL' ? '' : 'none';
+}
+function toggleFacturaTexto(val){
+  document.getElementById('fg-factura-texto').style.display = val==='OTRO' ? '' : 'none';
+}
+function mostrarSeccionPago(estado){
+  const visible = ['ADJUDICADA','REALIZADA'].includes(estado);
+  const sec = document.getElementById('sec-pago');
+  if(sec) sec.style.display = visible ? '' : 'none';
+}
+async function guardarPago(){
+  if(!COT_ID){ showToast('Guarda la cotización primero','err'); return; }
+  const payload={
+    id_cot: COT_ID,
+    estado_pago: document.getElementById('estado-pago').value,
+    monto_pagado: limpiarNum(document.getElementById('monto-pagado').value)||0,
+    n_factura: document.getElementById('n-factura').value.trim(),
+    empresa_factura: document.getElementById('empresa-factura').value,
+    factura_texto: document.getElementById('factura-texto').value.trim(),
+    id_contacto: CTT_SEL_ID||''
+  };
+  try{
+    const r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'updatePago',payload})});
+    const d=await r.json();
+    if(d.ok) showToast('✓ Pago actualizado','ok');
+    else showToast('Error: '+(d.error||'?'),'err');
+  }catch(e){ showToast('Error conexión','err'); }
+}
+function cargarDatosPago(cot){
+  if(!cot) return;
+  const ep=document.getElementById('estado-pago');
+  if(ep){ ep.value=cot.estado_pago||'NO_PAGADO'; toggleMontoParcial(ep.value); }
+  const mp=document.getElementById('monto-pagado');
+  if(mp) mp.value=cot.monto_pagado||'';
+  const nf=document.getElementById('n-factura');
+  if(nf) nf.value=cot.n_factura||'';
+  const ef=document.getElementById('empresa-factura');
+  if(ef){ ef.value=cot.empresa_factura||''; toggleFacturaTexto(ef.value); }
+  const ft=document.getElementById('factura-texto');
+  if(ft) ft.value=cot.factura_texto||'';
+  if(cot.id_contacto) CTT_SEL_ID=cot.id_contacto;
+}
+
+// ── INCIDENCIAS ───────────────────────────────────────────────
+async function cargarIncidencias(id_cot){
+  if(!id_cot) return;
+  try{
+    const r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'getIncidencias',payload:{id_cot}})});
+    const d=await r.json();
+    INCIDENCIAS_COT = d.ok ? (d.incidencias||[]) : [];
+    renderIncidencias(INCIDENCIAS_COT);
+  }catch(e){ INCIDENCIAS_COT=[]; }
+}
+function renderIncidencias(list){
+  const wrap=document.getElementById('inc-list');
+  if(!wrap) return;
+  if(!list.length){
+    wrap.innerHTML='<div class="inc-empty">Sin incidencias registradas</div>';
+    return;
+  }
+  const totalImpacto = list.reduce((s,i)=>s+(parseFloat(i.impacto_$)||0),0);
+  wrap.innerHTML = list.map(i=>{
+    const imp=parseFloat(i.impacto_$)||0;
+    const cls=imp<0?'neg':imp>0?'pos':'';
+    const impStr=imp!==0?(imp<0?'-':'+')+'$'+Math.abs(imp).toLocaleString('es-CL'):'$0';
+    return `<div class="inc-item">
+      <div class="inc-item-header">
+        <span class="inc-tipo ${i.tipo}">${i.tipo}</span>
+        <span class="inc-impacto ${cls}">${impStr}</span>
+      </div>
+      <div class="inc-desc">${i.descripcion}</div>
+      <div class="inc-meta">${i.fecha} · ${i.registrado_por}</div>
+    </div>`;
+  }).join('') + (list.length>1?`<div style="font-size:10px;color:var(--t3);text-align:right;padding:3px 0">Total impacto: <b style="color:${totalImpacto<0?'var(--red)':'var(--green)'}">$${totalImpacto.toLocaleString('es-CL')}</b></div>`:'');
+}
+function mostrarSeccionIncidencias(estado){
+  const visible=['ADJUDICADA','REALIZADA'].includes(estado);
+  const sec=document.getElementById('sec-incidencias');
+  if(sec) sec.style.display=visible?'':'none';
+}
+async function guardarIncidencia(){
+  if(!COT_ID){ showToast('Solo en cotizaciones guardadas','err'); return; }
+  const desc=document.getElementById('inc-desc-input').value.trim();
+  if(!desc){ showToast('Descripción obligatoria','err'); return; }
+  const gcSel=document.getElementById('creado-por');
+  const payload={
+    id_cot:COT_ID,
+    tipo:document.getElementById('inc-tipo').value,
+    descripcion:desc,
+    impacto_$:document.getElementById('inc-impacto').value||0,
+    registrado_por:gcSel?.value||'GC'
+  };
+  try{
+    const r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'saveIncidencia',payload})});
+    const d=await r.json();
+    if(d.ok){
+      showToast('⚠ Incidencia registrada','ok');
+      cerrarModal('modal-incidencia');
+      document.getElementById('inc-desc-input').value='';
+      document.getElementById('inc-impacto').value='';
+      await cargarIncidencias(COT_ID);
+    }else{ showToast('Error: '+(d.error||'?'),'err'); }
+  }catch(e){ showToast('Error conexión','err'); }
+}
+
+// ── BREAK-EVEN ────────────────────────────────────────────────
+// Fórmula: personas_min = CostoFijo_EXTRA / (PV_persona_PINSA - CostoVar_persona_PINSA)
+// CostoFijo = suma costos EXTRA
+// PV_persona_PINSA = TotalPV_PINSA / N_personas  (si N_personas > 0)
+// CostoVar_persona_PINSA = TotalCosto_PINSA / N_personas
+function calcBreakEven(){
+  const nPersonas = parseInt(document.getElementById('n-personas')?.value)||0;
+  const lineasPinsa = LINEAS.filter(l=>l.tipo==='RECETA'||l.tipo==='PINSA');
+  const lineasExtra = LINEAS.filter(l=>l.tipo==='EXTRA');
+
+  const pvPinsa    = lineasPinsa.reduce((s,l)=>s+(l.pv_u*l.q),0);
+  const costoPinsa = lineasPinsa.reduce((s,l)=>s+(l.costo_u*l.q),0);
+  const costoExtra = lineasExtra.reduce((s,l)=>s+(l.costo_u*l.q),0);
+
+  const beMin  = document.getElementById('be-min-val');
+  const beAct  = document.getElementById('be-actual-val');
+  const beBar  = document.getElementById('be-bar');
+  const beHint = document.getElementById('be-hint');
+  if(!beMin) return;
+
+  beAct.textContent = nPersonas > 0 ? nPersonas : '—';
+
+  if(nPersonas<=0 || pvPinsa===0){
+    beMin.textContent='—'; beMin.className='be-kpi-val';
+    if(beBar) beBar.style.width='0%';
+    if(beHint) beHint.textContent='Agrega productos y personas para ver el break-even';
+    return;
+  }
+
+  const pvUnit   = pvPinsa / nPersonas;
+  const costoUnit= costoPinsa / nPersonas;
+  const margenUnit= pvUnit - costoUnit;
+
+  if(margenUnit<=0 || costoExtra===0){
+    beMin.textContent='—'; beMin.className='be-kpi-val';
+    if(beHint) beHint.textContent = costoExtra===0 ? 'Sin extras — no hay costo fijo de evento' : '⚠ Margen PINSA negativo: revisa precios';
+    return;
+  }
+
+  const personasMin = Math.ceil(costoExtra / margenUnit);
+  beMin.textContent = personasMin;
+
+  const ratio = Math.min(nPersonas / personasMin, 2); // cap a 2x
+  const pct   = Math.min(ratio * 50, 100); // 100% = 2x el mínimo
+  const ok    = nPersonas >= personasMin;
+  const warn  = nPersonas >= personasMin * 0.8;
+
+  beMin.className = 'be-kpi-val ' + (ok ? 'ok' : warn ? 'warn' : 'bad');
+  beAct.className = 'be-kpi-val ' + (ok ? 'ok' : warn ? 'warn' : 'bad');
+  if(beBar){
+    beBar.style.width = pct+'%';
+    beBar.className = 'be-bar-fill ' + (ok ? '' : warn ? 'warn' : 'bad');
+  }
+  if(beHint){
+    if(ok) beHint.textContent = `✓ El evento cubre costos con ${nPersonas-personasMin} personas de margen`;
+    else   beHint.textContent = `⚠ Necesitas ${personasMin-nPersonas} personas más para cubrir extras`;
+  }
+}
+
+// ── HOOK: aggiorna break-even ad ogni recalc ──────────────────
+// Wrappa il recalc esistente per aggiungere calcBreakEven
+const _recalcOrig = typeof recalc === 'function' ? recalc : null;
+// Override recalc aggiungendo calcBreakEven
+const _recalcBase = window.recalc;
+window.recalcWithBE = function(){
+  if(typeof _recalcBase==='function') _recalcBase();
+  calcBreakEven();
+};
+
+// ── PATCH: aggiorna sezioni v3 quando si carica cotizacion ───
+// Intercettiamo post-caricamento cotizacion esistente
+const _origCargarCotizacion = window.cargarCotizacion;
+
+// ── PATCH mostrarSecciones: chiamata dopo guardar/adjudicar ───
+function mostrarSeccionesAdjudicada(estado){
+  mostrarSeccionPago(estado);
+  mostrarSeccionIncidencias(estado);
+  // Mostra campo fecha OC se adjudicada
+  const fgFechaOC = document.getElementById('fg-fecha-oc');
+  if(fgFechaOC) fgFechaOC.style.display = estado==='ADJUDICADA'||estado==='REALIZADA' ? '' : 'none';
+}
+
+// ── PATCH selezionaCliente: carica contactos quando si sceglie ─
+// Wrappa selCliente per aggiungere carico contactos
+function selClienteConContactos(cli){
+  // chiama la funzione originale se esiste
+  if(typeof window._selCliOrig === 'function') window._selCliOrig(cli);
+  if(cli?.id_cliente){
+    document.getElementById('sec-contactos').style.display='';
+    cargarContactosCliente(cli.id_cliente);
+  }
+}
+
+// Patch limpiarCliente per nascondere sezione contactos
+const _limpiarClienteOrig = window.limpiarCliente;
+window.limpiarClienteV3 = function(){
+  if(typeof _limpiarClienteOrig==='function') _limpiarClienteOrig();
+  CONTACTOS_CLI=[];
+  CTT_SEL_ID='';
+  const sec=document.getElementById('sec-contactos');
+  if(sec) sec.style.display='none';
+};
+
+// ── INIT v3: agganciamo tutto al boot ─────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  // Override recalc per includere break-even
+  if(typeof recalc==='function'){
+    const origRecalc=recalc;
+    window.recalc=function(){
+      origRecalc();
+      calcBreakEven();
+    };
+  }
+
+  // Override selCliente per includere carico contactos
+  if(typeof selCliente==='function'){
+    const origSel=selCliente;
+    window._selCliOrig=origSel;
+    window.selCliente=function(cli){
+      origSel(cli);
+      if(cli?.id_cliente){
+        document.getElementById('sec-contactos').style.display='';
+        cargarContactosCliente(cli.id_cliente);
+      }
+    };
+  }
+
+  // Override limpiarCliente
+  if(typeof limpiarCliente==='function'){
+    const origLimp=limpiarCliente;
+    window.limpiarCliente=function(){
+      origLimp();
+      CONTACTOS_CLI=[];
+      CTT_SEL_ID='';
+      const sec=document.getElementById('sec-contactos');
+      if(sec) sec.style.display='none';
+    };
+  }
+
+  // Carica incidencias e dati pago se cotizacion in modalità edit
+  // (viene eseguito dopo cargarCotizacion che setta COT_ID)
+  if(typeof cargarCotizacion==='function'){
+    const origCargar=cargarCotizacion;
+    window.cargarCotizacion=async function(id,readOnly){
+      await origCargar(id,readOnly);
+      // Post-hook v3
+      if(COT_ID){
+        await cargarIncidencias(COT_ID);
+        await cargarContactosCliente(CLI_SEL?.id_cliente||'');
+        // Determina stato per mostrare sezioni
+        // Lo stato è già nel badge o nella variabile globale
+        // usiamo COT_ID come proxy — le sezioni le attiviamo
+        // in base allo stato caricato
+      }
+    };
+  }
+
+  // Sync O/C da modal adjudicar verso campo sempre visibile (e viceversa)
+  const adjOC = document.getElementById('adj-oc');
+  const nOCField = document.getElementById('n-oc-cliente');
+  if(adjOC && nOCField){
+    // Quando si apre modal adjudicar, pre-popola da campo OC visibile
+    const origAprirAdj = window.abrirModalAdjudicar;
+    if(typeof origAprirAdj==='function'){
+      window.abrirModalAdjudicar=function(){
+        if(nOCField.value) adjOC.value=nOCField.value;
+        origAprirAdj();
+      };
+    }
+  }
+
+  // n-personas change → ricalcola break-even
+  const nPers=document.getElementById('n-personas');
+  if(nPers) nPers.addEventListener('input',()=>setTimeout(calcBreakEven,100));
+});
 </script>
 </body>
 </html>
