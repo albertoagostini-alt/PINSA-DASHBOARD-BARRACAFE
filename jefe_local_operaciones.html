@@ -2504,16 +2504,30 @@ function cteoFiltrar(q) {
           <span style="font-size:13px;color:var(--t3);min-width:24px">${utm}</span>
         </div>` : ''}`;
     } else {
-      const curU = isDone ? data.raw : '';
+      const curU  = isDone ? data.rawUO : '';
+      const curBO = isDone ? (data.rawBO || '') : '';
       inputHtml = `<div style="display:flex;gap:8px;align-items:center;margin:10px 0 8px">
         <input type="number" id="cteo-input-${sku}" value="${curU}" placeholder="0"
           min="0" step="1" inputmode="decimal"
-          oninput="cteoSetSellado('${sku}',this.value)"
+          oninput="cteoSetSellado('${sku}',this.value,document.getElementById('cteo-bo-${sku}')?.value||0)"
           style="flex:1;padding:10px;font-size:20px;font-weight:600;text-align:center;
           background:var(--bg3);border:1px solid var(--border2);border-radius:6px;
           color:var(--t1);font-family:var(--mono);outline:none">
         <span style="font-size:13px;color:var(--t3);min-width:50px">${descUO||'UO'}</span>
-      </div>`;
+      </div>
+      ${bo.activo ? `
+        <div style="font-size:11px;color:var(--amber);margin-bottom:4px">
+          + ${bo.descBO} sueltos · Factor: ${bo.factorBO} ${utm}
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+          <input type="number" id="cteo-bo-${sku}" value="${curBO}" placeholder="0"
+            min="0" step="1" inputmode="decimal"
+            oninput="cteoSetSellado('${sku}',document.getElementById('cteo-input-${sku}')?.value||0,this.value)"
+            style="flex:1;padding:10px;font-size:20px;font-weight:600;text-align:center;
+            background:var(--bg3);border:1px solid rgba(212,134,10,0.3);border-radius:6px;
+            color:var(--amber);font-family:var(--mono);outline:none">
+          <span style="font-size:13px;color:var(--t3);min-width:50px">${bo.descBO}</span>
+        </div>` : ''}`;
     }
 
     // Confirmación si ya contado
@@ -2624,14 +2638,25 @@ function cteoSetPeso(sku, valUO, valBO) {
   cteoUpdateConfirm(sku, uo, grUO > 0 || grBO > 0, boAbierto);
 }
 
-function cteoSetSellado(sku, val) {
-  const u = parseFloat(val) || 0;
-  if (u > 0) {
-    STATE.conteoInputs[sku] = { rawUO: u, rawBO: 0, uo: u };
+function cteoSetSellado(sku, valUO, valBO) {
+  const uPack = parseFloat(valUO) || 0;
+  const uBO   = parseFloat(valBO) || 0;
+  const bo    = cteoGetBO(sku);
+  const factor = cteoGetFactor(sku); // UTM per UO (es. 12 per Pack 12 un.)
+
+  // UO totale = (Pack completi × factor + BO sueltos) / factor
+  const utmTot = (uPack * factor) + (uBO * (bo.activo ? bo.factorBO : 0));
+  const uo = factor > 0 ? utmTot / factor : uPack;
+
+  const boAbierto = bo.activo && uBO > 0 && bo.factorBO > 0 &&
+                    (Math.abs(uBO % bo.factorBO) > 0.01);
+
+  if (uPack > 0 || uBO > 0) {
+    STATE.conteoInputs[sku] = { rawUO: uPack, rawBO: uBO, uo };
   } else {
     delete STATE.conteoInputs[sku];
   }
-  cteoUpdateConfirm(sku, u, u > 0, false);
+  cteoUpdateConfirm(sku, uo, uPack > 0 || uBO > 0, boAbierto);
 }
 
 function cteoUpdateConfirm(sku, uo, hasVal, boAbierto) {
