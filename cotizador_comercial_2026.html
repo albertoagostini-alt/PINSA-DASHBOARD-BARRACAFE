@@ -704,7 +704,7 @@ async function cargarGAS(){
     const d=JSON.parse(txt);
     if(d.ok){
       CLIENTES_BD=d.clientes||[];
-      EXTRAS_BD=(d.extras||[]).filter(e=>e.Activo==='SI');
+      EXTRAS_BD=(d.extras||[]).filter(e=>e.activo!=='NO');
       if(d.params){
         MARGEN_MIN_ABS=parseFloat(d.params.margen_alerta_pct_linea||d.params.margen_alerta_pct||20);
         MARGEN_BLOQUEO=parseFloat(d.params.margen_minimo_absoluto_pct||25);
@@ -775,9 +775,9 @@ function renderExtList(){
   const el=document.getElementById('ext-list');
   if(!EXTRAS_BD.length){el.innerHTML='<div class="cat-empty">Sin extras guardados aún</div>';return;}
   el.innerHTML=EXTRAS_BD.map(e=>`
-    <div class="ext-row" onclick="agregarExtraExistente('${esc(e.ID_Extra)}','${esc(e.Descripcion)}','${e.Costo_U||0}','${e.PV_U||0}')">
-      <div><div style="font-size:12px;font-weight:500;color:var(--t1)">${e.Descripcion}</div><div style="font-size:10px;color:var(--fu-soft)">${e.Categoria||''}</div></div>
-      <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--amber)">${fmtCLP(e.PV_U||0)}</div>
+    <div class="ext-row" onclick="agregarExtraExistente('${esc(e.id_extra)}','${esc(e.descripcion)}','${e.costo_u||0}','${e.pv_u||0}')">
+      <div><div style="font-size:12px;font-weight:500;color:var(--t1)">${e.descripcion}</div><div style="font-size:10px;color:var(--fu-soft)">${e.categoria||''}</div></div>
+      <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--amber)">${fmtCLP(e.pv_u||0)}</div>
     </div>`).join('');
 }
 
