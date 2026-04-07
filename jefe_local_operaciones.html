@@ -855,7 +855,7 @@
 <!-- ══════════════════════════════════════════════════════ -->
 <!-- MÓDULO 5 — CONTEO FÍSICO -->
 <!-- ══════════════════════════════════════════════════════ -->
-<div class="module" id="mod-conteo">
+<div class="module" id="mod-conteo" style="display:flex;flex-direction:column;height:calc(100vh - 110px);overflow:hidden">
 
   <!-- HEADER fijo -->
   <div style="padding:14px 0 10px;border-bottom:1px solid var(--border)">
@@ -895,10 +895,10 @@
   </div>
 
   <!-- Resumen estadístico (aparece al contar) -->
-  <div id="cteo-resumen" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0 0"></div>
+  <div id="cteo-resumen" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0;flex-shrink:0"></div>
 
-  <!-- Lista productos -->
-  <div id="cteo-list" style="padding-top:10px;padding-bottom:80px">
+  <!-- Lista productos — scroll interno -->
+  <div id="cteo-list" style="padding-top:10px;padding-bottom:16px;overflow-y:auto;flex:1;min-height:0">
     <div class="loading-card"><div class="spinner"></div></div>
   </div>
 
@@ -2444,8 +2444,12 @@ function cteoFiltrar(q) {
   document.getElementById('cteo-prog-bar').style.width = pct + '%';
   document.getElementById('btn-conteo-registrar').disabled = done.size === 0;
 
-  // Resumen stats
-  cteoRenderResumen(all);
+  // Resumen solo nel tab Contados
+  if (cteoTab === 'contados') {
+    cteoRenderResumen(all);
+  } else {
+    document.getElementById('cteo-resumen').style.display = 'none';
+  }
 
   const el = document.getElementById('cteo-list');
   if (!items.length) {
@@ -2627,7 +2631,9 @@ function cteoRenderResumen(all) {
 
 function cteoSetNivel(sku, pct) {
   STATE.conteoInputs[sku] = { rawUO: pct, rawBO: 0, uo: pct / 100 };
-  cteoFiltrar(document.getElementById('conteo-search').value || '');
+  // Va direttamente a tab Contados — l'operatore non vede la card, passa subito
+  cteoSetTab('contados');
+  cteoFiltrar('');
 }
 
 function cteoSetPeso(sku, valUO, valBO) {
