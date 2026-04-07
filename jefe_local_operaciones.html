@@ -120,6 +120,12 @@
   /* ── MODULE ── */
   .module { display: none; }
   .module.active { display: block; }
+  #mod-conteo.active { display: flex; }
+  /* Scrollbar invisibile ma funzionale */
+  #cteo-list::-webkit-scrollbar { display: none; }
+  #cteo-list { -ms-overflow-style: none; scrollbar-width: none; }
+  #sol-scroll::-webkit-scrollbar { display: none; }
+  #sol-scroll { -ms-overflow-style: none; scrollbar-width: none; }
   /* Eccezione: solicitud usa flex per il layout sticky+scroll interno */
   #mod-solicitud.active { display: flex; }
 
@@ -855,7 +861,7 @@
 <!-- ══════════════════════════════════════════════════════ -->
 <!-- MÓDULO 5 — CONTEO FÍSICO -->
 <!-- ══════════════════════════════════════════════════════ -->
-<div class="module" id="mod-conteo" style="display:flex;flex-direction:column;height:calc(100vh - 110px);overflow:hidden">
+<div class="module" id="mod-conteo" style="flex-direction:column;height:calc(100vh - 110px);overflow:hidden">
 
   <!-- HEADER fijo -->
   <div style="padding:14px 0 10px;border-bottom:1px solid var(--border)">
@@ -2550,18 +2556,33 @@ function cteoFiltrar(q) {
     if (isDone) {
       const uo = data.uo;
       const esFrac = (uo > 0) && (Math.abs(uo - Math.round(uo)) > 0.01);
-      confirmHtml = `
+      const boAb = cteoGetBO(sku);
+      const boAbierto = boAb.activo && data.rawBO > 0 && boAb.factorBO > 0 &&
+                        (Math.abs(data.rawBO % boAb.factorBO) > 0.01);
+      const alertaHtml = (boAbierto || esFrac) ?
+        `<div style="font-size:11px;color:var(--amber);background:rgba(212,134,10,0.1);
+          border:1px solid rgba(212,134,10,0.3);border-radius:6px;padding:6px 10px;margin-bottom:8px">
+          ⚠️ BO abierto — se reportará al JO</div>` : '';
+      const valorHtml = `
         <div style="background:rgba(15,110,86,0.1);border:1px solid var(--green2);border-radius:6px;
-          padding:8px 12px;margin:6px 0 10px;display:flex;justify-content:space-between;align-items:center">
+          padding:8px 12px;margin:6px 0 8px;display:flex;justify-content:space-between;align-items:center">
           <div style="font-size:12px;color:var(--green2)">✓ Contado</div>
-          <div style="font-size:16px;font-weight:700;color:var(--green2);font-family:var(--mono)">${uo.toFixed(2)} UO</div>
-        </div>
-        ${esFrac ? `<div style="font-size:11px;color:var(--amber);background:rgba(212,134,10,0.1);
-          border:1px solid rgba(212,134,10,0.3);border-radius:6px;padding:6px 10px;margin-bottom:10px">
-          ⚠️ UO fraccionada — se reportará al JO como BO abierto</div>` : ''}
-        <button onclick="cteoDeshacer('${sku}')"
-          style="width:100%;padding:7px;background:transparent;border:1px solid var(--border2);
-          border-radius:7px;color:var(--t3);font-size:12px;cursor:pointer">Deshacer</button>`;
+          <div style="font-size:16px;font-weight:700;color:var(--green2);font-family:var(--mono)">${uo.toFixed(3)} UO</div>
+        </div>`;
+      if (cteoTab === 'pendientes') {
+        // Pendientes: input + valore + bottone VERDE Confirmar
+        confirmHtml = valorHtml + alertaHtml +
+          `<button onclick="cteoConfirmar('${sku}')"
+            style="width:100%;padding:9px;background:var(--green2);border:none;
+            border-radius:7px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;margin-top:2px">
+            ✓ Confirmar y continuar →</button>`;
+      } else {
+        // Contados: solo valore + Deshacer (no input, no bottone verde)
+        confirmHtml = valorHtml + alertaHtml +
+          `<button onclick="cteoDeshacer('${sku}')"
+            style="width:100%;padding:7px;background:transparent;border:1px solid var(--border2);
+            border-radius:7px;color:var(--t3);font-size:12px;cursor:pointer">Deshacer</button>`;
+      }
     }
 
     const borderColor = isDone ? 'var(--green2)' : 'var(--border)';
@@ -2578,7 +2599,7 @@ function cteoFiltrar(q) {
         </div>
         <div style="margin-left:8px;flex-shrink:0">${metodoBadge}</div>
       </div>
-      ${inputHtml}
+      ${isDone && cteoTab === 'contados' ? '' : inputHtml}
       ${confirmHtml}
     </div>`;
   }).join('');
@@ -2629,11 +2650,16 @@ function cteoRenderResumen(all) {
     </div>`;
 }
 
-function cteoSetNivel(sku, pct) {
-  STATE.conteoInputs[sku] = { rawUO: pct, rawBO: 0, uo: pct / 100 };
-  // Va direttamente a tab Contados — l'operatore non vede la card, passa subito
+function cteoConfirmar(sku) {
+  // Sposta il prodotto a tab Contados e mostra il prossimo pendiente
   cteoSetTab('contados');
   cteoFiltrar('');
+}
+
+function cteoSetNivel(sku, pct) {
+  STATE.conteoInputs[sku] = { rawUO: pct, rawBO: 0, uo: pct / 100 };
+  // Rimane in Pendientes — mostra la card con il valore selezionato per conferma visiva
+  cteoFiltrar(document.getElementById('conteo-search').value || '');
 }
 
 function cteoSetPeso(sku, valUO, valBO) {
