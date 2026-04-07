@@ -901,7 +901,7 @@
   </div>
 
   <!-- Resumen estadístico (aparece al contar) -->
-  <!-- Resumen mostrado solo nel modal post-registrar -->
+  <div id="cteo-resumen" style="display:none"></div>
 
   <!-- Lista productos — scroll interno -->
   <div id="cteo-list" style="padding-top:10px;padding-bottom:16px;overflow-y:auto;flex:1;min-height:0">
@@ -2451,7 +2451,7 @@ function cteoFiltrar(q) {
   document.getElementById('btn-conteo-registrar').disabled = done.size === 0;
 
   // Resumen nascosto sempre durante il conteo — appare solo nel modal post-registrar
-  document.getElementById('cteo-resumen').style.display = 'none';
+  const _res=document.getElementById('cteo-resumen'); if(_res) _res.style.display='none';
 
   const el = document.getElementById('cteo-list');
   if (!items.length) {
@@ -2604,7 +2604,7 @@ function cteoFiltrar(q) {
 function cteoRenderResumen(all) {
   const done = Object.keys(STATE.conteoInputs);
   if (done.length === 0) {
-    document.getElementById('cteo-resumen').style.display = 'none';
+    const _res=document.getElementById('cteo-resumen'); if(_res) _res.style.display='none';
     return;
   }
   let cuadrado = 0, inferior = 0, superior = 0, boAbiertos = 0;
@@ -2623,7 +2623,7 @@ function cteoRenderResumen(all) {
     if (boAbierto) boAbiertos++;
   });
   const pctError = done.length > 0 ? Math.round((inferior + superior) / done.length * 100) : 0;
-  const el = document.getElementById('cteo-resumen');
+  const el = document.getElementById('cteo-resumen'); if (!el) return;
   el.style.display = 'block';
   el.innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
