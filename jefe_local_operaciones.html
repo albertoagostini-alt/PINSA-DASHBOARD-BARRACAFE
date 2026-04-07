@@ -120,6 +120,16 @@
   /* ── MODULE ── */
   .module { display: none; }
   .module.active { display: block; }
+  #mod-conteo{
+    display:none;
+    flex-direction:column;
+    position:fixed;
+    top:94px; /* header 52 + nav 42 */
+    left:0; right:0; bottom:0;
+    background:var(--bg);
+    z-index:50;
+    overflow:hidden;
+  }
   #mod-conteo.active { display: flex; }
   /* Scrollbar invisibile ma funzionale */
   #cteo-list::-webkit-scrollbar { display: none; }
@@ -861,10 +871,10 @@
 <!-- ══════════════════════════════════════════════════════ -->
 <!-- MÓDULO 5 — CONTEO FÍSICO -->
 <!-- ══════════════════════════════════════════════════════ -->
-<div class="module" id="mod-conteo" style="flex-direction:column;height:calc(100vh - 110px);overflow:hidden">
+<div class="module" id="mod-conteo">
 
   <!-- HEADER fijo -->
-  <div style="padding:14px 0 10px;border-bottom:1px solid var(--border);flex-shrink:0">
+  <div class="sol-sticky">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <div>
         <div class="section-title" style="margin:0">Conteo Físico</div>
@@ -900,16 +910,13 @@
     </div>
   </div>
 
-  <!-- Resumen estadístico (aparece al contar) -->
-  <div id="cteo-resumen" style="display:none"></div>
-
   <!-- Lista productos — scroll interno -->
-  <div id="cteo-list" style="padding-top:10px;padding-bottom:16px;overflow-y:auto;flex:1;min-height:0">
+  <div id="cteo-list" style="padding:10px 16px 80px;overflow-y:auto;flex:1;min-height:0;max-width:680px;width:100%;margin:0 auto;box-sizing:border-box">
     <div class="loading-card"><div class="spinner"></div></div>
   </div>
 
   <!-- Botón registrar fijo abajo -->
-  <div style="position:sticky;bottom:0;background:var(--bg);padding:12px 0 4px;border-top:1px solid var(--border)">
+  <div style="position:sticky;bottom:0;background:var(--bg);padding:12px 16px 4px;border-top:1px solid var(--border)">
     <button class="btn btn-primary" id="btn-conteo-registrar" onclick="registrarConteo()" disabled>
       Registrar ajustes y enviar PDF
     </button>
@@ -1201,12 +1208,13 @@ function goTab(tab) {
   document.querySelectorAll('.nav-tab')[idx].classList.add('active');
   document.getElementById('mod-'+tab).classList.add('active');
   // Calcola top dinamico per mod-solicitud (header + nav reali)
-  if (tab === 'solicitud') {
+  if (tab === 'solicitud' || tab === 'conteo') {
     const hdr = document.querySelector('.header');
     const nav = document.querySelector('.nav-scroll');
     if (hdr && nav) {
       const top = hdr.offsetHeight + nav.offsetHeight;
-      document.getElementById('mod-solicitud').style.top = top + 'px';
+      if (tab === 'solicitud') document.getElementById('mod-solicitud').style.top = top + 'px';
+      if (tab === 'conteo')    document.getElementById('mod-conteo').style.top    = top + 'px';
     }
   }
 
@@ -2450,9 +2458,6 @@ function cteoFiltrar(q) {
   document.getElementById('cteo-prog-bar').style.width = pct + '%';
   document.getElementById('btn-conteo-registrar').disabled = done.size === 0;
 
-  // Resumen nascosto sempre durante il conteo — appare solo nel modal post-registrar
-  const _res=document.getElementById('cteo-resumen'); if(_res) _res.style.display='none';
-
   const el = document.getElementById('cteo-list');
   if (!items.length) {
     el.innerHTML = cteoTab === 'pendientes'
@@ -2547,7 +2552,7 @@ function cteoFiltrar(q) {
         </div>` : ''}`;
     }
 
-    // Confirmación si ya contado
+    // Confirmación — lógica según estado y tab
     let confirmHtml = '';
     if (isDone) {
       const uo = data.uo;
@@ -2566,19 +2571,26 @@ function cteoFiltrar(q) {
           <div style="font-size:16px;font-weight:700;color:var(--green2);font-family:var(--mono)">${uo.toFixed(3)} UO</div>
         </div>`;
       if (cteoTab === 'pendientes') {
-        // Pendientes: input + valore + bottone VERDE Confirmar
+        // isDone en Pendientes: muestra valor + alerta + botón Confirmar verde
         confirmHtml = valorHtml + alertaHtml +
           `<button onclick="cteoConfirmar('${sku}')"
             style="width:100%;padding:9px;background:var(--green2);border:none;
             border-radius:7px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;margin-top:2px">
             ✓ Confirmar y continuar →</button>`;
       } else {
-        // Contados: solo valore + Deshacer (no input, no bottone verde)
+        // Contados: valor + Deshacer
         confirmHtml = valorHtml + alertaHtml +
           `<button onclick="cteoDeshacer('${sku}')"
             style="width:100%;padding:7px;background:transparent;border:1px solid var(--border2);
             border-radius:7px;color:var(--t3);font-size:12px;cursor:pointer">Deshacer</button>`;
       }
+    } else if (cteoTab === 'pendientes') {
+      // !isDone en Pendientes: input visible + botón Confirmar gris (activo siempre)
+      confirmHtml =
+        `<button onclick="cteoConfirmarDesdeInput('${sku}')"
+          style="width:100%;padding:9px;background:var(--bg3);border:1px solid var(--border2);
+          border-radius:7px;color:var(--t2);font-size:13px;font-weight:600;cursor:pointer;margin-top:4px">
+          Confirmar →</button>`;
     }
 
     const borderColor = isDone ? 'var(--green2)' : 'var(--border)';
@@ -2602,48 +2614,7 @@ function cteoFiltrar(q) {
 }
 
 function cteoRenderResumen(all) {
-  const done = Object.keys(STATE.conteoInputs);
-  if (done.length === 0) {
-    const _res=document.getElementById('cteo-resumen'); if(_res) _res.style.display='none';
-    return;
-  }
-  let cuadrado = 0, inferior = 0, superior = 0, boAbiertos = 0;
-  done.forEach(sku => {
-    const r = all.find(x => String(x['SKU']||'') === sku);
-    if (!r) return;
-    const teorico = parseFloat(r['Stock Teorico UO']||0);
-    const uo = STATE.conteoInputs[sku].uo;
-    const bo = cteoGetBO(sku);
-    const delta = uo - teorico;
-    if (Math.abs(delta) < 0.01) cuadrado++;
-    else if (delta < 0) inferior++;
-    else superior++;
-    const boAbierto = bo.activo && STATE.conteoInputs[sku].rawBO > 0 && bo.factorBO > 0 &&
-                      (Math.abs(STATE.conteoInputs[sku].rawBO % bo.factorBO) > 0.01);
-    if (boAbierto) boAbiertos++;
-  });
-  const pctError = done.length > 0 ? Math.round((inferior + superior) / done.length * 100) : 0;
-  const el = document.getElementById('cteo-resumen'); if (!el) return;
-  el.style.display = 'block';
-  el.innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
-      <div style="background:rgba(15,110,86,0.1);border:1px solid var(--green2);border-radius:8px;padding:8px;text-align:center">
-        <div style="font-size:18px;font-weight:700;color:var(--green2);font-family:var(--mono)">${cuadrado}</div>
-        <div style="font-size:10px;color:var(--t3)">Cuadrado</div>
-      </div>
-      <div style="background:rgba(192,57,43,0.1);border:1px solid var(--red);border-radius:8px;padding:8px;text-align:center">
-        <div style="font-size:18px;font-weight:700;color:var(--red);font-family:var(--mono)">${inferior}</div>
-        <div style="font-size:10px;color:var(--t3)">Inferior</div>
-      </div>
-      <div style="background:rgba(74,111,165,0.1);border:1px solid var(--blue2);border-radius:8px;padding:8px;text-align:center">
-        <div style="font-size:18px;font-weight:700;color:var(--blue2);font-family:var(--mono)">${superior}</div>
-        <div style="font-size:10px;color:var(--t3)">Superior</div>
-      </div>
-    </div>
-    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--t3)">
-      <span>% error: <strong style="color:${pctError>15?'var(--red)':pctError>5?'var(--amber)':'var(--green2)'}">${pctError}%</strong></span>
-      ${boAbiertos > 0 ? `<span style="color:var(--amber)">⚠️ ${boAbiertos} BO abierto${boAbiertos>1?'s':''}</span>` : ''}
-    </div>`;
+  // Resumen inline eliminado — solo aparece el modal post-registrar (cteoMostrarResumen)
 }
 
 function cteoMostrarResumen(total, cuadrado, inferior, superior, pctErr, boCount) {
@@ -2685,6 +2656,29 @@ function cteoMostrarResumen(total, cuadrado, inferior, superior, pctErr, boCount
 
 function cteoConfirmar(sku) {
   // Sposta il prodotto a tab Contados e mostra il prossimo pendiente
+  cteoSetTab('contados');
+  cteoFiltrar('');
+}
+
+function cteoConfirmarDesdeInput(sku) {
+  // Confirmar desde botón cuando !isDone — lee el valor actual del input
+  // Si no hay valor ingresado, registra UO=0 (conteo a cero es válido)
+  const metodo = cteoGetMetodo(STATE.conteo.find(r => String(r['SKU']||'') === sku) || {});
+  if (metodo === 'nivel') {
+    // Para nivel: si no seleccionó nada, registrar 0%
+    if (STATE.conteoInputs[sku] === undefined) {
+      cteoSetNivel(sku, 0);
+    }
+  } else if (metodo === 'peso') {
+    const valUO = document.getElementById('cteo-input-' + sku)?.value || '0';
+    const valBO = document.getElementById('cteo-bo-'    + sku)?.value || '0';
+    cteoSetPeso(sku, valUO, valBO);
+  } else {
+    const valUO = document.getElementById('cteo-input-' + sku)?.value || '0';
+    const valBO = document.getElementById('cteo-bo-'    + sku)?.value || '0';
+    cteoSetSellado(sku, valUO, valBO);
+  }
+  // Dopo aver impostato, sposta a Contados
   cteoSetTab('contados');
   cteoFiltrar('');
 }
