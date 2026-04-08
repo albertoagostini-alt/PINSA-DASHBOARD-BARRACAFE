@@ -912,24 +912,26 @@
   <!-- Resumen estadístico eliminado — aparece solo en modal post-registrar -->
 
   <!-- Lista productos — scroll interno -->
-  <div id="cteo-list" style="padding:10px 16px 120px;overflow-y:auto;flex:1;min-height:0;max-width:680px;width:100%;margin:0 auto;box-sizing:border-box">
+  <div id="cteo-list" style="padding:10px 16px 100px;overflow-y:auto;flex:1;min-height:0;max-width:680px;width:100%;margin:0 auto;box-sizing:border-box">
     <div class="loading-card"><div class="spinner"></div></div>
   </div>
 
-  <!-- Botón Registrar — FAB fijo en la parte inferior -->
-  <div id="cteo-fab" style="display:none;position:absolute;bottom:0;left:0;right:0;
-    padding:12px 16px 20px;background:linear-gradient(transparent,var(--bg) 40%);
-    z-index:10;box-sizing:border-box">
-    <div style="max-width:680px;margin:0 auto">
-      <button onclick="registrarConteo()" id="cteo-registrar-btn"
-        style="width:100%;padding:14px;background:var(--accent);border:none;border-radius:10px;
-        color:#fff;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:0.3px;
-        box-shadow:0 4px 16px rgba(0,0,0,0.4)">
-        Registrar Ajuste Inventario
-      </button>
-    </div>
-  </div>
+</div>
 
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- FAB — Registrar Ajuste Inventario (fixed, global) -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="cteo-fab" style="display:none;position:fixed;bottom:0;left:0;right:0;
+  padding:12px 16px 20px;background:linear-gradient(transparent,var(--bg) 40%);
+  z-index:60;box-sizing:border-box;pointer-events:none">
+  <div style="max-width:680px;margin:0 auto;pointer-events:all">
+    <button onclick="registrarConteo()" id="cteo-registrar-btn"
+      style="width:100%;padding:14px;background:var(--accent);border:none;border-radius:10px;
+      color:#fff;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:0.3px;
+      box-shadow:0 4px 20px rgba(0,0,0,0.5)">
+      Registrar Ajuste Inventario
+    </button>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════ -->
@@ -1228,6 +1230,9 @@ function goTab(tab) {
   }
 
   STATE.tab = tab;
+  // FAB conteo — mostra solo nel tab conteo se ci sono prodotti contati
+  const fab = document.getElementById('cteo-fab');
+  if (fab) fab.style.display = (tab === 'conteo' && Object.keys(STATE.conteoInputs||{}).length > 0) ? 'block' : 'none';
   if (tab === 'solicitud')   renderSolicitud();
   if (tab === 'recepcion')   renderRecepcion();
   if (tab === 'conteo')      renderConteo();
@@ -2465,8 +2470,9 @@ function cteoFiltrar(q) {
   document.getElementById('cteo-prog-num').innerHTML = done.size + '/<span id="cteo-total-num">' + all.length + '</span>';
   const pct = all.length > 0 ? Math.round(done.size / all.length * 100) : 0;
   document.getElementById('cteo-prog-bar').style.width = pct + '%';
+  // FAB conteo — visibile solo nel tab conteo e solo se ci sono prodotti contati
   const fab = document.getElementById('cteo-fab');
-  if (fab) fab.style.display = done.size > 0 ? 'block' : 'none';
+  if (fab) fab.style.display = (done.size > 0 && STATE.tab === 'conteo') ? 'block' : 'none';
 
   const el = document.getElementById('cteo-list');
   if (!items.length) {
@@ -2710,7 +2716,7 @@ function cteoMostrarResumen(total, cuadrado, inferior, superior, pctErr, boCount
         <span style="color:var(--t3)">% error: <strong style="color:${pctColor}">${pctErr}%</strong></span>
         ${boCount > 0 ? `<span style="color:var(--amber)">⚠️ ${boCount} BO abierto${boCount>1?'s':''} reportado${boCount>1?'s':''}</span>` : '<span style="color:var(--green2)">✓ Sin BO abiertos</span>'}
       </div>
-      <button onclick="document.getElementById('cteo-modal-resumen').remove()"
+      <button onclick="document.getElementById('cteo-modal-resumen').remove(); cteoSetTab('pendientes');"
         style="width:100%;padding:12px;background:var(--accent);border:none;border-radius:8px;
         color:#fff;font-size:14px;font-weight:600;cursor:pointer">Cerrar</button>
     </div>`;
@@ -3028,9 +3034,10 @@ const EQUIPO_FB = [{"n": 'Francisco', "c": 'Jefe de Local', "p": '123456', "t": 
 let SESSION = null;
 
 (function initLogin() {
-  // Popola select dal fallback
+  // Popola select dal fallback — ordinato alfabeticamente
   const sel = document.getElementById('ls-nombre');
-  EQUIPO_FB.forEach(u => {
+  const sorted = [...EQUIPO_FB].sort((a,b) => a.n.localeCompare(b.n, 'es'));
+  sorted.forEach(u => {
     const o = document.createElement('option');
     o.value = u.n;
     o.textContent = u.n + ' · ' + u.c;
@@ -3047,6 +3054,8 @@ let SESSION = null;
       const fromCSV = rows.filter(r => (r['Local']||'').trim()==='Candelaria' && (r['Usuario']||'').trim() && (r['PWD']||'').trim())
         .map(r => ({n:(r['Usuario']||'').trim(), c:(r['Cargo']||'').trim(), p:(r['PWD']||'').trim(), t:parseInt(r['Tipo']||'9')}));
       if (!fromCSV.length) return;
+      // Ordina alfabeticamente anche dal CSV
+      fromCSV.sort((a,b) => a.n.localeCompare(b.n, 'es'));
       sel.innerHTML = '<option value="">— Selecciona tu nombre —</option>';
       fromCSV.forEach(u => {
         const o = document.createElement('option');
