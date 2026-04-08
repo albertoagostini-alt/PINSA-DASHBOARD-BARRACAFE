@@ -1154,7 +1154,7 @@ async function cargarCotizacion(id, readOnly){
     // Mostra sezioni adjudicada
     mostrarSeccionesAdjudicada(cot.estado||'');
     // Carica dati pago
-    cargarDatosPago(cot);
+    cargarDatosPago(cot, readOnly);
     if(cot.creado_por){
       const sel=document.getElementById('creado-por');
       let found=false;
@@ -1893,7 +1893,7 @@ async function guardarPago(){
     if(btn){ btn.disabled=false; btn.style.opacity=''; btn.textContent='💳 Guardar Pago'; }
   }
 }
-function cargarDatosPago(cot){
+function cargarDatosPago(cot, readOnly){
   if(!cot) return;
   const ep=document.getElementById('estado-pago');
   if(ep){ ep.value=cot.estado_pago||'NO_PAGADO'; toggleMontoParcial(ep.value); }
@@ -1903,6 +1903,19 @@ function cargarDatosPago(cot){
     mp.dataset.raw = raw;
     mp.value = '$'+parseInt(raw).toLocaleString('es-CL');
   }
+  // Solo in modalità VER: pre-compila il campo con il SALDO per facilitare il pagamento del saldo
+  setTimeout(()=>{
+    const estadoPago = document.getElementById('estado-pago')?.value;
+    if(readOnly && estadoPago === 'PAGO_PARCIAL'){
+      const totalEvento = LINEAS.reduce((s,l)=>s+(l.pv_u*l.q),0);
+      const rawPagado = parseInt(mp?.dataset?.raw||'0')||0;
+      const saldo = totalEvento - rawPagado;
+      if(saldo > 0 && mp){
+        mp.dataset.raw = String(Math.round(saldo));
+        mp.value = '$'+Math.round(saldo).toLocaleString('es-CL');
+      }
+    }
+  }, 300);
   const fp=document.getElementById('fecha-pago');
   if(fp) fp.value=cot.fecha_pago||'';
   const nf=document.getElementById('n-factura');
