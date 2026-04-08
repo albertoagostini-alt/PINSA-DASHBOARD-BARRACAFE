@@ -78,9 +78,9 @@ header{position:sticky;top:0;z-index:100;background:rgba(15,15,15,0.97);backdrop
 .sec-label::after{content:'';flex:1;height:1px;background:var(--b)}
 
 /* ===== KPI GRID ===== */
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:500px){.kpi-grid{grid-template-columns:1fr 1fr}}
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+@media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
 
 .kpi-card{background:var(--card);border:1px solid var(--b);border-radius:10px;padding:12px 16px;position:relative;overflow:hidden}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
@@ -319,6 +319,10 @@ footer{text-align:center;padding:28px 16px;color:var(--t3);font-size:10px;letter
     <div class="loading"><div class="spinner"></div></div>
   </div>
 
+  <!-- PAGOS PENDIENTES -->
+  <div class="sec-label" id="sec-pagos-label" style="display:none">Cobros Pendientes</div>
+  <div id="pagos-wrap" style="display:none"></div>
+
   <!-- HISTORIAL: ADJUDICADAS + PERDIDAS -->
   <div class="sec-label">Historial</div>
   <div id="historial-wrap">
@@ -472,6 +476,10 @@ function buildFromCSV(rows, cliMap){
     creado_por:     r[15]||'',
     version:        r[16]||'1',
     n_oc_cliente:   r[17]||'',
+    // Pago — col T=18(id_contacto) U=19(n_factura) V=20(empresa_factura) W=21(factura_texto) X=22(estado_pago) Y=23(monto_pagado) Z=24(fecha_pago)
+    estado_pago:    (r[22]||'').toUpperCase().trim()||'NO_PAGADO',
+    monto_pagado:   parseNum(r[23]),
+    fecha_pago:     r[24]||'',
     /* enriquece nombre cliente desde mapa CLIENTES */
     cliente_nombre: cliMap[r[2]||''] || r[2] || '—'
   })).filter(c=>c.id);
@@ -524,6 +532,7 @@ function renderAll(){
   const cots = filtrar(rawData.cotizaciones || []);
   renderKPI(cots);
   renderPipeline(cots);
+  renderPagosPendientes(cots);
   renderActivas(cots);
   renderCalendario(cots);
   renderTopClientes(cots);
@@ -548,6 +557,11 @@ function renderKPI(cots){
   const margenMedio = adj.length ? Math.round(adj.reduce((s,c)=>s+c.margen_pct,0)/adj.length) : 0;
   const valorMedio  = adj.length ? Math.round(valorAdj/adj.length) : 0;
 
+  // KPI Cobrado
+  const cobrado       = adj.reduce((s,c)=>s+(c.monto_pagado||0),0);
+  const pendienteCobro= valorAdj - cobrado;
+  const pctCobrado    = valorAdj>0 ? Math.round(cobrado/valorAdj*100) : 0;
+
   const mg = m => m>=40?'verde':m>=30?'':m>=0?'amarillo':'rojo';
 
   document.getElementById('kpi-grid').innerHTML = `
@@ -571,6 +585,12 @@ function renderKPI(cots){
       <div class="kpi-label">Valor Medio Evento</div>
       <div class="kpi-val" style="font-size:22px">${fmtCLP(valorMedio)}</div>
       <div class="kpi-sub">promedio adjudicados</div>
+    </div>
+    <div class="kpi-card" style="border-color:${pendienteCobro>0?'var(--yellow)':'var(--green)'}">
+      <div class="kpi-label">Cobrado</div>
+      <div class="kpi-val" style="font-size:20px;color:${pctCobrado>=100?'var(--green)':'var(--yellow)'}">${fmtCLP(cobrado)}</div>
+      <div class="kpi-sub">${pctCobrado}% del adjudicado</div>
+      ${pendienteCobro>0?`<div class="kpi-sub" style="color:var(--yellow);font-family:'DM Mono',monospace;font-size:11px;margin-top:3px">Pendiente: ${fmtCLP(pendienteCobro)}</div>`:`<div class="kpi-sub" style="color:var(--green);margin-top:3px">✓ Todo cobrado</div>`}
     </div>
   `;
 }
@@ -823,6 +843,70 @@ function renderMotivos(cots){
 }
 
 /* ============================================================
+   PAGOS PENDIENTES — eventi adjudicados con saldo da incassare
+   ============================================================ */
+function renderPagosPendientes(cots){
+  const adj = cots.filter(c=>['ADJUDICADA','REALIZADA'].includes(c.estado));
+  const pendientes = adj.filter(c=>{
+    const ep = c.estado_pago||'NO_PAGADO';
+    const saldo = c.total_pv - (c.monto_pagado||0);
+    return ep !== 'PAGADO' && saldo > 0;
+  }).sort((a,b)=>(parseDate(a.fecha_evento)||0)-(parseDate(b.fecha_evento)||0));
+
+  const wrap  = document.getElementById('pagos-wrap');
+  const label = document.getElementById('sec-pagos-label');
+  if(!pendientes.length){
+    wrap.style.display='none'; label.style.display='none'; return;
+  }
+  wrap.style.display=''; label.style.display='';
+
+  const totalPendiente = pendientes.reduce((s,c)=>s+(c.total_pv-(c.monto_pagado||0)),0);
+
+  const filas = pendientes.map(c=>{
+    const saldo = c.total_pv - (c.monto_pagado||0);
+    const ep = c.estado_pago||'NO_PAGADO';
+    const pagadoPct = c.total_pv>0 ? Math.round((c.monto_pagado||0)/c.total_pv*100) : 0;
+    const esParc = ep==='PAGO_PARCIAL';
+    return `
+      <tr>
+        <td class="id-cell">${c.id}</td>
+        <td>
+          <div class="cliente-name">${esc(c.cliente_nombre||c.id_cliente)}</div>
+          <div class="evento-tipo">${esc(c.tipo_evento)}${c.ubicacion?' · '+esc(c.ubicacion):''}</div>
+        </td>
+        <td><span class="tag ${c.estado}">${c.estado}</span></td>
+        <td class="mono">${formatFecha(c.fecha_evento)}</td>
+        <td class="mono" style="color:var(--t1)">${fmtCLP(c.total_pv)}</td>
+        <td class="mono" style="color:var(--green)">${esParc?fmtCLP(c.monto_pagado||0):'$0'}</td>
+        <td class="mono" style="color:var(--yellow);font-weight:600">${fmtCLP(saldo)}</td>
+        <td style="text-align:center">
+          ${esParc
+            ? `<div style="width:60px;height:5px;background:var(--card3);border-radius:3px;display:inline-block;vertical-align:middle"><div style="height:100%;width:${pagadoPct}%;background:var(--green);border-radius:3px"></div></div><span style="font-size:10px;color:var(--t3);margin-left:4px">${pagadoPct}%</span>`
+            : `<span style="font-size:10px;color:var(--red)">Sin anticipo</span>`}
+        </td>
+        <td><a class="btn-ver" href="${COT_URL}?id=${c.id}&mode=view" target="_blank">Cobrar</a></td>
+      </tr>`;
+  }).join('');
+
+  wrap.innerHTML = `
+    <div class="hist-card" style="border-color:rgba(200,137,58,0.3)">
+      <div class="hist-header">
+        <div class="hist-title" style="color:var(--yellow)">⚠ ${pendientes.length} evento${pendientes.length!==1?'s':''} con cobro pendiente</div>
+        <div class="hist-count" style="color:var(--yellow);font-weight:600">Total: ${fmtCLP(totalPendiente)}</div>
+      </div>
+      <div class="tabla-wrap tabla-scroll">
+        <table class="tabla">
+          <thead><tr>
+            <th>ID</th><th>Cliente / Evento</th><th>Estado</th>
+            <th>Fecha Evento</th><th>Total</th><th>Cobrado</th><th>Saldo</th><th>Progreso</th><th></th>
+          </tr></thead>
+          <tbody>${filas}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+/* ============================================================
    HISTORIAL — ADJUDICADAS + PERDIDAS
    ============================================================ */
 function renderHistorial(cots){
@@ -836,11 +920,23 @@ function renderHistorial(cots){
     return;
   }
 
+  function badgePago(c){
+    if(c.estado==='PERDIDA') return `<span style="font-size:10px;color:var(--t3)">—</span>`;
+    const ep = c.estado_pago||'NO_PAGADO';
+    const mp = c.monto_pagado||0;
+    const saldo = c.total_pv - mp;
+    if(ep==='PAGADO' || saldo<=0)
+      return `<span style="font-size:10px;font-weight:500;color:var(--green)">✓ Pagado</span>`;
+    if(ep==='PAGO_PARCIAL')
+      return `<span style="font-size:10px;font-weight:500;color:var(--yellow)">Parcial<br><span style="font-size:9px;color:var(--t3)">Saldo: ${fmtCLP(saldo)}</span></span>`;
+    return `<span style="font-size:10px;color:var(--red)">Pendiente</span>`;
+  }
+
   const filas = hist.map(c=>{
     const mg = c.margen_pct;
     const mgClass = mg>=40?'verde':mg>=30?'amarillo':'rojo';
     const fe = formatFecha(c.fecha_evento);
-    const esAdj = c.estado==='ADJUDICADA';
+    const esAdj = ['ADJUDICADA','REALIZADA'].includes(c.estado);
     return `
       <tr>
         <td class="id-cell">${c.id}</td>
@@ -852,6 +948,7 @@ function renderHistorial(cots){
         <td class="mono">${fe}</td>
         <td class="mono" style="color:var(--t1)">${fmtCLP(c.total_pv)}</td>
         <td>${esAdj?`<span class="margen-pill ${mgClass}">${mg.toFixed(1)}%</span>`:`<span style="font-size:11px;color:var(--t3)">${esc(c.motivo_perd||'—')}</span>`}</td>
+        <td style="text-align:center">${badgePago(c)}</td>
         <td class="mono" style="color:var(--t3)">${esc(c.creado_por)}</td>
         <td><a class="btn-ver" href="${COT_URL}?id=${c.id}&mode=view" target="_blank">Ver</a></td>
       </tr>`;
@@ -867,7 +964,7 @@ function renderHistorial(cots){
         <table class="tabla">
           <thead><tr>
             <th>ID</th><th>Cliente / Evento</th><th>Estado</th>
-            <th>Fecha Evento</th><th>Valor</th><th>Margen / Motivo</th><th>GC</th><th></th>
+            <th>Fecha Evento</th><th>Valor</th><th>Margen / Motivo</th><th>Pago</th><th>GC</th><th></th>
           </tr></thead>
           <tbody>${filas}</tbody>
         </table>
