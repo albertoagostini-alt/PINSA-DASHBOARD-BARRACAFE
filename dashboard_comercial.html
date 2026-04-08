@@ -479,10 +479,10 @@ function buildFromCSV(rows, cliMap){
     creado_por:     r[15]||'',
     version:        r[16]||'1',
     n_oc_cliente:   r[17]||'',
-    // Pago — col T=18(id_contacto) U=19(n_factura) V=20(empresa_factura) W=21(factura_texto) X=22(estado_pago) Y=23(monto_pagado) Z=24(fecha_pago)
-    estado_pago:    (r[22]||'').toUpperCase().trim()||'NO_PAGADO',
-    monto_pagado:   parseNum(r[23]),
-    fecha_pago:     r[24]||'',
+    // Pago — col T=19(id_contacto) U=20(n_factura) V=21(empresa_factura) W=22(factura_texto) X=23(estado_pago) Y=24(monto_pagado) Z=25(fecha_pago)
+    estado_pago:    (r[23]||'').toUpperCase().trim()||'NO_PAGADO',
+    monto_pagado:   parseNum(r[24]),
+    fecha_pago:     r[25]||'',
     /* enriquece nombre cliente desde mapa CLIENTES */
     cliente_nombre: cliMap[r[2]||''] || r[2] || '—'
   })).filter(c=>c.id);
