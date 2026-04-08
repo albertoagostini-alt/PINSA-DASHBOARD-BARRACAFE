@@ -1931,17 +1931,6 @@ function calcBreakEven(){
   const ok   = cobertura >= 1.0;
   const warn = cobertura >= 0.75;
 
-  // Per il display "Personas mínimas" usiamo il costo extra per persona
-  // = quante persone servono affinché il margine PINSA per persona copra l'extra
-  const margenPerPersona = margenPinsa / nPersonas;
-  const personasMin = margenPerPersona > 0 ? Math.ceil(costoExtra / margenPerPersona) : null;
-
-  if(personasMin !== null && personasMin <= nPersonas * 5){
-    beMin.textContent = personasMin;
-  } else {
-    beMin.textContent = ok ? '≤'+nPersonas : '—';
-  }
-
   beMin.className = 'be-kpi-val ' + (ok ? 'ok' : warn ? 'warn' : 'bad');
   beAct.className = 'be-kpi-val ' + (ok ? 'ok' : warn ? 'warn' : 'bad');
 
