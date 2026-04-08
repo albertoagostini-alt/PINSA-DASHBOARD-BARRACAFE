@@ -431,16 +431,20 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
         <!-- Resumen importi -->
         <div style="background:var(--bg4);border-radius:6px;padding:8px 12px;margin-bottom:10px;display:flex;gap:0;flex-direction:column">
           <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0">
-            <span style="font-size:11px;color:var(--t3)">Total evento</span>
+            <span style="font-size:11px;color:var(--t3)">Total evento (neto)</span>
             <span id="pago-total-evento" style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;color:var(--t1)">—</span>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0">
-            <span style="font-size:11px;color:var(--t3)">Monto pagado</span>
+            <span style="font-size:11px;color:var(--t3)">Total con IVA (al cliente)</span>
+            <span id="pago-total-bruto" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--t3)">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0">
+            <span style="font-size:11px;color:var(--t3)">Cobrado neto</span>
             <span id="pago-recibido" style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;color:var(--green)">$0</span>
           </div>
           <div style="border-top:1px solid var(--border);margin:4px 0"></div>
           <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0">
-            <span style="font-size:12px;font-weight:600;color:var(--t2)">Saldo pendiente</span>
+            <span style="font-size:12px;font-weight:600;color:var(--t2)">Saldo neto pendiente</span>
             <span id="pago-saldo" style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--amber)">—</span>
           </div>
         </div>
@@ -463,15 +467,16 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-
 
         <div class="fr" id="fg-monto-pagado" style="display:none">
           <div class="fg" style="flex:1">
-            <label>Nuevo pago $</label>
+            <label>Monto recibido (bruto con IVA)</label>
             <input type="text" id="monto-pagado" placeholder="$0"
               oninput="this.dataset.raw=this.value.replace(/[^0-9]/g,'');this.value=this.dataset.raw?'$'+parseInt(this.dataset.raw).toLocaleString('es-CL'):'';actualizarResumenPago()"
               onfocus="this.value=this.dataset.raw||''"
               onblur="if(this.dataset.raw){this.value='$'+parseInt(this.dataset.raw).toLocaleString('es-CL');}actualizarResumenPago()">
           </div>
-          <div style="display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:4px;gap:2px;min-width:140px">
-            <div style="font-size:10px;color:var(--t3)">Pagado anterior: <span id="pago-anterior-lbl" style="color:var(--t2)">$0</span></div>
-            <div style="font-size:11px;font-weight:600;color:var(--green)">Total acumulado: <span id="pago-total-acum" style="font-family:'DM Mono',monospace">$0</span></div>
+          <div style="display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:4px;gap:2px;min-width:150px">
+            <div style="font-size:10px;color:var(--t3)">Neto equiv.: <span id="pago-neto-equiv" style="color:var(--fu);font-family:'DM Mono',monospace;font-weight:600">$0</span></div>
+            <div style="font-size:10px;color:var(--t3)">Anterior neto: <span id="pago-anterior-lbl" style="color:var(--t2)">$0</span></div>
+            <div style="font-size:11px;font-weight:600;color:var(--green)">Acum. neto: <span id="pago-total-acum" style="font-family:'DM Mono',monospace">$0</span></div>
           </div>
         </div>
 
@@ -1866,36 +1871,43 @@ function toggleMontoParcial(val){
 }
 
 function actualizarResumenPago(){
-  const totalEvento = LINEAS.reduce((s,l)=>s+(l.pv_u*l.q),0);
+  const totalEvento = LINEAS.reduce((s,l)=>s+(l.pv_u*l.q),0); // sempre netto
+  const totalBruto  = Math.round(totalEvento * (1 + IVA_PCT/100));
   const estado = document.getElementById('estado-pago')?.value||'NO_PAGADO';
-  const nuevoRaw = parseInt(document.getElementById('monto-pagado')?.dataset?.raw||'0')||0;
-  const totalAcum = PAGO_ANTERIOR + nuevoRaw;
+  const bruttoRaw = parseInt(document.getElementById('monto-pagado')?.dataset?.raw||'0')||0;
+  // Converte bruto inserito in netto equivalente
+  const nuevoNeto = bruttoRaw > 0 ? Math.round(bruttoRaw / (1 + IVA_PCT/100)) : 0;
+  const totalAcumNeto = PAGO_ANTERIOR + nuevoNeto;
 
-  let montoPagado = 0;
-  if(estado==='PAGADO') montoPagado = totalEvento;
-  else if(estado==='PAGO_PARCIAL') montoPagado = totalAcum;
+  let montoPagadoNeto = 0;
+  if(estado==='PAGADO') montoPagadoNeto = totalEvento;
+  else if(estado==='PAGO_PARCIAL') montoPagadoNeto = totalAcumNeto;
 
-  const saldo = totalEvento - montoPagado;
+  const saldo = totalEvento - montoPagadoNeto;
 
   // Resumen box
   const elTotal  = document.getElementById('pago-total-evento');
+  const elBruto  = document.getElementById('pago-total-bruto');
   const elPagado = document.getElementById('pago-recibido');
   const elSaldo  = document.getElementById('pago-saldo');
   if(elTotal) elTotal.textContent  = fmtCLP(totalEvento);
-  if(elPagado){ elPagado.textContent = fmtCLP(montoPagado); elPagado.style.color = montoPagado>0?'var(--green)':'var(--t3)'; }
+  if(elBruto) elBruto.textContent  = fmtCLP(totalBruto);
+  if(elPagado){ elPagado.textContent = fmtCLP(montoPagadoNeto); elPagado.style.color = montoPagadoNeto>0?'var(--green)':'var(--t3)'; }
   if(elSaldo){
-    if(saldo<=0){ elSaldo.style.color='var(--green)'; elSaldo.textContent='✓ Pagado completo'; }
+    if(saldo<=0){ elSaldo.style.color='var(--green)'; elSaldo.textContent='✓ Saldo neto cubierto'; }
     else if(estado==='NO_PAGADO'){ elSaldo.style.color='var(--t3)'; elSaldo.textContent=fmtCLP(saldo); }
     else { elSaldo.style.color='var(--amber)'; elSaldo.textContent=fmtCLP(saldo); }
   }
 
-  // Labels nuevo pago
-  const elAnterior = document.getElementById('pago-anterior-lbl');
-  const elAcum     = document.getElementById('pago-total-acum');
+  // Labels dettaglio
+  const elNetoEquiv = document.getElementById('pago-neto-equiv');
+  const elAnterior  = document.getElementById('pago-anterior-lbl');
+  const elAcum      = document.getElementById('pago-total-acum');
+  if(elNetoEquiv) elNetoEquiv.textContent = bruttoRaw > 0 ? fmtCLP(nuevoNeto) : '—';
   if(elAnterior) elAnterior.textContent = fmtCLP(PAGO_ANTERIOR);
-  if(elAcum){ 
-    elAcum.textContent = fmtCLP(totalAcum);
-    elAcum.style.color = totalAcum>=totalEvento?'var(--green)':'var(--amber)';
+  if(elAcum){
+    elAcum.textContent = fmtCLP(totalAcumNeto);
+    elAcum.style.color = totalAcumNeto>=totalEvento?'var(--green)':'var(--amber)';
   }
 }
 function toggleFacturaTexto(val){
@@ -1910,22 +1922,23 @@ async function guardarPago(){
   if(!COT_ID){ showToast('Guarda la cotización primero','err'); return; }
   const btn = document.querySelector('[onclick="guardarPago()"]');
   if(btn){ btn.disabled=true; btn.textContent='💳 Guardando...'; btn.style.opacity='0.7'; }
-  const nuevoRaw = limpiarNum(document.getElementById('monto-pagado').value)||0;
+  const bruttoRaw = limpiarNum(document.getElementById('monto-pagado').value)||0;
+  const nuevoNeto = bruttoRaw > 0 ? Math.round(bruttoRaw / (1 + IVA_PCT/100)) : 0;
   const totalEvento = LINEAS.reduce((s,l)=>s+(l.pv_u*l.q),0);
   const estadoSeleccionado = document.getElementById('estado-pago').value;
-  const totalAcum = estadoSeleccionado==='PAGADO'
+  const totalAcumNeto = estadoSeleccionado==='PAGADO'
     ? totalEvento
-    : PAGO_ANTERIOR + nuevoRaw;
-  // Auto-upgrade: se accumulo >= totale evento → forza PAGADO
-  const estadoFinal = (totalAcum >= totalEvento && totalEvento > 0) ? 'PAGADO' : estadoSeleccionado;
+    : PAGO_ANTERIOR + nuevoNeto;
+  // Auto-upgrade: se netto accumulato >= totale netto evento → forza PAGADO
+  const estadoFinal = (totalAcumNeto >= totalEvento && totalEvento > 0) ? 'PAGADO' : estadoSeleccionado;
   if(estadoFinal !== estadoSeleccionado){
     document.getElementById('estado-pago').value = 'PAGADO';
-    showToast('✓ Pago completo — estado actualizado a PAGADO','ok');
+    showToast('✓ Pago neto completo — estado actualizado a PAGADO','ok');
   }
   const payload={
     id_cot: COT_ID,
     estado_pago: estadoFinal,
-    monto_pagado: totalAcum,
+    monto_pagado: totalAcumNeto,   // sempre netto nel Sheet
     fecha_pago: document.getElementById('fecha-pago')?.value||'',
     n_factura: document.getElementById('n-factura').value.trim(),
     empresa_factura: document.getElementById('empresa-factura').value,
@@ -1937,7 +1950,7 @@ async function guardarPago(){
       body:JSON.stringify({action:'updatePago',payload})});
     const d=await r.json();
     if(d.ok){
-      PAGO_ANTERIOR = totalAcum; // aggiorna per eventuali ulteriori pagamenti
+      PAGO_ANTERIOR = totalAcumNeto; // aggiorna con netto per successivi pagamenti
       showToast('✓ Pago actualizado','ok');
       if(btn){ btn.style.background='var(--green)'; btn.style.color='#fff'; btn.textContent='✓ Pago Guardado'; }
       setTimeout(()=>{
@@ -1962,20 +1975,22 @@ function cargarDatosPago(cot, readOnly){
 
   if(mp){
     if(readOnly && (cot.estado_pago==='PAGO_PARCIAL')){
-      // In VER: pre-compila con SALDO (total - pagato) per facilitare il pagamento del saldo
+      // In VER: pre-compila con SALDO BRUTO (saldo neto × 1.19) — quello che il cliente deve pagare
       setTimeout(()=>{
         const totalEvento = LINEAS.reduce((s,l)=>s+(l.pv_u*l.q),0);
-        const saldo = totalEvento - PAGO_ANTERIOR;
-        if(saldo > 0){
-          mp.dataset.raw = String(Math.round(saldo));
-          mp.value = '$'+Math.round(saldo).toLocaleString('es-CL');
+        const saldoNeto = totalEvento - PAGO_ANTERIOR;
+        if(saldoNeto > 0){
+          const saldoBruto = Math.round(saldoNeto * (1 + IVA_PCT/100));
+          mp.dataset.raw = String(saldoBruto);
+          mp.value = '$'+saldoBruto.toLocaleString('es-CL');
           actualizarResumenPago();
         }
       }, 350);
     } else if(PAGO_ANTERIOR > 0){
-      // In EDITAR: mostra il monto già pagato come punto di partenza
-      mp.dataset.raw = String(PAGO_ANTERIOR);
-      mp.value = '$'+PAGO_ANTERIOR.toLocaleString('es-CL');
+      // In EDITAR: mostra il bruto equivalente al netto già pagato
+      const anteriorBruto = Math.round(PAGO_ANTERIOR * (1 + IVA_PCT/100));
+      mp.dataset.raw = String(anteriorBruto);
+      mp.value = '$'+anteriorBruto.toLocaleString('es-CL');
     }
   }
   const fp=document.getElementById('fecha-pago');
