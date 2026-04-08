@@ -1201,10 +1201,15 @@ async function cargarCotizacion(id, readOnly){
       document.querySelectorAll('.cot-input').forEach(el=>{
         el.disabled=true;el.style.pointerEvents='none';
       });
+      /* Ri-abilita sezione pago — il pagamento è sempre editabile */
+      setTimeout(()=>{
+        const secPago = document.getElementById('sec-pago');
+        if(secPago) secPago.querySelectorAll('input,select,textarea,button').forEach(el=>{ el.disabled=false; el.style.pointerEvents=''; });
+      }, 200);
       /* Banner sola lettura */
       const banner=document.createElement('div');
       banner.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1A1A1A;border:1px solid #4A6FA5;color:#60A5FA;padding:8px 20px;border-radius:20px;font-size:11px;z-index:500;pointer-events:none;';
-      banner.textContent='👁 Modo Solo Lectura — Sin modificaciones';
+      banner.textContent='👁 Solo lectura — Solo pagos editables';
       document.body.appendChild(banner);
     }
 
