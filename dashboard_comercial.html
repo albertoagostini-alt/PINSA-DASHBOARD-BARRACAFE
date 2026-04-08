@@ -596,14 +596,14 @@ function renderKPI(cots){
       <div class="kpi-sub">en eventos adjudicados</div>
     </div>
     <div class="kpi-card azul">
-      <div class="kpi-label">Valor Medio Evento</div>
+      <div class="kpi-label">Valor Neto Medio Evento</div>
       <div class="kpi-val" style="font-size:22px">${fmtCLP(valorMedio)}</div>
-      <div class="kpi-sub">promedio adjudicados</div>
+      <div class="kpi-sub">promedio adjudicados · neto</div>
     </div>
     <div class="kpi-card" style="border-color:${pendienteCobro>0?'var(--yellow)':'var(--green)'}">
-      <div class="kpi-label">Cobrado</div>
+      <div class="kpi-label">Cobrado Neto</div>
       <div class="kpi-val" style="font-size:20px;color:${pctCobrado>=100?'var(--green)':'var(--yellow)'}">${fmtCLP(cobrado)}</div>
-      <div class="kpi-sub">${pctCobrado}% del adjudicado</div>
+      <div class="kpi-sub">${pctCobrado}% del adjudicado neto</div>
       ${pendienteCobro>0?`<div class="kpi-sub" style="color:var(--yellow);font-family:'DM Mono',monospace;font-size:11px;margin-top:3px">Pendiente: ${fmtCLP(pendienteCobro)}</div>`:`<div class="kpi-sub" style="color:var(--green);margin-top:3px">✓ Todo cobrado</div>`}
     </div>
   `;
@@ -649,7 +649,7 @@ function renderPipeline(cots){
           <div class="pipeline-title">Pipeline Completo</div>
           <div class="pipeline-sub">${cots.length} cotizaciones totales en el período</div>
         </div>
-        <div class="pipeline-total">${fmtCLP(totalPV)} total</div>
+        <div class="pipeline-total">${fmtCLP(totalPV)} total neto</div>
       </div>
       <div class="pipeline-stages">${rows}</div>
     </div>`;
@@ -905,13 +905,13 @@ function renderPagosPendientes(cots){
     <div class="hist-card" style="border-color:rgba(200,137,58,0.3)">
       <div class="hist-header">
         <div class="hist-title" style="color:var(--yellow)">⚠ ${pendientes.length} evento${pendientes.length!==1?'s':''} con cobro pendiente</div>
-        <div class="hist-count" style="color:var(--yellow);font-weight:600">Total: ${fmtCLP(totalPendiente)}</div>
+        <div class="hist-count" style="color:var(--yellow);font-weight:600">Total Neto: ${fmtCLP(totalPendiente)}</div>
       </div>
       <div class="tabla-wrap tabla-scroll">
         <table class="tabla">
           <thead><tr>
             <th>ID</th><th>Cliente / Evento</th><th>Estado</th>
-            <th>Fecha Evento</th><th>Total</th><th>Cobrado</th><th>Saldo</th><th>Progreso</th><th></th>
+            <th>Fecha Evento</th><th>Total Neto</th><th>Cobrado Neto</th><th>Saldo Neto</th><th>Progreso</th><th></th>
           </tr></thead>
           <tbody>${filas}</tbody>
         </table>
