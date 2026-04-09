@@ -1585,7 +1585,7 @@ function generarPDFCliente(){
   ${hdr}
   <div class="ig">
     <div class="ii"><label>Para</label><p>${c?.razon_social||''}</p></div>
-    <div class="ii"><label>Contacto</label><p>${c?.contacto||''}</p></div>
+    <div class="ii"><label>Contacto</label><p>${CTT_SEL_NOMBRE || c?.contacto || ''}</p></div>
     <div class="ii"><label>Tipo de Evento</label><p>${document.getElementById('tipo-evento').value}</p></div>
     <div class="ii"><label>Fecha</label><p>${document.getElementById('fecha-evento').value||'—'}</p></div>
     <div class="ii"><label>N° Personas</label><p>${document.getElementById('n-personas').value||'—'}</p></div>
@@ -1646,7 +1646,7 @@ function generarPDFOperativo(){
 function resetForm(){
   if(LINEAS.length&&!confirm('¿Nueva cotización? Se perderán los datos.'))return;
   LINEAS=[];COT_ID=null;CLI_SEL=null;
-  CONTACTOS_CLI=[];CTT_SEL_ID='';INCIDENCIAS_COT=[];
+  CONTACTOS_CLI=[];CTT_SEL_ID='';CTT_SEL_NOMBRE='';INCIDENCIAS_COT=[];
   renderResumen();recalc();limpiarCliente();
   ['tipo-evento','n-personas','fecha-evento','ubicacion','notas','creado-por','motivo-alerta','motivo-bloqueo','n-oc-cliente','fecha-oc-campo'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('cot-badge').textContent='Nueva';
@@ -1795,6 +1795,7 @@ function parseCsv(txt){
 // ── STATO GLOBALE v3 ──────────────────────────────────────────
 let CONTACTOS_CLI = [];   // contatti del cliente selezionato
 let CTT_SEL_ID = '';      // ID contatto selezionato come principale per l'evento
+let CTT_SEL_NOMBRE = ''; // Nome contatto selezionato (per PDF)
 let INCIDENCIAS_COT = []; // incidencias della cotizacion aperta
 
 // ── CONTACTOS ─────────────────────────────────────────────────
@@ -1806,6 +1807,8 @@ async function cargarContactosCliente(id_cliente){
     const d=await r.json();
     CONTACTOS_CLI = d.ok ? (d.contactos||[]) : [];
     renderContactos(CONTACTOS_CLI);
+    // Aggiorna nome contatto se già selezionato (race condition fix)
+    if(CTT_SEL_ID){ const ctt=CONTACTOS_CLI.find(x=>x.id_contacto===CTT_SEL_ID); if(ctt) CTT_SEL_NOMBRE=ctt.nombre; }
   }catch(e){ CONTACTOS_CLI=[]; renderContactos([]); }
 }
 
@@ -1832,6 +1835,8 @@ function renderContactos(list){
 
 function selContacto(id){
   CTT_SEL_ID = CTT_SEL_ID===id ? '' : id; // toggle
+  const ctt = CONTACTOS_CLI.find(x=>x.id_contacto===CTT_SEL_ID);
+  CTT_SEL_NOMBRE = ctt ? ctt.nombre : '';
   renderContactos(CONTACTOS_CLI);
 }
 
