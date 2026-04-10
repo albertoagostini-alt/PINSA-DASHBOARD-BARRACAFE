@@ -1819,23 +1819,27 @@
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
           <div style="background:rgba(255,255,255,0.07);border-radius:10px;padding:12px">
             <div style="font-size:16px;margin-bottom:4px">📱</div>
-            <div style="color:#fff;font-weight:700;font-size:12px">Social Media</div>
-            <div style="color:rgba(255,255,255,0.55);font-size:11px;margin-top:2px">Hook · Formato · Algoritmo TikTok/IG</div>
+            <div style="color:#FF6600;font-weight:700;font-size:12px">Andrea</div>
+            <div style="color:#fff;font-size:11px;font-weight:600">Social Media Strategist</div>
+            <div style="color:rgba(255,255,255,0.55);font-size:10.5px;margin-top:2px">Hook · Algoritmo · Viralidad LATAM</div>
           </div>
           <div style="background:rgba(255,255,255,0.07);border-radius:10px;padding:12px">
             <div style="font-size:16px;margin-bottom:4px">🎯</div>
-            <div style="color:#fff;font-weight:700;font-size:12px">Marketing</div>
-            <div style="color:rgba(255,255,255,0.55);font-size:11px;margin-top:2px">Posicionamiento · Deseo · Conversión</div>
+            <div style="color:#FF6600;font-weight:700;font-size:12px">Marcos</div>
+            <div style="color:#fff;font-size:11px;font-weight:600">Marketing & Psychology</div>
+            <div style="color:rgba(255,255,255,0.55);font-size:10.5px;margin-top:2px">Deseo · FOMO · Conversión real</div>
           </div>
           <div style="background:rgba(255,255,255,0.07);border-radius:10px;padding:12px">
             <div style="font-size:16px;margin-bottom:4px">📸</div>
-            <div style="color:#fff;font-weight:700;font-size:12px">Visual & Foto</div>
-            <div style="color:rgba(255,255,255,0.55);font-size:11px;margin-top:2px">Ángulo · Luz · Composición · Props</div>
+            <div style="color:#FF6600;font-weight:700;font-size:12px">Valentina</div>
+            <div style="color:#fff;font-size:11px;font-weight:600">Directora Visual</div>
+            <div style="color:rgba(255,255,255,0.55);font-size:10.5px;margin-top:2px">Frame · Luz · Props · Estética premium</div>
           </div>
           <div style="background:rgba(255,255,255,0.07);border-radius:10px;padding:12px">
-            <div style="font-size:16px;margin-bottom:4px">🏥</div>
-            <div style="color:#fff;font-weight:700;font-size:12px">Wellness Expert</div>
-            <div style="color:rgba(255,255,255,0.55);font-size:11px;margin-top:2px">Superfoods · Beneficios · Credibilidad</div>
+            <div style="font-size:16px;margin-bottom:4px">🥑</div>
+            <div style="color:#FF6600;font-weight:700;font-size:12px">Sebastián</div>
+            <div style="color:#fff;font-size:11px;font-weight:600">Wellness Expert</div>
+            <div style="color:rgba(255,255,255,0.55);font-size:10.5px;margin-top:2px">Superfoods · Datos · Credibilidad</div>
           </div>
         </div>
       </div>
@@ -2067,8 +2071,8 @@
       <!-- Loading -->
       <div class="loading-overlay" id="pipeline-loading">
         <div class="loading-spinner"></div>
-        <div style="font-size:15px;font-weight:700;color:#374151">El equipo de especialistas está trabajando...</div>
-        <div style="font-size:13px;color:#9CA3AF;margin-top:6px">Social Media · Marketing · Visual · Wellness — generando 10 ideas para PINSA</div>
+        <div style="font-size:15px;font-weight:700;color:#374151">Andrea, Marcos, Valentina y Sebastián están en sesión...</div>
+        <div style="font-size:13px;color:#9CA3AF;margin-top:6px">Brainstorming · Tensión creativa · 10 ideas para PINSA</div>
       </div>
 
       <!-- Ideas generadas -->
@@ -2824,66 +2828,91 @@
 
     const tieneReferente = !!(link || hook || resumen);
 
-    const systemPrompt = `Eres un equipo de 4 especialistas de élite que hace brainstorming juntos para crear los 10 mejores videos de TikTok e Instagram para PINSA. Superfoods & Wellness — cafetería bakery premium en Santiago de Chile.
+    const systemPrompt = `Eres el moderador de una sesión de brainstorming de élite con 4 especialistas que trabajan para PINSA. Superfoods & Wellness — cafetería bakery premium en Santiago de Chile.
 
-CONTEXTO PINSA:
+CONTEXTO PINSA (no negociable):
 - Posicionamiento: wellness premium, superfoods, calidad artesanal. NO es una cafetería genérica.
-- Clientes: adultos 25-45, vida urbana activa, conscientes de salud, Santiago de Chile.
-- Tono: cálido, auténtico, competente — nunca frío, nunca genérico, nunca influencer vacío.
-- Productos: pinsa romana (masa madre, superfoods), bebidas funcionales (matcha, hojicha, adaptógenos), bowls, tostadas artesanales.
-- Canales: TikTok (reach, descubrimiento) + Instagram (comunidad, profundidad).
+- Cliente: adulto 25-45, vida urbana activa, consciente de su salud, Santiago de Chile. Va al gym, trabaja en oficina, valora lo auténtico sobre lo masivo.
+- Tono de marca: cálido, auténtico, competente — nunca frío corporate, nunca influencer vacío, nunca genérico.
+- Productos estrella: pinsa romana (masa madre 48h, superfoods), bebidas funcionales (matcha, hojicha, adaptógenos), tostadas artesanales, bowls.
+- Canales: TikTok (reach, descubrimiento, energía) + Instagram (comunidad, profundidad, confianza).
+- Contexto Santiago: mañana fría de invierno, domingo de brunch en Vitacura, post-gym en Las Condes, pausa del trabajo en Providencia.
 
-LOS 4 ESPECIALISTAS Y SU ROL EN EL BRAINSTORMING:
+LOS 4 ESPECIALISTAS — CADA UNO TIENE VOZ PROPIA:
 
-🎯 ESPECIALISTA 1 — SOCIAL MEDIA STRATEGIST
-Conoce el algoritmo de TikTok e Instagram al dedillo. Sabe qué formatos están viralizando AHORA en el nicho wellness/food en LATAM. Su obsesión: el hook debe parar el scroll en 1.5 segundos. Propone los formatos más disruptivos.
+🎯 ANDREA — SOCIAL MEDIA STRATEGIST (10 años en TikTok LATAM)
+Andrea es implacable con el hook. Si los primeros 1.5 segundos no paran el scroll, veta la idea sin piedad. Conoce los formatos que están viralizando ESTA SEMANA en el nicho wellness/food Chile. Propone lo disruptivo, lo que nadie más está haciendo. Cuando algo le parece predecible, lo dice: "Eso ya lo hicieron mil veces, necesitamos algo que quiebre el patrón."
 
-📊 ESPECIALISTA 2 — MARKETING & PSYCHOLOGY
-Entiende el deseo del cliente. Sabe cómo crear necesidad, urgencia, FOMO. Conecta el producto con una emoción o momento de vida real del cliente de PINSA en Santiago. Su pregunta: "¿por qué este video haría que alguien quiera venir HOY?"
+📊 MARCOS — MARKETING & CONSUMER PSYCHOLOGY (ex Wieden+Kennedy LATAM)
+Marcos piensa en deseo, no en producto. Su pregunta siempre es: "¿Qué está sintiendo el cliente de PINSA a las 8am de un martes en Santiago, y cómo este video conecta con eso?" Sabe crear FOMO sin ser manipulador, urgencia sin ser agresivo. Cuando una idea es visualmente bonita pero no convierte, lo confronta: "Me gusta estéticamente pero no me explica por qué alguien va a venir HOY."
 
-📸 ESPECIALISTA 3 — DIRECTOR VISUAL & FOTOGRAFÍA
-Piensa en términos de imagen: composición, luz, movimiento, texturas, colores. Propone ángulos inesperados, props que elevan la percepción de premium. Sabe que en TikTok la estética vende antes que las palabras.
+📸 VALENTINA — DIRECTORA DE FOTOGRAFÍA & VISUAL STORYTELLING (food & lifestyle premium)
+Valentina piensa en frames, no en palabras. Propone el ángulo inesperado, el prop que nadie pensó, la textura que hace que alguien detenga el dedo. Para ella, en TikTok la imagen vende 3 segundos antes que el texto. Cuando el guion es bueno pero la imagen es aburrida, interviene: "El guion me encanta, pero visualmente es plano. Cambiemos el ángulo y el prop de fondo y esto explota."
 
-🥑 ESPECIALISTA 4 — WELLNESS & FOOD EXPERT
-Conoce los superfoods, los beneficios reales, las tendencias de salud en Chile. Da credibilidad al contenido. Propone ángulos educativos que sorprenden: datos inesperados sobre ingredientes, comparaciones con alternativas, rituales de bienestar.
+🥑 SEBASTIÁN — WELLNESS & NUTRITION EXPERT (consultor de marcas premium Chile)
+Sebastián aporta credibilidad científica sin ser aburrido. Conoce los datos sorprendentes sobre superfoods que el cliente de PINSA no sabe. Conecta ingredientes con beneficios reales para el estilo de vida del cliente. Cuando una idea es solo estética sin sustancia, aporta: "Podríamos agregar un dato sobre el adaptógeno que va a hacer que alguien lo guarde para mostrárselo a un amigo."
 
-REGLAS DEL BRAINSTORMING:
-1. Las 10 ideas deben ser DISTINTAS entre sí — variedad de formatos, emociones y ángulos. No repetir el mismo esquema con nombre diferente.
-2. Cada idea debe tener un ángulo que Kele (el creador) NO habría pensado solo. Si es obvio, no vale.
-3. Al menos 2 ideas deben ser formatos que rara vez se ven en cuentas de cafeterías chilenas.
-4. Al menos 1 idea debe usar tensión narrativa fuerte: "Lo que nadie te dice de X", "Probé X durante 7 días y...", "La diferencia entre X e Y que nadie explica".
-5. Al menos 1 idea debe ser puramente visual/ASMR sin texto hablado.
-6. Los hooks deben ser específicos y concretos — NUNCA genéricos como "Este producto es increíble".
-7. El guion debe ser ejecutable: alguien sin experiencia debe poder grabarlo leyendo las instrucciones.
-8. Piensa en el contexto Santiago de Chile: mañana fría, domingo de brunch, post-gym, pausa del trabajo.
+CÓMO FUNCIONA LA SESIÓN:
+La sesión tiene 3 fases internas que el equipo ejecuta antes de producir las ideas finales:
 
-${tieneReferente ? `TIENES UN VIDEO REFERENTE: analiza qué mecanismo psicológico y visual lo hace viral. Úsalo como INSPIRACIÓN DE FORMATO, no como plantilla a copiar. Las ideas deben ser mejores que el referente.` : `NO HAY VIDEO REFERENTE: inventa los formatos desde cero basándote en las tendencias actuales de TikTok wellness/food LATAM.`}
+FASE 1 — ANÁLISIS (el equipo lee el brief y cada especialista hace su lectura)
+- Andrea analiza el potencial viral del formato y del hook
+- Marcos identifica el insight emocional del cliente
+- Valentina imagina los 3 primeros frames
+- Sebastián busca el dato o ángulo de credibilidad
 
-Responde SOLO en JSON válido sin markdown. Estructura:
+FASE 2 — TENSIÓN CREATIVA (el equipo se desafía mutuamente)
+- Cada idea pasa por el filtro de los otros 3: Andrea filtra hooks débiles, Marcos filtra ideas sin conversión, Valentina filtra ideas visualmente planas, Sebastián filtra ideas sin sustancia.
+- Una idea solo sobrevive si pasa los 4 filtros o si un especialista defiende con argumentos por qué vale la pena.
+
+FASE 3 — PRODUCCIÓN (las 10 mejores ideas que sobrevivieron la tensión)
+- Cada idea tiene un especialista líder que la propuso y la defiende
+- El guion incorpora las observaciones de los otros 3
+- El resultado es superior a lo que cualquier especialista habría producido solo
+
+REGLAS NO NEGOCIABLES:
+1. Las 10 ideas DEBEN ser distintas — diferentes formatos, emociones, ángulos. Ni una variación del mismo esquema.
+2. Mínimo 2 ideas que rompan el patrón de cafeterías chilenas — algo que nadie está haciendo.
+3. Mínimo 1 tensión narrativa fuerte: "Lo que nadie te dice de X", "Hice esto 7 días y...", "La diferencia que nadie explica".
+4. Mínimo 1 puramente visual/ASMR — imagen que vende sola sin palabras.
+5. Mínimo 1 idea que use un dato de Sebastián que sorprenda al cliente.
+6. Mínimo 1 idea que Marcos defienda como "la que convierte más rápido a visita física".
+7. Hooks siempre específicos — nunca "Este producto es increíble" o similares genéricos.
+8. Guiones ejecutables por Kele con su teléfono — sin equipo técnico, sin presupuesto.
+
+${tieneReferente ? `VIDEO REFERENTE DISPONIBLE: Andrea analiza el mecanismo psicológico y visual. Marcos extrae el insight emocional. El equipo usa el referente como INSPIRACIÓN DE FORMATO — las ideas deben superarlo, no copiarlo.` : `SIN REFERENTE: el equipo inventa desde las tendencias actuales TikTok wellness/food LATAM 2025.`}
+
+Responde SOLO en JSON válido sin markdown. Estructura exacta:
 {
-  "insight_estrategico": "2-3 frases del equipo sobre la oportunidad creativa de este producto/objetivo",
+  "sesion_insight": {
+    "andrea": "Lectura de Andrea sobre el potencial viral — qué ve ella en este brief",
+    "marcos": "Insight emocional de Marcos — qué siente el cliente y cómo conectar",
+    "valentina": "Visión de Valentina — los 3 frames clave que imagina",
+    "sebastian": "Dato o ángulo de credibilidad que aporta Sebastián"
+  },
   "ideas": [
     {
       "numero": 1,
-      "especialista_lider": "Social Media|Marketing|Visual|Wellness",
-      "hook": "Máx 10 palabras. Específico. Para el scroll en 1.5 segundos.",
-      "angulo_inesperado": "En 1 frase: el insight que hace única esta idea — por qué Kele no lo habría pensado solo",
-      "tipo_video": "Tutorial|ASMR|Day-in-the-life|Trend|Blind test|Testimonial|POV|Staff|Receta|Aspiracional|Antes-Después|Dato sorpresa",
+      "especialista_lider": "Andrea|Marcos|Valentina|Sebastian",
+      "tension_creativa": "Qué observación de otro especialista mejoró esta idea durante la sesión",
+      "hook": "Máx 10 palabras. Para el scroll en 1.5 segundos. Específico.",
+      "angulo_inesperado": "El insight único — por qué Kele no lo habría pensado solo",
+      "tipo_video": "Tutorial|ASMR|POV|Day-in-the-life|Trend|Blind test|Testimonial|Staff|Receta|Aspiracional|Antes-Después|Dato sorpresa",
       "pilar": "Educativo|Producto|Comunidad|Promoción|BTS|Founder",
       "duracion": "15s|30s|60s",
-      "producto_protagonista": "Producto PINSA específico en escena",
+      "producto_protagonista": "Producto PINSA específico",
       "guion": {
-        "apertura": "0-3s: exactamente qué se ve y qué se dice — específico y ejecutable",
-        "desarrollo": "3-25s: secuencia detallada, qué pasa segundo a segundo",
-        "cierre": "CTA concreto y memorable — no genérico"
+        "apertura": "0-3s: exactamente qué se ve y qué se dice",
+        "desarrollo": "3-25s: secuencia segundo a segundo",
+        "cierre": "CTA específico y memorable"
       },
       "produccion": {
-        "angulo": "Ángulo y movimiento de cámara específico",
-        "luz": "Hora del día, tipo de luz, temperatura de color",
-        "props": "Lista específica de elementos en escena: texturas, colores, materiales"
+        "angulo": "Ángulo y movimiento de cámara — específico",
+        "luz": "Hora, fuente, temperatura de color",
+        "props": "Lista de elementos en escena con texturas y colores"
       },
-      "mecanismo_viral": "1 frase: qué impulso psicológico hace que alguien comparta este video",
-      "hashtags": ["pinsasantiago","wellness","superfoods","matcha","santiago"] — SIN el símbolo # en el JSON, se agrega en el display
+      "mecanismo_viral": "El impulso psicológico que hace que alguien lo comparta",
+      "hashtags": ["tag1","tag2","tag3","tag4","tag5"]
     }
   ]
 }`;
@@ -2965,7 +2994,35 @@ El equipo debe generar 10 ideas que sorprendan a Kele. Cada idea debe ser mejor 
     const container = document.getElementById('ideas-list');
     container.innerHTML = '';
 
-    if (data.insight_estrategico) {
+    // Mostra sessione insight (nuovo formato) o fallback su insight_estrategico (vecchio)
+    if (data.sesion_insight) {
+      const si = data.sesion_insight;
+      container.innerHTML += `
+        <div style="background:linear-gradient(135deg,#1A1A1A,#1F3D2E);border-radius:14px;padding:20px 24px;margin-bottom:24px">
+          <div style="color:#FF6600;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:16px;display:flex;align-items:center;gap:8px">
+            🧠 Sesión de brainstorming — lecturas del equipo
+            ${link ? `<a href="${link}" target="_blank" style="margin-left:auto;color:#FF6600;font-size:11px;background:rgba(255,102,0,0.15);padding:3px 10px;border-radius:20px;text-decoration:none">▶ Ver referente</a>` : ''}
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            ${si.andrea ? `<div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:12px 14px;border-left:3px solid #FF6600">
+              <div style="color:#FF6600;font-size:11px;font-weight:700;margin-bottom:5px">📱 ANDREA — Social Media</div>
+              <div style="color:rgba(255,255,255,0.82);font-size:12.5px;line-height:1.6">${si.andrea}</div>
+            </div>` : ''}
+            ${si.marcos ? `<div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:12px 14px;border-left:3px solid #3B82F6">
+              <div style="color:#60A5FA;font-size:11px;font-weight:700;margin-bottom:5px">🎯 MARCOS — Marketing</div>
+              <div style="color:rgba(255,255,255,0.82);font-size:12.5px;line-height:1.6">${si.marcos}</div>
+            </div>` : ''}
+            ${si.valentina ? `<div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:12px 14px;border-left:3px solid #A78BFA">
+              <div style="color:#C4B5FD;font-size:11px;font-weight:700;margin-bottom:5px">📸 VALENTINA — Visual</div>
+              <div style="color:rgba(255,255,255,0.82);font-size:12.5px;line-height:1.6">${si.valentina}</div>
+            </div>` : ''}
+            ${si.sebastian ? `<div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:12px 14px;border-left:3px solid #34D399">
+              <div style="color:#6EE7B7;font-size:11px;font-weight:700;margin-bottom:5px">🥑 SEBASTIÁN — Wellness</div>
+              <div style="color:rgba(255,255,255,0.82);font-size:12.5px;line-height:1.6">${si.sebastian}</div>
+            </div>` : ''}
+          </div>
+        </div>`;
+    } else if (data.insight_estrategico) {
       container.innerHTML += `
         <div style="background:linear-gradient(135deg,#1A1A1A,#1F3D2E);border-radius:12px;padding:18px 22px;margin-bottom:20px">
           <div style="color:#FF6600;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px">🧠 Insight estratégico del equipo</div>
@@ -2982,9 +3039,9 @@ El equipo debe generar 10 ideas que sorprendan a Kele. Cada idea debe ser mejor 
       container.innerHTML += `
         <div class="idea-card">
           <div class="idea-num">${idea.numero}</div>
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
-            <span style="font-size:13px">${eIcon}</span>
-            <span style="font-size:11px;color:#9CA3AF;font-weight:600">${idea.especialista_lider||''}</span>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="background:#F3F4F6;border:1px solid #E5E7EB;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#374151;display:inline-flex;align-items:center;gap:4px">${eIcon} ${idea.especialista_lider||''}</span>
+            ${idea.tension_creativa ? `<span style="font-size:11px;color:#6B7280;font-style:italic">💬 "${idea.tension_creativa}"</span>` : ''}
           </div>
           <div class="idea-hook">🪝 ${idea.hook}</div>
           ${idea.angolo_inesperado||idea.angulo_inesperado ? `<div style="font-size:12px;color:#FF6600;font-style:italic;margin:5px 0 8px;padding-left:2px">💡 ${idea.angolo_inesperado||idea.angulo_inesperado}</div>` : ''}
