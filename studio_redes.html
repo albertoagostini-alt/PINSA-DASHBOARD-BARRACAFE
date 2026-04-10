@@ -1805,7 +1805,7 @@
     ══════════════════════════════════════ -->
     <div id="page-pipeline" class="page">
       <div class="section-title">Pipeline IA — Generador de Ideas</div>
-      <div class="section-subtitle">Kele ingresa los datos del video referente → la IA genera 10 ideas listas para grabar</div>
+      <div class="section-subtitle">Modo 1: video viral referente → 10 ideas · Modo 2: tienes un producto/objetivo → 10 ideas</div>
 
       <!-- Instrucción Snowball -->
       <div style="background:linear-gradient(135deg,#1A1A1A,#1F3D2E);border-radius:14px;padding:18px 22px;margin-bottom:24px;display:flex;align-items:center;gap:16px;">
@@ -1819,32 +1819,76 @@
 
       <!-- Formulario de input -->
       <div class="pipeline-form">
-        <div style="font-weight:700;font-size:15px;color:#1A1A1A;margin-bottom:20px;display:flex;align-items:center;gap:8px">
-          <span>📥</span> Datos del video referente
-        </div>
 
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">🔗 Link del video referente</label>
-            <input class="form-input" id="ref-link" type="url" placeholder="https://tiktok.com/@cuenta/video/...">
+        <!-- Selector de modo -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px">
+          <div id="modo-btn-referente" onclick="setModo('referente')" style="padding:14px 16px;border-radius:12px;border:2px solid #FF6600;background:#FFF3E0;cursor:pointer;transition:all 0.15s">
+            <div style="font-weight:700;font-size:13px;color:#CC5200;margin-bottom:3px">📹 Modo 1 — Video referente</div>
+            <div style="font-size:11.5px;color:#9A3412">Vi un video viral y quiero adaptarlo a PINSA</div>
           </div>
-          <div class="form-group">
-            <label class="form-label">👤 Cuenta referente (@)</label>
-            <input class="form-input" id="ref-cuenta" type="text" placeholder="@thehealthybarista">
+          <div id="modo-btn-objetivo" onclick="setModo('objetivo')" style="padding:14px 16px;border-radius:12px;border:1.5px solid #E5E7EB;background:#F9FAFB;cursor:pointer;transition:all 0.15s">
+            <div style="font-weight:700;font-size:13px;color:#374151;margin-bottom:3px">🎯 Modo 2 — Tengo un objetivo</div>
+            <div style="font-size:11.5px;color:#6B7280">Quiero hacer un video de un producto específico</div>
           </div>
         </div>
 
-        <div class="form-grid">
-          <div class="form-group full">
-            <label class="form-label">🪝 Hook del video (primeras palabras exactas)</label>
-            <input class="form-input" id="ref-hook" type="text" placeholder='Ej: "Si comes esto todos los días tu energía va a cambiar..."'>
+        <!-- MODO 1: Referente -->
+        <div id="bloque-referente">
+          <div style="font-weight:700;font-size:14px;color:#1A1A1A;margin-bottom:16px;display:flex;align-items:center;gap:8px">
+            <span style="background:#FF6600;color:#fff;width:22px;height:22px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800">1</span>
+            Datos del video referente
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">🔗 Link del video</label>
+              <input class="form-input" id="ref-link" type="url" placeholder="https://tiktok.com/@cuenta/video/...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">👤 Cuenta (@)</label>
+              <input class="form-input" id="ref-cuenta" type="text" placeholder="@thehealthybarista">
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label class="form-label">🪝 Hook — primeras palabras exactas del video</label>
+              <input class="form-input" id="ref-hook" type="text" placeholder='Ej: "en otro universo somos 2 matcha iced de frutilla"'>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label class="form-label">📝 Resumen del video</label>
+              <textarea class="form-textarea" id="ref-resumen" placeholder="Qué hace el video, qué muestra, cuál es el mensaje principal..."></textarea>
+            </div>
           </div>
         </div>
 
-        <div class="form-grid">
-          <div class="form-group full">
-            <label class="form-label">📝 Resumen del video (¿de qué trata?)</label>
-            <textarea class="form-textarea" id="ref-resumen" placeholder="Describe en 2-3 líneas qué hace el video, qué muestra, cuál es el mensaje principal..."></textarea>
+        <!-- MODO 2: Objetivo -->
+        <div id="bloque-objetivo" style="display:none">
+          <div style="font-weight:700;font-size:14px;color:#1A1A1A;margin-bottom:16px;display:flex;align-items:center;gap:8px">
+            <span style="background:#1F3D2E;color:#fff;width:22px;height:22px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800">2</span>
+            Tu objetivo de contenido
+          </div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label class="form-label">🥤 Producto o tema a comunicar</label>
+              <input class="form-input" id="obj-producto" type="text" placeholder='Ej: "Hojicha Frutilla", "Pinsa de Quinoa", "Matcha Adaptógeno"'>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label class="form-label">🎯 Objetivo del video — ¿qué quieres lograr?</label>
+              <textarea class="form-textarea" id="obj-objetivo" placeholder='Ej: "Quiero mostrar la preparación del Hojicha Frutilla, que se vea premium y que la gente quiera venir a probarlo. Que transmita verano y frescura."'></textarea>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">💡 ¿Qué hace único este producto?</label>
+              <input class="form-input" id="obj-diferencial" type="text" placeholder='Ej: "Es el único hojicha de Santiago con leche de avena y frutillas frescas"'>
+            </div>
+            <div class="form-group">
+              <label class="form-label">👤 ¿A quién va dirigido?</label>
+              <input class="form-input" id="obj-audiencia" type="text" placeholder='Ej: "Mujeres 25-35, activas, van al gym, aman lo estético"'>
+            </div>
           </div>
         </div>
 
@@ -1950,8 +1994,8 @@
       <!-- Loading -->
       <div class="loading-overlay" id="pipeline-loading">
         <div class="loading-spinner"></div>
-        <div style="font-size:15px;font-weight:700;color:#374151">Analizando video referente...</div>
-        <div style="font-size:13px;color:#9CA3AF;margin-top:6px">La IA está generando 10 ideas adaptadas a PINSA</div>
+        <div style="font-size:15px;font-weight:700;color:#374151" id="loading-title">Analizando...</div>
+        <div style="font-size:13px;color:#9CA3AF;margin-top:6px">El director creativo está generando 10 ideas para PINSA</div>
       </div>
 
       <!-- Ideas generadas -->
@@ -2538,6 +2582,37 @@
     });
   }
 
+  // ─── MODO SELECTOR ─────────────────────────
+  window._modoActual = 'referente';
+
+  function setModo(modo) {
+    window._modoActual = modo;
+    const btnRef = document.getElementById('modo-btn-referente');
+    const btnObj = document.getElementById('modo-btn-objetivo');
+    const bloqRef = document.getElementById('bloque-referente');
+    const bloqObj = document.getElementById('bloque-objetivo');
+
+    if (modo === 'referente') {
+      btnRef.style.border = '2px solid #FF6600';
+      btnRef.style.background = '#FFF3E0';
+      btnRef.querySelector('div').style.color = '#CC5200';
+      btnObj.style.border = '1.5px solid #E5E7EB';
+      btnObj.style.background = '#F9FAFB';
+      btnObj.querySelector('div').style.color = '#374151';
+      bloqRef.style.display = 'block';
+      bloqObj.style.display = 'none';
+    } else {
+      btnObj.style.border = '2px solid #1F3D2E';
+      btnObj.style.background = '#ECFDF5';
+      btnObj.querySelector('div').style.color = '#065F46';
+      btnRef.style.border = '1.5px solid #E5E7EB';
+      btnRef.style.background = '#F9FAFB';
+      btnRef.querySelector('div').style.color = '#374151';
+      bloqObj.style.display = 'block';
+      bloqRef.style.display = 'none';
+    }
+  }
+
   // ─── PIPELINE IA ────────────────────────────
   const PILLAR_COLORS = {
     'Educativo':    { bg:'#EEF2FF', color:'#3730A3' },
@@ -2549,10 +2624,15 @@
   };
 
   async function generarIdeas() {
-    const link    = document.getElementById('ref-link').value.trim();
-    const cuenta  = document.getElementById('ref-cuenta').value.trim();
-    const hook    = document.getElementById('ref-hook').value.trim();
-    const resumen = document.getElementById('ref-resumen').value.trim();
+    const modo    = window._modoActual || 'referente';
+    const link    = document.getElementById('ref-link')?.value.trim() || '';
+    const cuenta  = document.getElementById('ref-cuenta')?.value.trim() || '';
+    const hook    = document.getElementById('ref-hook')?.value.trim() || '';
+    const resumen = document.getElementById('ref-resumen')?.value.trim() || '';
+    const objProducto  = document.getElementById('obj-producto')?.value.trim() || '';
+    const objObjetivo  = document.getElementById('obj-objetivo')?.value.trim() || '';
+    const objDiferencial = document.getElementById('obj-diferencial')?.value.trim() || '';
+    const objAudiencia = document.getElementById('obj-audiencia')?.value.trim() || '';
     const pillar  = document.getElementById('ref-pillar').value;
     const tipo    = document.getElementById('ref-tipo').value;
     const vViews    = document.getElementById('met-views').value.trim();
@@ -2564,59 +2644,80 @@
     const statusEl = document.getElementById('pipeline-status');
     statusEl.style.color = '#EF4444';
 
-    if (!hook || !resumen) { statusEl.textContent = '⚠ Completa al menos el Hook y el Resumen'; return; }
+    if (modo === 'referente' && (!hook || !resumen)) { statusEl.textContent = '⚠ Completa el Hook y el Resumen del video'; return; }
+    if (modo === 'objetivo' && !objProducto) { statusEl.textContent = '⚠ Indica el producto o tema del video'; return; }
+    if (modo === 'objetivo' && !objObjetivo) { statusEl.textContent = '⚠ Describe el objetivo del video'; return; }
 
     statusEl.textContent = '';
     document.getElementById('ideas-container').style.display = 'none';
     document.getElementById('pipeline-loading').style.display = 'block';
 
-    const systemPrompt = `Eres el consulente de contenido de PINSA. Superfoods & Wellness — una cafetería bakery premium en Santiago de Chile.
-PINSA se posiciona como: wellness premium, superfoods, calidad artesanal.
-Clientes: adultos 25-45, conscientes de su salud, vida urbana activa, Santiago.
-Tono: cálido, auténtico, competente — no frío corporate, no influencer vacío.
-Colores marca: naranja #FF6600, verde oscuro #1F3D2E.
-Productos estrella: pinsa romana (masa madre, superfoods), bebidas funcionales (matcha, adaptógenos), productos artesanales wellness.
-Canales: Instagram (comunidad, profundidad) y TikTok (reach, descubrimiento, energía).
-KPIs reales: reach local Santiago, engagement en contenido producido, reviews Google, clicks bio.
+    const systemPrompt = `Eres el director creativo de contenido de PINSA. Superfoods & Wellness — cafetería bakery premium en Santiago de Chile.
 
-Cuando el usuario te dé datos de un video viral de referencia, debes generar exactamente 10 ideas de video completas y listas para grabar, adaptadas 100% a PINSA Santiago.
+MARCA:
+- Posicionamiento: wellness premium, superfoods, calidad artesanal. NO es una cafetería genérica.
+- Clientes: adultos 25-45, conscientes de su salud, vida urbana activa, Santiago de Chile.
+- Tono: cálido, auténtico, competente — nunca frío corporate, nunca influencer vacío, nunca genérico.
+- Productos estrella: pinsa romana (masa madre, superfoods), bebidas funcionales (matcha, hojicha, adaptógenos), productos artesanales wellness.
+- Canales: TikTok (reach, descubrimiento, energía) e Instagram (comunidad, profundidad).
+- KPIs que importan: reach local Santiago, engagement real, reviews Google generadas, visitas al local.
 
-Responde SOLO en JSON válido, sin markdown ni texto adicional. El JSON debe tener esta estructura:
+TU ROL — DIRECTOR CREATIVO SENIOR:
+Tu trabajo es generar ideas que Kele NO habría pensado solo. Ideas que sorprendan, que tengan ángulos inesperados, que conecten emocionalmente con el cliente de PINSA. No adaptes mecánicamente — crea con intención.
+
+PRINCIPIOS CREATIVOS OBLIGATORIOS:
+1. Cada hook debe crear tensión, curiosidad o deseo en los primeros 2 segundos. Si el hook no para el scroll, la idea no vale.
+2. Varía los formatos: no todas las ideas pueden ser ASMR o receta. Mezcla emocional + educativo + aspiracional + sorpresa.
+3. Conecta con la vida del cliente, no solo con el producto. El producto es el vehículo, la emoción es el destino.
+4. Usa tensión narrativa: "Lo que nadie te dice...", "Hice esto por 7 días y...", "La diferencia entre X e Y es..."
+5. Piensa en el momento del día, la estación, el estado de ánimo del cliente de PINSA en Santiago.
+6. Al menos 2 de las 10 ideas deben ser formatos que raramente se ven en cuentas de cafeterías chilenas — algo que rompa el patrón.
+
+ESTRUCTURA JSON — responde SOLO en JSON válido sin markdown:
 {
-  "analisis_referente": "2-3 frases explicando por qué funciona el video referente",
+  "analisis_referente": "Si hay video referente: 2-3 frases sobre por qué funciona y qué mecanismo psicológico activa. Si es objetivo de producto: análisis de oportunidad creativa del producto.",
   "ideas": [
     {
       "numero": 1,
-      "hook": "Frase de gancho — máx 10 palabras, impactante, en español",
-      "tipo_video": "Tutorial|ASMR|Day-in-the-life|Trend|Blind test|Testimonial|Staff|Receta",
+      "hook": "Máx 10 palabras. Debe parar el scroll. Específico, no genérico.",
+      "angulo_creativo": "En 1 frase: el insight o ángulo inesperado que hace única esta idea",
+      "tipo_video": "Tutorial|ASMR|Day-in-the-life|Trend|Blind test|Testimonial|Staff|Receta|Educativo|Sorpresa",
       "pillar": "Educativo|Producto|Comunidad|Promoción|BTS|Founder",
       "duracion": "15s|30s|60s",
-      "producto_pinsa": "Qué producto PINSA protagoniza o se sugiere mostrar",
+      "producto_pinsa": "Producto PINSA específico que protagoniza",
       "guion": {
-        "apertura": "0-3 seg: exactamente qué decir/hacer con el hook",
-        "desarrollo": "3-25 seg: contenido central del video",
-        "cierre": "25-30 seg: llamada a la acción"
+        "apertura": "0-3s: exactamente qué decir y qué se ve en pantalla",
+        "desarrollo": "3-25s: secuencia detallada del contenido",
+        "cierre": "CTA específico y memorable — no genérico"
       },
       "produccion": {
-        "angulo": "Descripción del ángulo de cámara",
-        "luz": "Tipo de iluminación sugerida",
-        "props": "Elementos visuales necesarios"
+        "angulo": "Ángulo y movimiento de cámara específico",
+        "luz": "Iluminación y hora del día sugerida",
+        "props": "Elementos visuales, texturas, colores en escena"
       },
-      "hashtags": ["#hashtag1", "#hashtag2", "#hashtag3", "#hashtag4", "#hashtag5"]
+      "por_que_funciona": "1 frase explicando el mecanismo psicológico que hace viral esta idea",
+      "hashtags": ["#h1","#h2","#h3","#h4","#h5"]
     }
   ]
 }`;
 
-    const userMsg = `Video referente:
-- Cuenta: ${cuenta || 'No especificada'}
-- Link: ${link || 'No proporcionado'}
-- Hook original: "${hook}"
-- Resumen del video: ${resumen}
-- Pilar sugerido: ${pillar || 'Libre'}
-- Tipo de video: ${tipo || 'Libre'}
-- Métricas: Views: ${vViews||'—'} | Likes: ${vLikes||'—'} | Comentarios: ${vComments||'—'} | Compartidos: ${vShares||'—'}
+    const userMsg = modo === 'referente'
+      ? `MODO: Video referente viral
+Cuenta: ${cuenta || '—'} | Link: ${link || '—'}
+Hook original: "${hook}"
+Resumen: ${resumen}
+Pilar sugerido: ${pillar || 'Libre'} | Tipo: ${tipo || 'Libre'}
+Métricas: Views ${vViews||'—'} | Likes ${vLikes||'—'} | Comentarios ${vComments||'—'} | Compartidos ${vShares||'—'}
 
-Genera 10 ideas de video completas para PINSA. Santiago de Chile. Wellness premium. Adapta el concepto viral al contexto de la marca.`;
+Analiza por qué este video funciona y genera 10 ideas superiores adaptadas a PINSA Santiago. Sé un director creativo senior — sorprende.`
+      : `MODO: Objetivo de producto
+Producto a comunicar: ${objProducto}
+Objetivo del video: ${objObjetivo}
+Diferencial del producto: ${objDiferencial || 'No especificado'}
+Audiencia objetivo: ${objAudiencia || 'Cliente típico PINSA 25-45 Santiago'}
+Pilar sugerido: ${pillar || 'Libre'} | Tipo: ${tipo || 'Libre'}
+
+Genera 10 ideas de video para comunicar este producto de PINSA de forma creativa y superior. Piensa como un director creativo senior — qué haría Kele que nadie más haría. Cada idea debe tener un ángulo inesperado.`;
 
     try {
       const res = await fetch('https://pinsa-ai-proxy.alberto-agostini.workers.dev', {
@@ -2681,6 +2782,7 @@ Genera 10 ideas de video completas para PINSA. Santiago de Chile. Wellness premi
         <div class="idea-card">
           <div class="idea-num">${idea.numero}</div>
           <div class="idea-hook">🪝 ${idea.hook}</div>
+          ${idea.angolo_creativo ? `<div style="font-size:12px;color:#FF6600;font-style:italic;margin-bottom:8px;padding-left:2px">💡 ${idea.angolo_creativo}</div>` : ''}
           <div class="idea-tags">
             <span class="idea-tag pillar" style="background:${pc.bg};color:${pc.color}">${idea.pillar}</span>
             <span class="idea-tag tipo">${idea.tipo_video}</span>
@@ -2702,6 +2804,11 @@ Genera 10 ideas de video completas para PINSA. Santiago de Chile. Wellness premi
             <div>🎨 <b>Props:</b> ${idea.produccion.props}</div>
           </div>
 
+          ${idea.por_que_funciona ? `
+          <div style="background:#F0FDF4;border-left:3px solid #1F3D2E;border-radius:6px;padding:8px 12px;margin-top:10px;font-size:12px;color:#166534">
+            🧠 <b>Por qué funciona:</b> ${idea.por_que_funciona}
+          </div>` : ''}
+
           <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px">
             ${idea.hashtags.map(h => `<span style="font-size:11px;color:#FF6600;background:#FFF3E0;padding:2px 8px;border-radius:20px;font-weight:600">${h}</span>`).join('')}
           </div>
@@ -2721,7 +2828,7 @@ Genera 10 ideas de video completas para PINSA. Santiago de Chile. Wellness premi
   }
 
   function limpiarForm() {
-    ['ref-link','ref-cuenta','ref-hook','ref-resumen','met-views','met-likes','met-comments','met-shares'].forEach(id => {
+    ['ref-link','ref-cuenta','ref-hook','ref-resumen','obj-producto','obj-objetivo','obj-diferencial','obj-audiencia','met-views','met-likes','met-comments','met-shares'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
