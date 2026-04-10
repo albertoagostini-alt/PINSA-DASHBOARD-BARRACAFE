@@ -675,7 +675,8 @@ function openEdit(id){
   document.getElementById('f-guion').value=c.Guion||'';
   document.getElementById('f-ref').value=c.Referencia||'';
   document.getElementById('f-notas').value=c.Notas||'';
-  if(c.Fecha_Planificada){const p=c.Fecha_Planificada.split('/');if(p.length===3)document.getElementById('f-fecha').value=`${p[2]}-${p[1]}-${p[0]}`}
+  const fp=fmtFecha(c.Fecha_Planificada);
+  if(fp&&fp!=='—'){const p=fp.split('/');if(p.length===3)document.getElementById('f-fecha').value=`${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;}
   document.getElementById('modalContenido').classList.add('open');
 }
 function openInfModal(){document.getElementById('modalInf').classList.add('open')}
