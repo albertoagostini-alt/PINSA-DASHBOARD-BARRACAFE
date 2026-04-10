@@ -1970,9 +1970,27 @@
         </div>
 
         <div class="form-grid">
-          <div class="form-group full">
-            <label class="form-label">🪝 Hook del video — primeras palabras exactas</label>
+          <div class="form-group" style="flex:0 0 280px">
+            <label class="form-label">🎭 Tipo de hook</label>
+            <select class="form-select" id="ref-hook-tipo" onchange="onHookTipoChange(this.value)">
+              <option value="">— Libre — la IA decide —</option>
+              <option value="curiosidad">🔥 Curiosidad — "Nadie te cuenta esto..."</option>
+              <option value="promesa">⚡ Promesa de valor — "Te enseño a..."</option>
+              <option value="shock">😱 Sorpresa / Shock — "Perdí todo en 24h..."</option>
+              <option value="pregunta">❓ Pregunta — "¿Te ha pasado esto?"</option>
+              <option value="identificacion">🧠 Identificación — "Si tienes 25 y no sabes..."</option>
+              <option value="error">🚫 Error común — "Estás haciendo mal esto"</option>
+              <option value="historia">💡 Historia / Storytelling — "Todo empezó cuando..."</option>
+              <option value="rapidez">⏱️ Rapidez / Facilidad — "Aprende esto en 30 seg"</option>
+              <option value="experimento">🧪 Experimento / Reto — "Probé esto 7 días y..."</option>
+              <option value="urgencia">🚨 Urgencia — "Mira esto antes de que..."</option>
+            </select>
+            <div id="hook-tipo-hint" style="font-size:11px;color:#9CA3AF;margin-top:4px;min-height:16px"></div>
+          </div>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">🪝 Hook — primeras palabras exactas del referente</label>
             <input class="form-input" id="ref-hook" type="text" placeholder='Ej: "en otro universo somos 2 matcha iced de frutilla"'>
+            <div style="font-size:11px;color:#9CA3AF;margin-top:4px">Copia exacto del referente · Si no hay referente déjalo vacío</div>
           </div>
         </div>
 
@@ -2282,6 +2300,7 @@
           <div class="form-group full">
             <label class="form-label">🪝 Hook del video</label>
             <input class="form-input" id="sb-hook" type="text" placeholder='Ej: "en otro universo somos 2 matcha iced de frutilla"'>
+            <div style="font-size:11px;color:#9CA3AF;margin-top:3px">Se usa para el texto en pantalla del primer shot</div>
           </div>
         </div>
 
@@ -2759,6 +2778,31 @@
     });
   }
 
+  const HOOK_HINTS = {
+    'curiosidad': 'Genera intriga — deja una pregunta abierta. Ej: "Nadie te cuenta esto sobre el matcha..."',
+    'promesa': 'Di qué va a ganar viendo el video. Ej: "3 razones por las que este matcha cambia tu tarde"',
+    'shock': 'Algo inesperado o impactante. Ej: "Este ingrediente casi desaparece de PINSA..."',
+    'pregunta': 'Invita a que el espectador piense. Ej: "¿Por qué tu matcha sabe diferente al nuestro?"',
+    'identificacion': 'Habla directamente a un tipo de persona. Ej: "Si tomas matcha en Santiago, necesitas ver esto"',
+    'error': 'Corrige algo que la gente hace mal. Ej: "Estás preparando el matcha al revés"',
+    'historia': 'Empieza con una mini historia. Ej: "Todo empezó cuando un cliente nos dijo que..."',
+    'rapidez': 'Promete algo rápido. Ej: "En 15 segundos te explico por qué este matcha es diferente"',
+    'experimento': 'Muestra algo que se está probando. Ej: "Probé tomar esto cada mañana por 7 días y..."',
+    'urgencia': 'Hace sentir que no deben perderse el contenido. Ej: "Solo esta semana tenemos esto en PINSA"',
+  };
+
+  function onHookTipoChange(val) {
+    const hint = document.getElementById('hook-tipo-hint');
+    if (!hint) return;
+    if (val && HOOK_HINTS[val]) {
+      hint.textContent = '→ ' + HOOK_HINTS[val];
+      hint.style.color = '#FF6600';
+    } else {
+      hint.textContent = 'La IA elige el mejor tipo de hook para cada idea';
+      hint.style.color = '#9CA3AF';
+    }
+  }
+
   // ─── HELPERS FORM ──────────────────────────
   function onProdSelect(val) {
     const inp = document.getElementById('obj-producto');
@@ -2805,6 +2849,7 @@
     const link       = document.getElementById('ref-link').value.trim();
     const cuenta     = document.getElementById('ref-cuenta').value.trim();
     const hook       = document.getElementById('ref-hook').value.trim();
+    const hookTipo   = document.getElementById('ref-hook-tipo')?.value || '';
     const resumen    = document.getElementById('ref-resumen').value.trim();
     const pillar     = document.getElementById('ref-pillar').value;
     const tipo       = document.getElementById('ref-tipo').value;
@@ -2879,6 +2924,7 @@ REGLAS NO NEGOCIABLES:
 5. Mínimo 1 idea que use un dato de Sebastián que sorprenda al cliente.
 6. Mínimo 1 idea que Marcos defienda como "la que convierte más rápido a visita física".
 7. Hooks siempre específicos — nunca "Este producto es increíble" o similares genéricos.
+8. SI SE ESPECIFICA UN TIPO DE HOOK: todas las ideas DEBEN usar ese estilo retórico. No es sugerencia, es obligatorio. Andrea lo exige. El tipo de hook define la estructura emocional de la apertura — el contenido cambia, la estructura retórica no.
 8. Guiones ejecutables por Kele con su teléfono — sin equipo técnico, sin presupuesto.
 
 ${tieneReferente ? `VIDEO REFERENTE DISPONIBLE: Andrea analiza el mecanismo psicológico y visual. Marcos extrae el insight emocional. El equipo usa el referente como INSPIRACIÓN DE FORMATO — las ideas deben superarlo, no copiarlo.` : `SIN REFERENTE: el equipo inventa desde las tendencias actuales TikTok wellness/food LATAM 2025.`}
@@ -2926,6 +2972,7 @@ OBJETIVO: ${objetivo}
 ${diferencial ? `DIFERENCIAL: ${diferencial}` : ''}
 ${audiencia ? `AUDIENCIA: ${audiencia}` : ''}
 ${pillar ? `PILAR PREFERIDO: ${pillar}` : ''}
+${hookTipo ? `TIPO DE HOOK PARA LAS IDEAS: ${hookTipo.toUpperCase()} — el equipo debe construir los hooks de las 10 ideas usando este estilo retórico` : 'TIPO DE HOOK: libre — el equipo elige el mejor estilo para cada idea'}
 ${tipo ? `TIPO DE VIDEO PREFERIDO: ${tipo}` : ''}
 
 ${tieneRef ? `VIDEO REFERENTE:
