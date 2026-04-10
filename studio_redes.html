@@ -433,7 +433,31 @@ let cat=null, allCont=[], currentBrand='PINSA';
 const STAGES=['Idea','Brief','Grabado','Calendariado','Publicado'];
 const STAGE_COLORS=['#7A7570','#C8893A','#4A8FD4','#00B4B4','#5A9E7A'];
 
+function initSelects(){
+  const D={
+    'f-brand':  ['PINSA','EXO','BKS'],
+    'f-canal':  ['Instagram','TikTok'],
+    'f-formato':['Reel','Video','Carrusel','Story','Grafica'],
+    'f-pilar':  ['Cuerpo & Rutina','Comunidad & Cultura','Deporte & Movimiento','Producto con Propósito','Visión & Opinión'],
+    'f-hora':   ['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00'],
+    'f-quien':  ['Kele','Nea','In house','Externo'],
+    'f-estado': ['Idea','Brief','Grabado','Calendariado','Publicado'],
+    'inf-camp': ['Brunch','Matcha','Launch','Stagionale','Otro'],
+    'inf-estado':['Invitado','Confirmado','Visitó','Grabó','Publicado'],
+  };
+  Object.entries(D).forEach(([id,vals])=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.innerHTML='';
+    vals.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;el.appendChild(o);});
+  });
+  // Set defaults
+  const fh=document.getElementById('f-hora');if(fh)fh.value='09:00';
+  const fq=document.getElementById('f-quien');if(fq)fq.value='Kele';
+  const fe=document.getElementById('f-estado');if(fe)fe.value='Idea';
+}
 window.onload=async()=>{
+  initSelects();
   document.getElementById('ll').src=LOGO_DATA;
   document.getElementById('hl').src=LOGO_DATA;
   updateWeek();
