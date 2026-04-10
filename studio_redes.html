@@ -1870,8 +1870,91 @@
           </div>
           <div class="form-grid">
             <div class="form-group full">
-              <label class="form-label">🥤 Producto o tema a comunicar</label>
-              <input class="form-input" id="obj-producto" type="text" placeholder='Ej: "Hojicha Frutilla", "Pinsa de Quinoa", "Matcha Adaptógeno"'>
+              <label class="form-label">🥤 Producto PINSA</label>
+              <select class="form-select" id="obj-producto-select" onchange="onProductoSelect(this.value)" style="margin-bottom:8px">
+              <option value="">— Texto libre —</option>
+              <optgroup label="🍵 Iced Matchas">
+                <option value="MATCHA MANGO">MATCHA MANGO</option>
+                <option value="MATCHA ARANDANO">MATCHA ARANDANO</option>
+                <option value="MATCHA FRUTILLA">MATCHA FRUTILLA</option>
+                <option value="MATCHA ACAI">MATCHA ACAI</option>
+                <option value="COCO MATCHA">COCO MATCHA</option>
+                <option value="COCO FRUTILLA MATCHA">COCO FRUTILLA MATCHA</option>
+                <option value="VAINILLA MATCHA">VAINILLA MATCHA</option>
+                <option value="MONT BLANC MATCHA">MONT BLANC MATCHA</option>
+                <option value="LIMONADA MATCHA">LIMONADA MATCHA</option>
+                <option value="MATCHA LATTE FRIO">MATCHA LATTE FRIO</option>
+                <option value="MATCHA LATTE CALIENTE">MATCHA LATTE CALIENTE</option>
+                <option value="BETA MOJITO">BETA MOJITO</option>
+                <option value="COLD BREW">COLD BREW</option>
+                <option value="MATCHA PIÑA">MATCHA PIÑA</option>
+              </optgroup>
+              <optgroup label="☕ Iced Super Latte">
+                <option value="COLD BREW VAINILLA">COLD BREW VAINILLA</option>
+                <option value="CREMA TIRAMISU">CREMA TIRAMISU</option>
+                <option value="CREMA DE VAINILLA">CREMA DE VAINILLA</option>
+                <option value="TIRAMISU MATCHA">TIRAMISU MATCHA</option>
+                <option value="MONT BLANC COFFEE">MONT BLANC COFFEE</option>
+                <option value="COCO ESPRESSO CHOCO">COCO ESPRESSO CHOCO</option>
+                <option value="CREMA CACAO">CREMA CACAO</option>
+                <option value="ICE LATTE">ICE LATTE</option>
+              </optgroup>
+              <optgroup label="🥗 Super Food">
+                <option value="PINSA SIN GLUTEN POLLO">PINSA SIN GLUTEN POLLO</option>
+                <option value="TOSTADA HUMMUS DE BETARRAGA">TOSTADA HUMMUS DE BETARRAGA</option>
+                <option value="TOSTADA DE PROSCIUTTO Y RICOTTA">TOSTADA DE PROSCIUTTO Y RICOTTA</option>
+                <option value="TOSTADA DE MECHADA PALTA">TOSTADA DE MECHADA PALTA</option>
+                <option value="SORRISO JAMON DE PAVO">SORRISO JAMON DE PAVO</option>
+                <option value="SORRISO PROSCIUTTO CRUDO">SORRISO PROSCIUTTO CRUDO</option>
+                <option value="SORRISO SALMON CURADO">SORRISO SALMON CURADO</option>
+                <option value="RECETA SALMON">RECETA SALMON</option>
+                <option value="BURRITO POLLO">BURRITO POLLO</option>
+                <option value="SANDWICH HUMMUS BETARRAGA X2">SANDWICH HUMMUS BETARRAGA X2</option>
+                <option value="SANDWICH MECHADA PALTA X2">SANDWICH MECHADA PALTA X2</option>
+                <option value="SANDWICH PROSCIUTTO X2">SANDWICH PROSCIUTTO X2</option>
+                <option value="SANDWICH ATUN TARTAR X2">SANDWICH ATUN TARTAR X2</option>
+                <option value="TOSTADA SALMÓN">TOSTADA SALMÓN</option>
+                <option value="SALSA HUMMUS PALTA">SALSA HUMMUS PALTA</option>
+                <option value="RECETA SALSA QUESO CREMA">RECETA SALSA QUESO CREMA</option>
+                <option value="SALSA SALMON">SALSA SALMON</option>
+                <option value="SALSA MECHADA">SALSA MECHADA</option>
+                <option value="RECETA REDUCCION ACETO BALSAMICO">RECETA REDUCCION ACETO BALSAMICO</option>
+                <option value="SALSA PROSCIUTTO">SALSA PROSCIUTTO</option>
+                <option value="RECETA CARNE MECHADA">RECETA CARNE MECHADA</option>
+                <option value="ENSALADA QUINOA HUMMUS + PROCIUTTO">ENSALADA QUINOA HUMMUS + PROCIUTTO</option>
+              </optgroup>
+              <optgroup label="🫐 Super Açaí">
+                <option value="ACAI BRUNCH">ACAI BRUNCH</option>
+              </optgroup>
+              <optgroup label="🥤 Super Jugos">
+                <option value="IMMUNITY">IMMUNITY</option>
+                <option value="BERRY LIFT">BERRY LIFT</option>
+                <option value="GOLDEN RISE">GOLDEN RISE</option>
+                <option value="BANANA FUEL">BANANA FUEL</option>
+                <option value="BEET CHARGE">BEET CHARGE</option>
+              </optgroup>
+              <optgroup label="🫙 Salsas & Syrups">
+                <option value="GUACAMOLE">GUACAMOLE</option>
+                <option value="SYRUP DE FRUTILLA">SYRUP DE FRUTILLA</option>
+                <option value="SYRUP DE ARANDANO">SYRUP DE ARANDANO</option>
+                <option value="SYRUP DE MANGO">SYRUP DE MANGO</option>
+                <option value="SYRUP DE BETARRAGA">SYRUP DE BETARRAGA</option>
+                <option value="SYRUP DE FRAMBUEZA">SYRUP DE FRAMBUEZA</option>
+                <option value="SYRUP DE PIÑA">SYRUP DE PIÑA</option>
+              </optgroup>
+              <optgroup label="⚙️ Producción">
+                <option value="BASE COLD BREW 1">BASE COLD BREW 1</option>
+                <option value="PREPARACION CARNE MECHADA">PREPARACION CARNE MECHADA</option>
+                <option value="HUMMUS">HUMMUS</option>
+                <option value="COLESLAW">COLESLAW</option>
+                <option value="POLLO MARINADO">POLLO MARINADO</option>
+                <option value="POLLO APANADO">POLLO APANADO</option>
+                <option value="PREP BURRITO POLLO">PREP BURRITO POLLO</option>
+                <option value="ALMIBAR DE ALULOSA">ALMIBAR DE ALULOSA</option>
+              </optgroup>
+              </select>
+              <input class="form-input" id="obj-producto" type="text" placeholder='O escribe un producto nuevo / especial (ej: "Hojicha Frutilla")' style="font-size:13px">
+              <div style="font-size:11px;color:#9CA3AF;margin-top:4px">Selecciona de la lista o escribe directamente · 65 productos activos cargados</div>
             </div>
           </div>
           <div class="form-grid">
@@ -2580,6 +2663,21 @@
         animation:fadeIn 0.2s ease
       ">${m.label} ${val}</span>`;
     });
+  }
+
+  // ─── PRODUCTO SELECT ────────────────────────
+  function onProductoSelect(val) {
+    const input = document.getElementById('obj-producto');
+    if (val) {
+      input.value = val;
+      input.style.borderColor = '#FF6600';
+      input.style.background = '#FFF8F5';
+    } else {
+      input.value = '';
+      input.style.borderColor = '';
+      input.style.background = '';
+      input.focus();
+    }
   }
 
   // ─── MODO SELECTOR ─────────────────────────
