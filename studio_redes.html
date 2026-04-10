@@ -753,31 +753,41 @@ async function saveKpi(){
   const semana=document.getElementById('kpi-semana').value;
   const fr=document.getElementById('kpi-fecha').value;let ff='';
   if(fr){const[y,m,d]=fr.split('-');ff=`${d}/${m}/${y}`}
-
-  // Check if semana already exists
   const btn=document.querySelector('#modalKpi .btn-primary');
-  const existing=await fetch(`${GAS}?action=getKpiSemanal`,{redirect:'follow'});
-  const ed=await existing.json();
-  const yaExiste=(ed.semanas||[]).some(s=>s.Semana===semana);
-  if(yaExiste){
-    const confirma=confirm(`La semana ${semana} ya está registrada. ¿Quieres sobreescribirla?`);
-    if(!confirma)return;
-  }
 
-  // Loading state
-  btn.disabled=true;btn.textContent='Guardando...';
-  const p={action:'saveKpis',Semana:semana,Fecha_Inicio:ff,
-    Top_Hook:document.getElementById('kpi-hook').value,
-    Notas_Semana:document.getElementById('kpi-notas').value,
-    Sobreescribir:yaExiste};
+  // Loading state FIRST
+  btn.disabled=true;btn.innerHTML='⏳ Guardando...';
+
   try{
+    // Check duplicates
+    const existing=await fetch(`${GAS}?action=getKpiSemanal`,{redirect:'follow'});
+    const ed=await existing.json();
+    const yaExiste=(ed.semanas||[]).some(s=>s.Semana===semana);
+    if(yaExiste){
+      btn.disabled=false;btn.innerHTML='💾 Guardar';
+      const confirma=confirm(`La semana ${semana} ya está registrada. ¿Quieres sobreescribirla?`);
+      if(!confirma)return;
+      btn.disabled=true;btn.innerHTML='⏳ Guardando...';
+    }
+
+    const p={action:'saveKpis',Semana:semana,Fecha_Inicio:ff,
+      Top_Hook:document.getElementById('kpi-hook').value,
+      Notas_Semana:document.getElementById('kpi-notas').value,
+      Sobreescribir:yaExiste};
+
     const r=await fetch(GAS,{method:'POST',body:JSON.stringify(p)});
-    const d=await r.json();
+    const txt=await r.text();
+    let d;
+    try{d=JSON.parse(txt);}catch(e){d={error:'Respuesta inválida del servidor'};}
     btn.disabled=false;btn.innerHTML='💾 Guardar';
-    if(d.error){toast(d.error,true);return}
-    toast(`✅ ${d.mensaje} — Tasa: ${d.tasa}`);
-    closeModal('modalKpi');loadKpis();
-  }catch(e){btn.disabled=false;btn.innerHTML='💾 Guardar';toast('Error',true)}
+    if(d.error){toast(d.error,true);return;}
+    toast(`✅ ${d.mensaje} — Tasa: ${d.tasa} — Views: ${d.views||0}`);
+    closeModal('modalKpi');
+    loadKpis();
+  }catch(e){
+    btn.disabled=false;btn.innerHTML='💾 Guardar';
+    toast('Error de conexión — intenta de nuevo',true);
+  }
 }
 
 function showTab(t){
