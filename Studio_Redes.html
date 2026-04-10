@@ -312,16 +312,26 @@ tbody td{padding:10px 12px;font-size:12px;vertical-align:middle}
     <div class="modal-hdr"><div class="modal-title" id="mTitle">Nuevo contenido</div><button class="modal-close" onclick="closeModal('modalContenido')">✕</button></div>
     <div class="modal-body">
       <div class="form-row three">
-        <div class="form-group"><label class="form-label">Brand <span class="req">*</span></label><select class="form-select" id="f-brand"></select></div>
-        <div class="form-group"><label class="form-label">Canal <span class="req">*</span></label><select class="form-select" id="f-canal"></select></div>
-        <div class="form-group"><label class="form-label">Formato <span class="req">*</span></label><select class="form-select" id="f-formato"></select></div>
+        <div class="form-group"><label class="form-label">Brand <span class="req">*</span></label><select class="form-select" id="f-brand">
+  <option>PINSA</option><option>EXO</option><option>BKS</option>
+</select></div>
+        <div class="form-group"><label class="form-label">Canal <span class="req">*</span></label><select class="form-select" id="f-canal">
+  <option>Instagram</option><option>TikTok</option>
+</select></div>
+        <div class="form-group"><label class="form-label">Formato <span class="req">*</span></label><select class="form-select" id="f-formato">
+  <option>Reel</option><option>Video</option><option>Carrusel</option><option>Story</option><option>Grafica</option>
+</select></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">Fecha planificada <span class="req">*</span></label><input class="form-input" type="date" id="f-fecha"></div>
         <div class="form-group"><label class="form-label">Hora <span class="req">*</span></label><select class="form-select" id="f-hora"><option>07:00</option><option>08:00</option><option selected>09:00</option><option>10:00</option><option>11:00</option><option>12:00</option><option>13:00</option><option>14:00</option><option>15:00</option><option>16:00</option><option>17:00</option><option>18:00</option><option>19:00</option><option>20:00</option><option>21:00</option></select></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Pilar <span class="req">*</span></label><select class="form-select" id="f-pilar"></select></div>
+        <div class="form-group"><label class="form-label">Pilar <span class="req">*</span></label><select class="form-select" id="f-pilar">
+  <option>Cuerpo &amp; Rutina</option><option>Comunidad &amp; Cultura</option>
+  <option>Deporte &amp; Movimiento</option><option>Producto con Propósito</option>
+  <option>Visión &amp; Opinión</option>
+</select></div>
         <div class="form-group"><label class="form-label">Serie</label><input class="form-input" type="text" id="f-serie" placeholder="Blind test, Behind the scenes..."></div>
       </div>
       <div class="form-row full">
@@ -332,10 +342,15 @@ tbody td{padding:10px 12px;font-size:12px;vertical-align:middle}
       </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">Referencia</label><input class="form-input" type="text" id="f-ref" placeholder="URL o descripción"></div>
-        <div class="form-group"><label class="form-label">Quien graba <span class="req">*</span></label><select class="form-select" id="f-quien"></select></div>
+        <div class="form-group"><label class="form-label">Quien graba <span class="req">*</span></label><select class="form-select" id="f-quien">
+  <option>Kele</option><option>Nea</option><option>In house</option><option>Externo</option>
+</select></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Estado <span class="req">*</span></label><select class="form-select" id="f-estado"></select></div>
+        <div class="form-group"><label class="form-label">Estado <span class="req">*</span></label><select class="form-select" id="f-estado">
+  <option>Idea</option><option>Brief</option><option>Grabado</option>
+  <option>Calendariado</option><option>Publicado</option>
+</select></div>
         <div class="form-group"><label class="form-label">Notas</label><input class="form-input" type="text" id="f-notas"></div>
       </div>
     </div>
@@ -358,10 +373,15 @@ tbody td{padding:10px 12px;font-size:12px;vertical-align:middle}
       <div class="form-row three">
         <div class="form-group"><label class="form-label">Seguidores</label><input class="form-input" type="number" id="inf-seg"></div>
         <div class="form-group"><label class="form-label">Categoría</label><select class="form-select" id="inf-cat"><option>Food</option><option>Wellness</option><option>Lifestyle</option><option>Deporte</option><option>Otro</option></select></div>
-        <div class="form-group"><label class="form-label">Campaña</label><select class="form-select" id="inf-camp"></select></div>
+        <div class="form-group"><label class="form-label">Campaña</label><select class="form-select" id="inf-camp">
+  <option>Brunch</option><option>Matcha</option><option>Launch</option><option>Stagional</option>
+</select></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Estado</label><select class="form-select" id="inf-estado"></select></div>
+        <div class="form-group"><label class="form-label">Estado</label><select class="form-select" id="inf-estado">
+  <option>Invitado</option><option>Confirmado</option><option>Visitó</option>
+  <option>Grabó</option><option>Publicado</option>
+</select></div>
         <div class="form-group"><label class="form-label">Fecha visita</label><input class="form-input" type="date" id="inf-fecha"></div>
       </div>
       <div class="form-row">
@@ -437,22 +457,30 @@ async function loadCat(){
   try{
     const r=await fetch(`${GAS}?action=getCatalogo`, {redirect:'follow'});
     cat=await r.json();
-    fillSel('f-brand',cat.brands);fillSel('f-canal',cat.canales);
-    fillSel('f-formato',cat.formatos);// hora hardcoded in HTML
-    fillSel('f-pilar',cat.pilares);fillSel('f-quien',cat.quien);
-    fillSel('f-estado',cat.estados);
-    fillSel('inf-camp',cat.campanas);fillSel('inf-estado',cat.estadosInf);
-    // pilar filter
-    const pf=document.getElementById('calPilar');
-    (cat.pilares||[]).forEach(p=>{const o=document.createElement('option');o.value=o.textContent=p;pf.appendChild(o)});
-    // campaña filter
-    const cf=document.getElementById('infCamp');
-    (cat.campanas||[]).forEach(c=>{const o=document.createElement('option');o.value=o.textContent=c;cf.appendChild(o)});
-  }catch(e){console.error(e)}
+    // Update selects from GAS (hardcoded defaults already in place)
+    if(cat.brands)   fillSel('f-brand',   cat.brands);
+    if(cat.canales)  fillSel('f-canal',   cat.canales);
+    if(cat.formatos) fillSel('f-formato', cat.formatos);
+    if(cat.pilares){
+      fillSel('f-pilar', cat.pilares);
+      const pf=document.getElementById('calPilar');
+      const existing=[...pf.options].map(o=>o.value);
+      cat.pilares.forEach(p=>{if(!existing.includes(p)){const o=document.createElement('option');o.value=o.textContent=p;pf.appendChild(o)}});
+    }
+    if(cat.quien)      fillSel('f-quien',      cat.quien);
+    if(cat.estados)    fillSel('f-estado',      cat.estados);
+    if(cat.campanas){
+      fillSel('inf-camp', cat.campanas);
+      const cf=document.getElementById('infCamp');
+      const existing=[...cf.options].map(o=>o.value);
+      cat.campanas.forEach(c=>{if(!existing.includes(c)){const o=document.createElement('option');o.value=o.textContent=c;cf.appendChild(o)}});
+    }
+    if(cat.estadosInf) fillSel('inf-estado', cat.estadosInf);
+  }catch(e){console.warn('getCatalogo: using hardcoded defaults');}
 }
 
 function fillSel(id,vals){
-  const el=document.getElementById(id);if(!el||!vals)return;
+  const el=document.getElementById(id);if(!el||!vals||!vals.length)return;
   el.innerHTML='';vals.forEach(v=>{const o=document.createElement('option');o.value=o.textContent=v;el.appendChild(o)});
 }
 
