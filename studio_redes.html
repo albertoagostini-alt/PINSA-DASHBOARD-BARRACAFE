@@ -729,7 +729,16 @@ async function saveContenido(){
   const p={action,Brand:document.getElementById('f-brand').value,Canal:document.getElementById('f-canal').value,Fecha_Planificada:ff,Hora_Publicacion:document.getElementById('f-hora').value,Pilar:document.getElementById('f-pilar').value,Serie:document.getElementById('f-serie').value,Hook:document.getElementById('f-hook').value,Formato:document.getElementById('f-formato').value,Guion:document.getElementById('f-guion').value,Referencia:document.getElementById('f-ref').value,Quien_Graba:document.getElementById('f-quien').value,Estado:document.getElementById('f-estado').value,Notas:document.getElementById('f-notas').value,Views:document.getElementById('f-views').value,Engagement_Rate:document.getElementById('f-engagement').value};
   if(editId)p.ID=editId;
   if(!p.Hook.trim()){toast('El hook es obligatorio',true);return}
-  try{const r=await fetch(GAS,{method:'POST',body:JSON.stringify(p)});const d=await r.json();if(d.error){toast(d.error,true);return}toast('✅ '+d.mensaje);closeModal('modalContenido');loadResumen();}catch(e){toast('Error guardando',true)}
+  const btn=document.querySelector('#modalContenido .btn-primary');
+  btn.disabled=true;btn.textContent='Guardando...';
+  try{
+    const r=await fetch(GAS,{method:'POST',body:JSON.stringify(p)});
+    const d=await r.json();
+    btn.disabled=false;btn.innerHTML='💾 Guardar';
+    if(d.error){toast(d.error,true);return}
+    toast('✅ '+d.mensaje);closeModal('modalContenido');loadResumen();
+    if(document.getElementById('sec-calendario').classList.contains('active'))loadCal();
+  }catch(e){btn.disabled=false;btn.innerHTML='💾 Guardar';toast('Error guardando',true)}
 }
 
 async function saveInf(){
@@ -741,10 +750,34 @@ async function saveInf(){
 }
 
 async function saveKpi(){
+  const semana=document.getElementById('kpi-semana').value;
   const fr=document.getElementById('kpi-fecha').value;let ff='';
   if(fr){const[y,m,d]=fr.split('-');ff=`${d}/${m}/${y}`}
-  const p={action:'saveKpis',Semana:document.getElementById('kpi-semana').value,Fecha_Inicio:ff,Top_Hook:document.getElementById('kpi-hook').value,Notas_Semana:document.getElementById('kpi-notas').value};
-  try{const r=await fetch(GAS,{method:'POST',body:JSON.stringify(p)});const d=await r.json();if(d.error){toast(d.error,true);return}toast(`✅ ${d.mensaje} — Tasa: ${d.tasa}`);closeModal('modalKpi');loadKpis();}catch(e){toast('Error',true)}
+
+  // Check if semana already exists
+  const btn=document.querySelector('#modalKpi .btn-primary');
+  const existing=await fetch(`${GAS}?action=getKpiSemanal`,{redirect:'follow'});
+  const ed=await existing.json();
+  const yaExiste=(ed.semanas||[]).some(s=>s.Semana===semana);
+  if(yaExiste){
+    const confirma=confirm(`La semana ${semana} ya está registrada. ¿Quieres sobreescribirla?`);
+    if(!confirma)return;
+  }
+
+  // Loading state
+  btn.disabled=true;btn.textContent='Guardando...';
+  const p={action:'saveKpis',Semana:semana,Fecha_Inicio:ff,
+    Top_Hook:document.getElementById('kpi-hook').value,
+    Notas_Semana:document.getElementById('kpi-notas').value,
+    Sobreescribir:yaExiste};
+  try{
+    const r=await fetch(GAS,{method:'POST',body:JSON.stringify(p)});
+    const d=await r.json();
+    btn.disabled=false;btn.innerHTML='💾 Guardar';
+    if(d.error){toast(d.error,true);return}
+    toast(`✅ ${d.mensaje} — Tasa: ${d.tasa}`);
+    closeModal('modalKpi');loadKpis();
+  }catch(e){btn.disabled=false;btn.innerHTML='💾 Guardar';toast('Error',true)}
 }
 
 function showTab(t){
