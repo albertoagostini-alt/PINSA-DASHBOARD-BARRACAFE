@@ -2728,7 +2728,7 @@ Responde SOLO en JSON válido sin markdown. Estructura:
         "props": "Lista específica de elementos en escena: texturas, colores, materiales"
       },
       "mecanismo_viral": "1 frase: qué impulso psicológico hace que alguien comparta este video",
-      "hashtags": ["#h1","#h2","#h3","#h4","#h5"]
+      "hashtags": ["pinsasantiago","wellness","superfoods","matcha","santiago"] — SIN el símbolo # en el JSON, se agrega en el display
     }
   ]
 }`;
@@ -2757,7 +2757,7 @@ El equipo debe generar 10 ideas que sorprendan a Kele. Cada idea debe ser mejor 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
-          max_tokens: 5000,
+          max_tokens: 6000,
           system: systemPrompt,
           messages: [{ role: 'user', content: userMsg }]
         })
@@ -2771,11 +2771,24 @@ El equipo debe generar 10 ideas que sorprendan a Kele. Cada idea debe ser mejor 
       if (!data.content?.length) throw new Error('Respuesta vacía');
 
       let text = data.content.map(c=>c.text||'').join('');
+      // Pulizia robusta
       text = text.replace(/```json\s*/gi,'').replace(/```\s*/gi,'').trim();
+      // Estrai solo il blocco JSON
       const j0 = text.indexOf('{'), j1 = text.lastIndexOf('}');
-      if (j0<0||j1<0) throw new Error('JSON no encontrado');
-      const parsed = JSON.parse(text.slice(j0,j1+1));
-      if (!Array.isArray(parsed.ideas)) throw new Error('Estructura inválida');
+      if (j0<0||j1<0) throw new Error('JSON no encontrado en la respuesta');
+      let jsonStr = text.slice(j0, j1+1);
+      // Rimuovi caratteri di controllo problematici
+      jsonStr = jsonStr.replace(/[\u0000-\u001F\u007F]/g, ' ');
+      let parsed;
+      try {
+        parsed = JSON.parse(jsonStr);
+      } catch(parseErr) {
+        // Fallback: prova a estrarre solo le ideas con regex
+        console.error('JSON parse error:', parseErr.message);
+        console.error('Raw text sample:', jsonStr.slice(0,300));
+        throw new Error('Error al procesar respuesta: ' + parseErr.message);
+      }
+      if (!Array.isArray(parsed.ideas)) throw new Error('Estructura inválida — falta array ideas');
 
       document.getElementById('pipeline-loading').style.display = 'none';
       renderIdeas(parsed, link);
@@ -2847,7 +2860,7 @@ El equipo debe generar 10 ideas que sorprendan a Kele. Cada idea debe ser mejor 
           </div>` : ''}
 
           <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px">
-            ${(idea.hashtags||[]).map(h=>`<span style="font-size:11px;color:#FF6600;background:#FFF3E0;padding:2px 8px;border-radius:20px;font-weight:600">${h}</span>`).join('')}
+            ${(idea.hashtags||[]).map(h=>`<span style="font-size:11px;color:#FF6600;background:#FFF3E0;padding:2px 8px;border-radius:20px;font-weight:600">${h.startsWith('#')?h:'#'+h}</span>`).join('')}
           </div>
 
           <div class="idea-actions">
