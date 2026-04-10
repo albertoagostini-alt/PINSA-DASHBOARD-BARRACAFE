@@ -20,7 +20,7 @@
   --tt:#ff0050; --ttbg:rgba(255,0,80,0.12);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;-webkit-font-smoothing:antialiased}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;-webkit-font-smoothing:antialiased;scrollbar-width:none;-ms-overflow-style:none;}body::-webkit-scrollbar{display:none}
 
 /* ===== LOADING ===== */
 #lo{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
@@ -47,7 +47,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(15,15,15,0.97);backdrop
 .hbrand select{background:var(--tc-dim);border:1px solid var(--tc-glow);color:var(--tc);font-size:11px;font-weight:500;letter-spacing:1px;padding:4px 10px;border-radius:20px;cursor:pointer;outline:none;font-family:'DM Sans',sans-serif}
 
 /* ===== NAV TABS ===== */
-.nav{background:var(--card);border-bottom:1px solid var(--b);display:flex;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.nav{background:var(--card);border-bottom:1px solid var(--b);display:flex;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;position:sticky;top:56px;z-index:90}
 .nav::-webkit-scrollbar{display:none}
 .nav-tab{flex-shrink:0;padding:12px 18px;font-size:12px;font-weight:500;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;letter-spacing:.3px;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
 .nav-tab:hover{color:var(--t1)}
@@ -642,7 +642,9 @@ function renderKpis(semanas){
   const maxV=Math.max(...last8.map(s=>Number(s.Views_Totales)||0),1);
   document.getElementById('chartEjec').innerHTML=last8.map(s=>{
     const t=parseFloat(s.Tasa_Ejecucion)||0,pct=t/maxT*100;
-    return`<div class="bar-row"><div class="bar-lbl">${s.Semana||'—'}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${t>=0.9?'var(--green)':'var(--tc)'}"></div></div><div class="bar-val">${Math.round(t*100)}%</div></div>`;
+    const pub=Number(s.Total_Publicados)||0,plan=Number(s.Total_Planificados)||0;
+    const detail=plan>0?` <span style="color:var(--t3);font-size:9px">${pub}/${plan}</span>`:'';
+    return`<div class="bar-row"><div class="bar-lbl">${s.Semana||'—'}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${t>=0.9?'var(--green)':'var(--tc)'}"></div></div><div class="bar-val">${Math.round(t*100)}%${detail}</div></div>`;
   }).join('');
   document.getElementById('chartViews').innerHTML=last8.map(s=>{
     const v=Number(s.Views_Totales)||0,pct=v/maxV*100;
