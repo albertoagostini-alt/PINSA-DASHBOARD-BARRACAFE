@@ -944,43 +944,58 @@
     Stock actual · Alertas críticas
   </div>
 
-  <div class="kpi-grid">
+  <!-- KPI GRID 4 cards -->
+  <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:14px">
     <div class="kpi-card">
       <div class="kpi-label">Total SKU</div>
       <div class="kpi-value" id="inv-total">—</div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-label">Críticos</div>
-      <div class="kpi-value err" id="inv-criticos">—</div>
-      <div class="kpi-sub">Quiebre o bajo mínimo</div>
+      <div class="kpi-label">Quiebre</div>
+      <div class="kpi-value err" id="inv-quiebre">—</div>
+      <div class="kpi-sub">Stock = 0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Bajo mínimo</div>
+      <div class="kpi-value" style="color:var(--amber)" id="inv-bajominimo">—</div>
+      <div class="kpi-sub">Stock &lt; mín</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Valor total</div>
+      <div class="kpi-value" id="inv-valor">—</div>
+      <div class="kpi-sub">En bodega</div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">Stock actual</div>
-    <div class="search-wrap">
+  <!-- FILTROS: search + pills -->
+  <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px">
+    <div class="search-wrap" style="flex:1;min-width:160px;margin:0">
       <span class="search-icon">🔍</span>
-      <input type="text" id="inv-search" placeholder="Buscar..." oninput="filtrarInventario(this.value)">
+      <input type="text" id="inv-search" placeholder="Buscar producto o SKU..." oninput="filtrarInventario(this.value)" autocomplete="off">
     </div>
-    <div class="field">
-      <select id="inv-filter" onchange="filtrarInventario(document.getElementById('inv-search').value)">
-        <option value="all">Todos los productos</option>
-        <option value="critical">Solo críticos</option>
-        <option value="ok">Stock OK</option>
-      </select>
-    </div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr>
-          <th>Producto</th>
-          <th style="text-align:right">Stock</th>
-          <th style="text-align:center">Estado</th>
-        </tr></thead>
-        <tbody id="inv-tbody">
-          <tr><td colspan="3" class="empty">Cargando...</td></tr>
-        </tbody>
-      </table>
-    </div>
+    <button id="inv-pill-q"   onclick="invSetFiltro('quiebre')"  style="padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--red);background:rgba(192,57,43,0.15);color:var(--red)">Quiebre (<span id="inv-n-q">—</span>)</button>
+    <button id="inv-pill-bm"  onclick="invSetFiltro('bajominimo')" style="padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--amber);background:rgba(212,134,10,0.12);color:var(--amber)">Bajo mín (<span id="inv-n-bm">—</span>)</button>
+    <button id="inv-pill-ok"  onclick="invSetFiltro('ok')"        style="padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--t3)">OK (<span id="inv-n-ok">—</span>)</button>
+    <button id="inv-pill-all" onclick="invSetFiltro('all')"       style="padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--t3)">Todos</button>
+  </div>
+
+  <!-- TABLA -->
+  <div class="tbl-wrap" style="border-radius:8px;overflow:hidden;border:1px solid var(--border)">
+    <table style="width:100%;border-collapse:collapse">
+      <thead>
+        <tr style="background:var(--bg3)">
+          <th style="padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3);font-weight:500;text-align:left">Producto</th>
+          <th style="padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3);font-weight:500;text-align:right">Stock UTM</th>
+          <th style="padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3);font-weight:500;text-align:right">Stock UO</th>
+          <th style="padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3);font-weight:500;text-align:right">Cobertura</th>
+          <th style="padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3);font-weight:500;text-align:right">Valor $</th>
+          <th style="padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3);font-weight:500;text-align:center">Estado</th>
+        </tr>
+      </thead>
+      <tbody id="inv-tbody">
+        <tr><td colspan="6" class="empty">Cargando...</td></tr>
+      </tbody>
+    </table>
   </div>
 </div>
 
@@ -2909,72 +2924,136 @@ async function registrarConteo() {
 
 // MÓDULO 6 — INVENTARIO
 // ════════════════════════════════════════════════════════
+let invFiltroActivo = 'quiebre';
+
+function invGetStatus(r) {
+  const stock = limpiarNum(r['Stock Actual UTM']||r['Stock Actual UO']||'0');
+  const min   = limpiarNum(r['Stock min UTM']||r['Stock min UO']||'0');
+  if (stock <= 0) return 'quiebre';
+  if (min > 0 && stock <= min) return 'bajominimo';
+  return 'ok';
+}
+
+function invSetFiltro(f) {
+  invFiltroActivo = f;
+  // Aggiorna stili pills
+  const pills = { quiebre:'inv-pill-q', bajominimo:'inv-pill-bm', ok:'inv-pill-ok', all:'inv-pill-all' };
+  Object.entries(pills).forEach(([key, id]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (key === f) {
+      if (key==='quiebre')    { el.style.background='rgba(192,57,43,0.3)'; el.style.borderColor='var(--red)'; el.style.color='var(--red)'; }
+      else if (key==='bajominimo') { el.style.background='rgba(212,134,10,0.25)'; el.style.borderColor='var(--amber)'; el.style.color='var(--amber)'; }
+      else if (key==='ok')    { el.style.background='rgba(15,110,86,0.2)'; el.style.borderColor='var(--green2)'; el.style.color='var(--green2)'; }
+      else                    { el.style.background='var(--bg3)'; el.style.borderColor='var(--border2)'; el.style.color='var(--t1)'; }
+    } else {
+      el.style.background='transparent'; el.style.borderColor='var(--border2)'; el.style.color='var(--t3)';
+    }
+  });
+  filtrarInventario(document.getElementById('inv-search').value || '');
+}
+
 function renderInventario() {
   const items = STATE.inventario.filter(r => r['SKU'] && r['SKU'] !== '');
-  const criticos = items.filter(r => {
-    const stock = limpiarNum(r['Stock Actual UTM']||r['Stock Actual UO']);
-    const min   = limpiarNum(r['Stock min UTM']||'0');
-    return stock <= 0 || (min > 0 && stock <= min);
-  }).length;
+  const nQ  = items.filter(r => invGetStatus(r)==='quiebre').length;
+  const nBM = items.filter(r => invGetStatus(r)==='bajominimo').length;
+  const nOK = items.filter(r => invGetStatus(r)==='ok').length;
+  const valorTotal = items.reduce((acc,r) => acc + limpiarNum(r['Valor Inventario $']||'0'), 0);
 
-  document.getElementById('inv-total').textContent    = items.length;
-  document.getElementById('inv-criticos').textContent = criticos;
-  filtrarInventario('');
+  document.getElementById('inv-total').textContent      = items.length;
+  document.getElementById('inv-quiebre').textContent    = nQ;
+  document.getElementById('inv-bajominimo').textContent = nBM;
+  document.getElementById('inv-valor').textContent      = valorTotal >= 1e6
+    ? '$' + (valorTotal/1e6).toFixed(1) + 'M'
+    : '$' + Math.round(valorTotal).toLocaleString('es-CL');
+  const nqEl = document.getElementById('inv-n-q');   if(nqEl) nqEl.textContent = nQ;
+  const nbEl = document.getElementById('inv-n-bm');  if(nbEl) nbEl.textContent = nBM;
+  const noEl = document.getElementById('inv-n-ok');  if(noEl) noEl.textContent = nOK;
+  invSetFiltro('quiebre');
 }
 
 function filtrarInventario(q) {
-  const filt = document.getElementById('inv-filter').value;
-  let items  = STATE.inventario.filter(r => r['SKU'] && r['SKU'] !== '');
-
+  let items = STATE.inventario.filter(r => r['SKU'] && r['SKU'] !== '');
   if (q) items = items.filter(r =>
     (r['Descripcion']||'').toLowerCase().includes(q.toLowerCase()) ||
     (r['SKU']||'').toString().includes(q)
   );
+  if (invFiltroActivo !== 'all') items = items.filter(r => invGetStatus(r) === invFiltroActivo);
 
-  if (filt === 'critical') items = items.filter(r => {
-    const stock = limpiarNum(r['Stock Actual UTM']||r['Stock Actual UO']);
-    const min   = limpiarNum(r['Stock min UTM']||'0');
-    return stock <= 0 || (min > 0 && stock <= min);
-  });
-  if (filt === 'ok') items = items.filter(r => {
-    const stock = limpiarNum(r['Stock Actual UTM']||r['Stock Actual UO']);
-    const min   = limpiarNum(r['Stock min UTM']||'0');
-    return stock > min;
+  // Ordena: quiebre → bajominimo → ok, luego alfabético
+  const order = { quiebre:0, bajominimo:1, ok:2 };
+  items.sort((a,b) => {
+    const diff = order[invGetStatus(a)] - order[invGetStatus(b)];
+    return diff !== 0 ? diff : (a['Descripcion']||'').localeCompare(b['Descripcion']||'');
   });
 
   const tbody = document.getElementById('inv-tbody');
   if (!items.length) {
-    tbody.innerHTML = '<tr><td colspan="3" class="empty">Sin resultados</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="empty">Sin resultados</td></tr>';
     return;
   }
 
-  tbody.innerHTML = items.map(r => {
-    const desc  = r['Descripcion'] || '—';
-    const utm   = r['UTM'] || '';
-    const stock = limpiarNum(r['Stock Actual UTM']||r['Stock Actual UO']);
-    const min   = limpiarNum(r['Stock min UTM']||'0');
-    const val   = r['Valor Inventario $'] || '';
+  // Agrupa por sección (quiebre / bajominimo / ok) solo si filtro all
+  let lastSection = null;
+  const rows = items.map(r => {
+    const desc   = r['Descripcion'] || '—';
+    const sku    = r['SKU'] || '';
+    const utm    = r['UTM'] || '';
+    const stockUTM = limpiarNum(r['Stock Actual UTM']||'0');
+    const stockUO  = limpiarNum(r['Stock Actual UO']||'0');
+    const descUO   = r['Descripcion UO'] || '';
+    const min    = limpiarNum(r['Stock min UTM']||r['Stock min UO']||'0');
+    const valor  = limpiarNum(r['Valor Inventario $']||'0');
+    const diario = limpiarNum(r['Promedio Diario']||r['Consumo Diario']||'0');
+    const status = invGetStatus(r);
 
-    let statusHTML, stockColor = 'var(--t1)';
-    if (stock <= 0) {
-      statusHTML = `<span class="status status-err">QUIEBRE</span>`;
-      stockColor = 'var(--red)';
-    } else if (min > 0 && stock <= min) {
-      statusHTML = `<span class="status status-warn">ATENCIÓN</span>`;
-      stockColor = 'var(--amber)';
-    } else {
-      statusHTML = `<span class="status status-ok">OK</span>`;
+    // Cobertura en días
+    let cobHTML = '<span style="color:var(--t3)">—</span>';
+    if (status !== 'quiebre' && diario > 0) {
+      const dias = Math.round(stockUTM / diario);
+      const col  = dias <= 3 ? 'var(--red)' : dias <= 7 ? 'var(--amber)' : 'var(--green2)';
+      cobHTML = `<span style="color:${col};font-weight:500">${dias}d</span>`;
+    } else if (status === 'quiebre') {
+      cobHTML = '<span style="color:var(--red)">— d</span>';
     }
 
-    return `<tr>
-      <td>
-        <div style="font-size:12px;font-weight:500;color:var(--t1)">${desc}</div>
-        <div style="font-size:10px;color:var(--t3)">${val}</div>
+    let statusBadge, stockColor;
+    if (status === 'quiebre') {
+      statusBadge = '<span class="status status-err">QUIEBRE</span>';
+      stockColor  = 'var(--red)';
+    } else if (status === 'bajominimo') {
+      statusBadge = '<span class="status status-warn">ATENCIÓN</span>';
+      stockColor  = 'var(--amber)';
+    } else {
+      statusBadge = '<span class="status status-ok">OK</span>';
+      stockColor  = 'var(--green2)';
+    }
+
+    const valorFmt = valor > 0 ? '$' + Math.round(valor).toLocaleString('es-CL') : '<span style="color:var(--t3)">$0</span>';
+
+    let sectionRow = '';
+    if (invFiltroActivo === 'all' && status !== lastSection) {
+      lastSection = status;
+      const sLabels = { quiebre:'Quiebre — sin stock', bajominimo:'Bajo mínimo — pedir pronto', ok:'OK — stock suficiente' };
+      const sBg     = { quiebre:'rgba(192,57,43,0.12)', bajominimo:'rgba(212,134,10,0.10)', ok:'rgba(15,110,86,0.08)' };
+      const sCol    = { quiebre:'var(--red)', bajominimo:'var(--amber)', ok:'var(--green2)' };
+      sectionRow = `<tr><td colspan="6" style="padding:6px 10px;font-size:10px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;background:${sBg[status]};color:${sCol[status]};border-bottom:1px solid var(--border)">${sLabels[status]}</td></tr>`;
+    }
+
+    return sectionRow + `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:10px">
+        <div style="font-size:13px;font-weight:500;color:var(--t1)">${desc}</div>
+        <div style="font-size:11px;color:var(--t3)">SKU ${sku}${min > 0 ? ' · Mín: '+min.toLocaleString('es-CL')+' '+utm : ''}</div>
       </td>
-      <td class="num" style="color:${stockColor}">${stock.toLocaleString('es-CL')} ${utm}</td>
-      <td style="text-align:center">${statusHTML}</td>
+      <td style="padding:10px;text-align:right;font-size:13px;font-weight:500;color:${stockColor}">${stockUTM.toLocaleString('es-CL')} <span style="font-size:11px;font-weight:400">${utm}</span></td>
+      <td style="padding:10px;text-align:right;font-size:12px;color:${stockColor}">${stockUO > 0 || status==='quiebre' ? stockUO.toFixed(1)+' <span style="font-size:10px;color:var(--t3)">'+descUO+'</span>' : '—'}</td>
+      <td style="padding:10px;text-align:right;font-size:13px">${cobHTML}</td>
+      <td style="padding:10px;text-align:right;font-size:12px;color:var(--t2)">${valorFmt}</td>
+      <td style="padding:10px;text-align:center">${statusBadge}</td>
     </tr>`;
-  }).join('');
+  });
+
+  tbody.innerHTML = rows.join('');
 }
 
 // ════════════════════════════════════════════════════════
