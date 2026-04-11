@@ -3004,7 +3004,10 @@ function filtrarInventario(q) {
     const descUO   = r['Descripcion UO'] || '';
     const min    = limpiarNum(r['Stock min UTM']||r['Stock min UO']||'0');
     const valor  = limpiarNum(r['Valor Inventario $']||'0');
-    const diario = limpiarNum(r['Promedio Diario']||r['Consumo Diario']||'0');
+    // Join con Analisis_Consumo por SKU para obtener consumo diario
+    const analRow = STATE.analisis.find(a => String(a['SKU']||'').trim() === String(sku).trim());
+    const consumo30 = analRow ? limpiarNum(analRow['Consumo 30 dias en UTM']||analRow['Consumo 30 dias en UO']||'0') : 0;
+    const diario = analRow ? limpiarNum(analRow['Promedio Diario']||'0') || (consumo30 > 0 ? consumo30/30 : 0) : limpiarNum(r['Promedio Diario']||r['Consumo Diario']||'0');
     const status = invGetStatus(r);
 
     // Cobertura en días
