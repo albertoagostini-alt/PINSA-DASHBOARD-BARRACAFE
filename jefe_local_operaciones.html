@@ -1006,47 +1006,68 @@
   <div class="section-title">Análisis de Consumo</div>
   <div class="section-sub">
     <span class="tag tag-gray">CONSULTA</span>
-    Tendencias · Consumo por sección
+    Consumo 30 días · Stock · Alertas
   </div>
 
-  <div class="card">
-    <div class="card-title">Filtros</div>
-    <div class="row2">
-      <div class="field">
-        <label>Sección</label>
-        <select id="anal-seccion" onchange="filtrarAnalisis()">
-          <option value="all">Todas</option>
-          <option value="Barra Cafe">Barra Café</option>
-          <option value="Barra Jugos">Barra Jugos</option>
-          <option value="Barra Alimentos">Barra Alimentos</option>
-          <option value="Barra Helados">Barra Helados</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Ordenar por</label>
-        <select id="anal-sort" onchange="filtrarAnalisis()">
-          <option value="consumo">Mayor consumo</option>
-          <option value="nombre">Nombre</option>
-        </select>
-      </div>
+  <!-- KPI 3 cards -->
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px">
+    <div class="kpi-card">
+      <div class="kpi-label">SKU activos</div>
+      <div class="kpi-value" id="anal-total">—</div>
+      <div class="kpi-sub">Últimos 30 días</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Bajo mínimo</div>
+      <div class="kpi-value err" id="anal-bajo">—</div>
+      <div class="kpi-sub">Stock &lt; mín sugerido</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Sin consumo</div>
+      <div class="kpi-value" style="color:var(--t3)" id="anal-sinconsumo">—</div>
+      <div class="kpi-sub">0 movimientos / 30d</div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">Consumo últimos 30 días</div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr>
-          <th>Producto</th>
-          <th>Sección</th>
-          <th style="text-align:right">30 días</th>
-          <th style="text-align:right">Diario</th>
-        </tr></thead>
-        <tbody id="anal-tbody">
-          <tr><td colspan="4" class="empty">Cargando...</td></tr>
-        </tbody>
-      </table>
+  <!-- Filtros -->
+  <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px">
+    <div class="search-wrap" style="flex:1;min-width:160px;margin:0">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="anal-search" placeholder="Buscar producto..." oninput="filtrarAnalisis()" autocomplete="off">
     </div>
+    <select id="anal-seccion" onchange="filtrarAnalisis()" style="padding:7px 10px;border-radius:20px;border:1px solid var(--border2);background:var(--bg2);color:var(--t2);font-size:12px">
+      <option value="all">Todas las secciones</option>
+      <option value="Barra Cafe">Barra Café</option>
+      <option value="Barra Jugos">Barra Jugos</option>
+      <option value="Barra Alimentos">Barra Alimentos</option>
+      <option value="Barra Helados">Barra Helados</option>
+      <option value="Cocina Central">Cocina Central</option>
+      <option value="Pasteleria">Pastelería</option>
+      <option value="Local">Local</option>
+    </select>
+    <select id="anal-sort" onchange="filtrarAnalisis()" style="padding:7px 10px;border-radius:20px;border:1px solid var(--border2);background:var(--bg2);color:var(--t2);font-size:12px">
+      <option value="critico">Críticos primero</option>
+      <option value="consumo">Mayor consumo</option>
+      <option value="nombre">Alfabético</option>
+    </select>
+  </div>
+
+  <!-- Tabla -->
+  <div class="tbl-wrap" style="border-radius:8px;overflow:hidden;border:1px solid var(--border)">
+    <table style="width:100%;border-collapse:collapse">
+      <thead>
+        <tr style="background:var(--bg3)">
+          <th style="padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3);font-weight:500;text-align:left">Producto</th>
+          <th style="padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3);font-weight:500;text-align:right">Consumo 30d</th>
+          <th style="padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3);font-weight:500;text-align:right">Prom/día</th>
+          <th style="padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3);font-weight:500;text-align:right">Stock actual</th>
+          <th style="padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3);font-weight:500;text-align:right">Mín → Máx</th>
+          <th style="padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--t3);font-weight:500;text-align:center">Estado</th>
+        </tr>
+      </thead>
+      <tbody id="anal-tbody">
+        <tr><td colspan="6" class="empty">Cargando...</td></tr>
+      </tbody>
+    </table>
   </div>
 </div>
 
@@ -3062,44 +3083,147 @@ function filtrarInventario(q) {
 // ════════════════════════════════════════════════════════
 // MÓDULO 7 — ANÁLISIS
 // ════════════════════════════════════════════════════════
-function renderAnalisis() { filtrarAnalisis(); }
+function analGetStatus(r) {
+  const consumo = limpiarNum(r['Consumo 30 dias en UTM']||'0');
+  if (consumo === 0) return 'sinconsumo';
+  // Join con inventario para comparar stock vs min sugerido
+  const sku = String(r['SKU']||'').trim();
+  const invRow = STATE.inventario.find(i => String(i['SKU']||'').trim() === sku);
+  const stockUTM = invRow ? limpiarNum(invRow['Stock Actual UTM']||'0') : -1;
+  const minSug = limpiarNum(r['Min Sugerido UTM']||'0');
+  if (stockUTM >= 0 && minSug > 0) {
+    if (stockUTM <= 0) return 'quiebre';
+    if (stockUTM < minSug) return 'bajominimo';
+  }
+  return 'ok';
+}
+
+function renderAnalisis() {
+  const items = STATE.analisis.filter(r => r['SKU'] && r['SKU'] !== '');
+  const nActivos    = items.filter(r => limpiarNum(r['Consumo 30 dias en UTM']||'0') > 0).length;
+  const nBajo       = items.filter(r => { const s = analGetStatus(r); return s==='quiebre'||s==='bajominimo'; }).length;
+  const nSinConsumo = items.filter(r => analGetStatus(r)==='sinconsumo').length;
+
+  const el = (id, v) => { const e = document.getElementById(id); if(e) e.textContent = v; };
+  el('anal-total', nActivos);
+  el('anal-bajo', nBajo);
+  el('anal-sinconsumo', nSinConsumo);
+  filtrarAnalisis();
+}
 
 function filtrarAnalisis() {
-  const sec  = document.getElementById('anal-seccion').value;
-  const sort = document.getElementById('anal-sort').value;
+  const sec  = document.getElementById('anal-seccion')?.value || 'all';
+  const sort = document.getElementById('anal-sort')?.value || 'critico';
+  const q    = (document.getElementById('anal-search')?.value || '').toLowerCase();
 
   let items = STATE.analisis.filter(r => r['SKU'] && r['SKU'] !== '');
-  if (sec !== 'all') items = items.filter(r => r['Seccion'] === sec);
 
-  if (sort === 'consumo') {
+  // Filtro búsqueda
+  if (q) items = items.filter(r =>
+    (r['Descripcion']||r['Descirpcion']||'').toLowerCase().includes(q) ||
+    String(r['SKU']||'').includes(q)
+  );
+
+  // Filtro sección — campo puede tener múltiples secciones separadas por coma
+  if (sec !== 'all') items = items.filter(r => (r['Seccion']||'').includes(sec));
+
+  // Ordenar
+  const statusOrder = { quiebre:0, bajominimo:1, ok:2, sinconsumo:3 };
+  if (sort === 'critico') {
+    items.sort((a,b) => {
+      const diff = statusOrder[analGetStatus(a)] - statusOrder[analGetStatus(b)];
+      return diff !== 0 ? diff : limpiarNum(b['Consumo 30 dias en UTM']) - limpiarNum(a['Consumo 30 dias en UTM']);
+    });
+  } else if (sort === 'consumo') {
     items.sort((a,b) => limpiarNum(b['Consumo 30 dias en UTM']) - limpiarNum(a['Consumo 30 dias en UTM']));
   } else {
-    items.sort((a,b) => (a['Descirpcion']||a['Descripcion']||'').localeCompare(b['Descirpcion']||b['Descripcion']||''));
+    items.sort((a,b) => (a['Descripcion']||a['Descirpcion']||'').localeCompare(b['Descripcion']||b['Descirpcion']||''));
   }
 
   const tbody = document.getElementById('anal-tbody');
   if (!items.length) {
-    tbody.innerHTML = '<tr><td colspan="4" class="empty">Sin datos</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="empty">Sin resultados</td></tr>';
     return;
   }
 
-  tbody.innerHTML = items.slice(0,60).map(r => {
-    const desc    = r['Descirpcion'] || r['Descripcion'] || '—';
-    const utm     = r['UTM'] || '';
-    const sec30   = limpiarNum(r['Consumo 30 dias en UTM']);
-    const diario  = limpiarNum(r['Promedio Diario']);
-    const seccion = r['Seccion'] || '—';
+  let lastSection = null;
+  const sLabels = { quiebre:'Quiebre — sin stock', bajominimo:'Bajo mínimo sugerido', ok:'Stock suficiente', sinconsumo:'Sin movimientos últimos 30 días' };
+  const sBg     = { quiebre:'rgba(192,57,43,0.12)', bajominimo:'rgba(212,134,10,0.10)', ok:'rgba(15,110,86,0.06)', sinconsumo:'rgba(255,255,255,0.03)' };
+  const sCol    = { quiebre:'var(--red)', bajominimo:'var(--amber)', ok:'var(--green2)', sinconsumo:'var(--t3)' };
 
-    return `<tr>
-      <td>
-        <div style="font-size:12px;color:var(--t1);font-weight:500">${desc}</div>
-        <div style="font-size:10px;color:var(--t3)">${utm}</div>
+  const rows = items.map(r => {
+    const desc    = r['Descripcion'] || r['Descirpcion'] || '—';
+    const sku     = String(r['SKU']||'').trim();
+    const utm     = r['UTM'] || '';
+    const seccion = (r['Seccion']||'—').replace(/Barra /g,'B.');
+    const consumo = limpiarNum(r['Consumo 30 dias en UTM']||'0');
+    const diario  = limpiarNum(r['Promedio Diario']||'0') || (consumo > 0 ? consumo/30 : 0);
+    const minSug  = limpiarNum(r['Min Sugerido UTM']||'0');
+    const maxSug  = limpiarNum(r['Max Sugerido UTM']||'0');
+    const status  = analGetStatus(r);
+
+    // Join inventario
+    const invRow   = STATE.inventario.find(i => String(i['SKU']||'').trim() === sku);
+    const stockUTM = invRow ? limpiarNum(invRow['Stock Actual UTM']||'0') : null;
+
+    // Cobertura
+    let cobHTML = '<span style="color:var(--t3)">—</span>';
+    let stockHTML = '<span style="color:var(--t3)">—</span>';
+    if (stockUTM !== null) {
+      const stockCol = status==='quiebre' ? 'var(--red)' : status==='bajominimo' ? 'var(--amber)' : 'var(--green2)';
+      stockHTML = `<span style="color:${stockCol};font-weight:500">${stockUTM.toLocaleString('es-CL')} <span style="font-size:10px;font-weight:400;color:var(--t3)">${utm}</span></span>`;
+      if (diario > 0 && stockUTM > 0) {
+        const dias = Math.round(stockUTM / diario);
+        const dCol = dias <= 3 ? 'var(--red)' : dias <= 7 ? 'var(--amber)' : 'var(--green2)';
+        cobHTML = `<div style="font-size:10px;color:${dCol}">${dias}d</div>`;
+      } else if (stockUTM <= 0) {
+        cobHTML = `<div style="font-size:10px;color:var(--red)">—</div>`;
+      }
+    }
+
+    // Barra consumo vs max
+    let barHTML = '';
+    if (consumo > 0 && maxSug > 0 && stockUTM !== null) {
+      const pct = Math.min(Math.round(stockUTM / maxSug * 100), 100);
+      const barCol = status==='quiebre' ? 'var(--red)' : status==='bajominimo' ? 'var(--amber)' : 'var(--green2)';
+      barHTML = `<div style="width:60px;height:4px;background:var(--bg4);border-radius:2px;margin-top:3px"><div style="width:${pct}%;height:100%;border-radius:2px;background:${barCol}"></div></div>`;
+    }
+
+    // Badge
+    let badge;
+    if (status==='quiebre')     badge = '<span class="status status-err">QUIEBRE</span>';
+    else if (status==='bajominimo') badge = '<span class="status status-warn">ATENCIÓN</span>';
+    else if (status==='ok')     badge = '<span class="status status-ok">OK</span>';
+    else                        badge = `<span style="font-size:10px;color:var(--t3);background:var(--bg3);border:1px solid var(--border);padding:2px 6px;border-radius:4px">Sin datos</span>`;
+
+    const rowOpacity = status === 'sinconsumo' ? 'opacity:0.5;' : '';
+
+    // Section header
+    let sectionRow = '';
+    if (sort === 'critico' && status !== lastSection) {
+      lastSection = status;
+      sectionRow = `<tr><td colspan="6" style="padding:6px 10px;font-size:10px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;background:${sBg[status]};color:${sCol[status]};border-bottom:1px solid var(--border)">${sLabels[status]}</td></tr>`;
+    }
+
+    const minMaxHTML = (minSug > 0 || maxSug > 0)
+      ? `<span style="color:var(--t2)">${minSug.toLocaleString('es-CL')}</span><span style="color:var(--t3)"> → ${maxSug.toLocaleString('es-CL')}</span>`
+      : `<span style="color:var(--t3)">—</span>`;
+
+    return sectionRow + `<tr style="border-bottom:1px solid var(--border);${rowOpacity}">
+      <td style="padding:10px">
+        <div style="font-size:13px;font-weight:500;color:var(--t1)">${desc}</div>
+        <div style="font-size:10px;color:var(--t3)">${seccion}</div>
+        ${barHTML}
       </td>
-      <td style="font-size:11px;color:var(--t3)">${seccion.replace('Barra ','')}</td>
-      <td class="num">${sec30.toLocaleString('es-CL',{maximumFractionDigits:1})}</td>
-      <td class="num" style="color:var(--t3)">${diario.toLocaleString('es-CL',{maximumFractionDigits:2})}</td>
+      <td style="padding:10px;text-align:right;font-size:12px;font-weight:500;color:var(--t1);font-family:var(--mono)">${consumo > 0 ? consumo.toLocaleString('es-CL')+' <span style="font-size:10px;color:var(--t3)">'+utm+'</span>' : '<span style="color:var(--t3)">0</span>'}</td>
+      <td style="padding:10px;text-align:right;font-size:12px;color:var(--t2);font-family:var(--mono)">${diario > 0 ? diario.toFixed(1)+'/d' : '<span style="color:var(--t3)">0/d</span>'}</td>
+      <td style="padding:10px;text-align:right">${stockHTML}${cobHTML}</td>
+      <td style="padding:10px;text-align:right;font-size:12px;font-family:var(--mono)">${minMaxHTML}</td>
+      <td style="padding:10px;text-align:center">${badge}</td>
     </tr>`;
-  }).join('');
+  });
+
+  tbody.innerHTML = rows.join('');
 }
 
 // ════════════════════════════════════════════════════════
