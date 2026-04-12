@@ -522,10 +522,10 @@
     <button class="nav-tab active" onclick="goTab('movimientos')">Movimientos</button>
     <button class="nav-tab" onclick="goTab('ventas')">Ventas</button>
     <button class="nav-tab" onclick="goTab('solicitud')">Solicitud BC</button>
-    <button class="nav-tab" onclick="goTab('recepcion')">Recepción</button>
-    <button class="nav-tab" onclick="goTab('conteo')">Conteo Físico</button>
     <button class="nav-tab" onclick="goTab('inventario')">Inventario</button>
     <button class="nav-tab" onclick="goTab('analisis')">Análisis</button>
+    <button class="nav-tab" onclick="goTab('recepcion')">Recepción BC</button>
+    <button class="nav-tab" onclick="goTab('conteo')">Conteo Físico</button>
   </div>
 </div>
 
@@ -2114,7 +2114,10 @@ function solRenderCarrito() {
             value="${qty}" onchange="updateSolQty('${sku}',this.value)" onclick="this.select()" onfocus="this.select()">
           <div class="sol-btn" onclick="solStep('${sku}',1)">+</div>
         </div>
-        <div style="font-size:10px;color:var(--t3);text-align:right;margin-top:2px">UO</div>
+        <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:4px">
+          <div style="font-size:10px;color:var(--t3)">UO</div>
+          <button onclick="solEliminar('${sku}')" style="font-size:10px;color:var(--red);background:none;border:none;cursor:pointer;padding:0;line-height:1">× Quitar</button>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -2189,6 +2192,11 @@ function invPedir(sku, maxSug) {
   solUpdateCarritoBar();
   goTab('solicitud');
   showToast('Agregado al pedido — revisa Solicitud BC', 'ok');
+}
+
+function solEliminar(sku) {
+  delete STATE.solicitudQtys[sku];
+  solUpdateCarritoBar();
 }
 
 // ── Alertas sugeridas ──
@@ -3053,14 +3061,15 @@ function filtrarInventario(q) {
 
     let statusBadge, stockColor;
     const invMaxSug = analRow ? limpiarNum(analRow['Max Sugerido UTM']||'0') : 0;
+    const pedirBtn = `<button onclick="invPedir('${sku}',${invMaxSug})" style="font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid var(--orange);background:rgba(196,98,29,0.15);color:var(--orange2);cursor:pointer;font-weight:600;margin-top:4px">+ Pedir</button>`;
     if (status === 'quiebre') {
-      statusBadge = `<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="status status-err">QUIEBRE</span><button onclick="invPedir('${sku}',${invMaxSug})" style="font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid var(--orange);background:rgba(196,98,29,0.15);color:var(--orange2);cursor:pointer;font-weight:600">+ Pedir</button></div>`;
+      statusBadge = `<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span class="status status-err">QUIEBRE</span>${pedirBtn}</div>`;
       stockColor  = 'var(--red)';
     } else if (status === 'bajominimo') {
-      statusBadge = `<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="status status-warn">ATENCIÓN</span><button onclick="invPedir('${sku}',${invMaxSug})" style="font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid var(--orange);background:rgba(196,98,29,0.15);color:var(--orange2);cursor:pointer;font-weight:600">+ Pedir</button></div>`;
+      statusBadge = `<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span class="status status-warn">ATENCIÓN</span>${pedirBtn}</div>`;
       stockColor  = 'var(--amber)';
     } else {
-      statusBadge = '<span class="status status-ok">OK</span>';
+      statusBadge = `<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span class="status status-ok">OK</span>${pedirBtn}</div>`;
       stockColor  = 'var(--green2)';
     }
 
@@ -3200,12 +3209,12 @@ function filtrarAnalisis() {
       barHTML = `<div style="width:60px;height:4px;background:var(--bg4);border-radius:2px;margin-top:3px"><div style="width:${pct}%;height:100%;border-radius:2px;background:${barCol}"></div></div>`;
     }
 
-    // Badge + Pedir
+    // Badge solo — senza Pedir (Análisis è lettura, non azione)
     let badge;
     if (status==='quiebre')
-      badge = `<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="status status-err">QUIEBRE</span><button onclick="invPedir('${sku}',${maxSug})" style="font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid var(--orange);background:rgba(196,98,29,0.15);color:var(--orange2);cursor:pointer;font-weight:600">+ Pedir</button></div>`;
+      badge = '<span class="status status-err">QUIEBRE</span>';
     else if (status==='bajominimo')
-      badge = `<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="status status-warn">ATENCIÓN</span><button onclick="invPedir('${sku}',${maxSug})" style="font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid var(--orange);background:rgba(196,98,29,0.15);color:var(--orange2);cursor:pointer;font-weight:600">+ Pedir</button></div>`;
+      badge = '<span class="status status-warn">ATENCIÓN</span>';
     else if (status==='ok')
       badge = '<span class="status status-ok">OK</span>';
     else
