@@ -856,14 +856,31 @@
   <div class="section-title">Recepción BC</div>
   <div class="section-sub">
     <span class="tag tag-blue">RECEPCIÓN</span>
-    Confirmar cantidades recibidas
+    Confirmar entregas · Registrar diferencias
   </div>
 
-  <div class="card">
-    <div class="card-title">Entregas pendientes de confirmación</div>
-    <div id="recep-list">
-      <div class="loading-card"><div class="spinner"></div></div>
+  <!-- KPI 3 cards -->
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px">
+    <div class="kpi-card">
+      <div class="kpi-label">Pendientes</div>
+      <div class="kpi-value" style="color:var(--amber)" id="recep-n-pend">—</div>
+      <div class="kpi-sub">Sin confirmar</div>
     </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Confirmadas hoy</div>
+      <div class="kpi-value" id="recep-n-ok">—</div>
+      <div class="kpi-sub">Sin diferencias</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Con diferencia</div>
+      <div class="kpi-value err" id="recep-n-dif">—</div>
+      <div class="kpi-sub">BC notificado</div>
+    </div>
+  </div>
+
+  <!-- Lista entregas -->
+  <div id="recep-list">
+    <div class="loading-card"><div class="spinner"></div></div>
   </div>
 </div>
 
@@ -2347,79 +2364,242 @@ async function enviarSolicitud() {
 // ════════════════════════════════════════════════════════
 // MÓDULO 4 — RECEPCIÓN
 // ════════════════════════════════════════════════════════
+
+// Agrupa filas por ID Entrega
+function recepAgrupar(rows) {
+  const map = {};
+  rows.forEach(r => {
+    const id = r['ID Entrega'] || '—';
+    if (!map[id]) map[id] = { id, fecha: r['Fecha']||'', prods: [] };
+    map[id].prods.push(r);
+  });
+  return Object.values(map);
+}
+
+function recepGetEstadoEntrega(prods) {
+  const confirmadas = prods.filter(p => p['Q Recibida UPC'] && p['Q Recibida UPC'] !== '');
+  if (!confirmadas.length) return 'pendiente';
+  if (confirmadas.length < prods.length) return 'parcial';
+  const conDif = prods.some(p => {
+    const esperado = parseFloat(p['Q Esperada UPC']||'0');
+    const recibido = parseFloat(p['Q Recibida UPC']||'0');
+    return Math.abs(esperado - recibido) > 0.01;
+  });
+  return conDif ? 'diferencia' : 'recibido';
+}
+
+// Estado badge HTML
+function recepBadge(estado) {
+  if (estado==='pendiente') return `<span class="status" style="background:rgba(74,111,165,0.15);color:var(--blue2);border:1px solid rgba(74,111,165,0.3)">ENVIADO</span>`;
+  if (estado==='parcial')   return `<span class="status status-warn">PARCIAL</span>`;
+  if (estado==='diferencia')return `<span class="status status-err">DIFERENCIA</span>`;
+  return `<span class="status status-ok">RECIBIDO</span>`;
+}
+
 function renderRecepcion() {
-  const pendientes = STATE.confirmacion.filter(r =>
-    !r['Q Recibida UPC'] || r['Q Recibida UPC'] === ''
-  );
+  const allRows  = STATE.confirmacion.filter(r => r['ID Entrega'] && r['ID Entrega'] !== '');
+  const grupos   = recepAgrupar(allRows);
+  const today    = today();
 
-  const el = document.getElementById('recep-list');
+  // KPI
+  const nPend = grupos.filter(g => recepGetEstadoEntrega(g.prods)==='pendiente').length;
+  const nOk   = grupos.filter(g => {
+    const est = recepGetEstadoEntrega(g.prods);
+    const esHoy = (g.fecha||'').toString().startsWith(today.substring(0,7));
+    return est==='recibido';
+  }).length;
+  const nDif  = grupos.filter(g => recepGetEstadoEntrega(g.prods)==='diferencia').length;
+  const el = id => document.getElementById(id);
+  if(el('recep-n-pend')) el('recep-n-pend').textContent = nPend;
+  if(el('recep-n-ok'))   el('recep-n-ok').textContent   = nOk;
+  if(el('recep-n-dif'))  el('recep-n-dif').textContent  = nDif;
 
-  if (!pendientes.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-icon">✅</div>No hay entregas pendientes de confirmación</div>`;
+  const list = document.getElementById('recep-list');
+  if (!grupos.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">📦</div>No hay entregas registradas</div>`;
     return;
   }
 
-  el.innerHTML = pendientes.map(r => {
-    const id   = r['ID Entrega'] || '—';
-    const sku  = r['SKU'] || '—';
-    const desc = r['Descripcion'] || '—';
-    const qEsp = r['Q Esperada UPC'] || '—';
-    const fecha= r['Fecha'] || '';
-    const key  = 'recep-' + id.replace(/[^a-zA-Z0-9]/g,'-');
+  // Ordena: pendientes primero
+  const order = { pendiente:0, parcial:1, diferencia:2, recibido:3 };
+  grupos.sort((a,b) => order[recepGetEstadoEntrega(a.prods)] - order[recepGetEstadoEntrega(b.prods)]);
 
-    return `<div class="card" style="padding:14px;margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--t1)">${desc}</div>
-          <div style="font-size:11px;color:var(--t3)">SKU: ${sku} · ${fmtDate(fecha)}</div>
-          <div style="font-size:11px;color:var(--t3)">ID: ${id}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:11px;color:var(--t3)">Esperado</div>
-          <div style="font-size:16px;font-weight:700;font-family:var(--mono);color:var(--amber)">${qEsp}</div>
-        </div>
-      </div>
-      <div class="row2" style="gap:10px;align-items:flex-end">
-        <div>
-          <label>Q recibida (UPC)</label>
-          <input type="number" id="${key}" min="0" step="0.01" placeholder="0" value="${qEsp}" style="font-family:var(--mono)">
-        </div>
-        <button class="btn btn-green btn-sm" onclick="confirmarRecepcion('${id}','${sku}','${desc}','${qEsp}','${key}')">
-          Confirmar
-        </button>
-      </div>
-    </div>`;
-  }).join('');
+  const pendientes  = grupos.filter(g => ['pendiente','parcial'].includes(recepGetEstadoEntrega(g.prods)));
+  const recientes   = grupos.filter(g => ['recibido','diferencia'].includes(recepGetEstadoEntrega(g.prods)));
+
+  let html = '';
+
+  if (pendientes.length) {
+    html += `<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--amber);margin-bottom:8px">Pendientes de confirmación</div>`;
+    pendientes.forEach(g => { html += recepRenderGrupo(g, true); });
+  }
+
+  if (recientes.length) {
+    html += `<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--t3);margin:16px 0 8px">Últimas entregas</div>`;
+    recientes.forEach(g => { html += recepRenderGrupo(g, false); });
+  }
+
+  list.innerHTML = html;
 }
 
-async function confirmarRecepcion(idEntrega, sku, desc, qEsp, inputId) {
-  const qRecib = parseFloat(document.getElementById(inputId).value);
-  if (isNaN(qRecib) || qRecib < 0) { showToast('Ingresa una cantidad válida','error'); return; }
+function recepRenderGrupo(g, open) {
+  const estado   = recepGetEstadoEntrega(g.prods);
+  const badge    = recepBadge(estado);
+  const idSafe   = g.id.replace(/[^a-zA-Z0-9]/g,'-');
+  const isPend   = estado === 'pendiente' || estado === 'parcial';
+  const opacity  = isPend ? '' : 'opacity:0.75;';
+  const borderCol= estado==='diferencia' ? 'rgba(192,57,43,0.4)' : estado==='recibido' ? 'rgba(15,110,86,0.3)' : 'var(--border)';
 
-  const btn = document.querySelector(`[onclick*="${inputId}"]`);
-  if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div>'; }
+  // Productos rows
+  const prodsHTML = g.prods.map((p,i) => {
+    const sku    = p['SKU'] || '';
+    const desc   = p['Descripcion'] || '—';
+    const qEsp   = parseFloat(p['Q Esperada UPC']||'0');
+    const qRec   = p['Q Recibida UPC'] !== '' && p['Q Recibida UPC'] !== undefined ? parseFloat(p['Q Recibida UPC']) : null;
+    const inputId= 'ri-' + idSafe + '-' + i;
+    const val    = qRec !== null ? qRec : '';
+    let inputCls = 'recep-inp';
+    if (qRec !== null) {
+      inputCls += Math.abs(qRec - qEsp) < 0.01 ? ' ok' : ' diff';
+    }
+    const confirmed = qRec !== null;
+    const checkHTML = confirmed
+      ? (Math.abs(qRec - qEsp) < 0.01
+          ? `<span style="color:var(--green2);font-size:12px">✓</span>`
+          : `<span style="color:var(--red);font-size:12px">≠</span>`)
+      : '';
 
-  const res = await callGAS({
-    action:    'confirmarRecepcion',
-    local:     CFG.local,
-    idEntrega: idEntrega,
-    sku:       sku,
-    desc:      desc,
-    qEsperada: parseFloat(qEsp) || 0,
-    qRecibida: qRecib
+    return `<div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--border)">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${desc}</div>
+        <div style="font-size:11px;color:var(--t3)">SKU ${sku}</div>
+      </div>
+      <div style="font-size:12px;color:var(--t2);text-align:right;width:56px;flex-shrink:0">${qEsp} esp</div>
+      ${isPend ? `<input id="${inputId}" type="number" min="0" step="0.01" placeholder="—" value="${val}"
+        style="width:72px;height:36px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--t1);font-size:14px;font-weight:500;font-family:var(--mono);text-align:center;outline:none;padding:0 4px"
+        class="${inputCls}"
+        oninput="recepCheckInput(this,${qEsp})">` : `<div style="width:72px;text-align:center;font-size:13px;font-weight:500;font-family:var(--mono);color:${qRec!==null?(Math.abs(qRec-qEsp)<0.01?'var(--green2)':'var(--red)'):'var(--t3)'}">${qRec !== null ? qRec : '—'}</div>`}
+      <div style="width:16px;text-align:center">${checkHTML}</div>
+    </div>`;
+  }).join('');
+
+  const footerHTML = isPend ? `
+    <div style="display:flex;gap:8px;padding:12px 14px;background:var(--bg3);border-top:1px solid var(--border);align-items:center">
+      <input type="text" id="nota-${idSafe}" placeholder="Nota (opcional)..."
+        style="flex:1;height:36px;border-radius:6px;border:1px solid var(--border2);background:var(--bg2);color:var(--t1);font-size:12px;padding:0 10px;outline:none">
+      <button onclick="confirmarEntrega('${g.id}','${idSafe}',${JSON.stringify(g.prods.map(p=>p['Q Esperada UPC']||'0'))})"
+        style="padding:0 18px;height:36px;border-radius:6px;border:none;background:var(--orange);color:#fff;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">
+        Confirmar recepción
+      </button>
+    </div>` : '';
+
+  return `<div style="background:var(--bg2);border:1px solid ${borderCol};border-radius:8px;margin-bottom:10px;overflow:hidden;${opacity}">
+    <div onclick="recepToggle('det-${idSafe}')" style="padding:12px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div>
+        <div style="font-size:11px;font-family:var(--mono);color:var(--t3);margin-bottom:2px">${g.id}</div>
+        <div style="font-size:13px;font-weight:500;color:var(--t1)">${g.prods.length} productos · ${fmtDate(g.fecha)}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        ${badge}
+        <span style="font-size:10px;color:var(--t3)">${isPend?'toca para abrir':'ver detalle'}</span>
+      </div>
+    </div>
+    <div id="det-${idSafe}" style="display:${open?'block':'none'}">
+      <div style="display:flex;gap:8px;padding:6px 14px;background:var(--bg3);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+        <div style="flex:1;font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:0.4px">Producto</div>
+        <div style="width:56px;font-size:10px;color:var(--t3);text-transform:uppercase;text-align:right">Esperado</div>
+        <div style="width:72px;font-size:10px;color:var(--t3);text-transform:uppercase;text-align:center">Recibido</div>
+        <div style="width:16px"></div>
+      </div>
+      ${prodsHTML}
+      ${footerHTML}
+    </div>
+  </div>`;
+}
+
+function recepToggle(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function recepCheckInput(el, esperado) {
+  const val = parseFloat(el.value);
+  if (isNaN(val) || el.value === '') {
+    el.style.borderColor = 'var(--amber)';
+    el.style.color = 'var(--t1)';
+  } else if (Math.abs(val - esperado) < 0.01) {
+    el.style.borderColor = 'var(--green2)';
+    el.style.color = 'var(--green2)';
+  } else {
+    el.style.borderColor = 'var(--red)';
+    el.style.color = 'var(--red)';
+  }
+}
+
+async function confirmarEntrega(idEntrega, idSafe, qEsperadas) {
+  const prods = STATE.confirmacion.filter(r => r['ID Entrega'] === idEntrega);
+  if (!prods.length) return;
+
+  // Raccoglie Q Recibida per ogni prodotto
+  const items = prods.map((p, i) => {
+    const inputEl = document.getElementById('ri-' + idSafe + '-' + i);
+    const qRec = inputEl ? parseFloat(inputEl.value) : null;
+    return {
+      idEntrega: idEntrega,
+      sku:       p['SKU'] || '',
+      desc:      p['Descripcion'] || '',
+      qEsperada: parseFloat(p['Q Esperada UPC']||'0'),
+      qRecibida: qRec
+    };
   });
 
-  if (res && res.ok) {
-    showToast(qRecib == parseFloat(qEsp) ? '✅ Recepción confirmada' : '⚠️ Diferencia registrada','success');
-    // Actualizar estado local
-    STATE.confirmacion = STATE.confirmacion.map(r =>
-      r['ID Entrega'] === idEntrega ? {...r, 'Q Recibida UPC': String(qRecib)} : r
-    );
-    renderRecepcion();
-  } else {
-    if (btn) { btn.disabled = false; btn.innerHTML = 'Confirmar'; }
-    showToast('Error: ' + (res?.error || 'sin respuesta'),'error');
+  // Verifica che tutti abbiano un valore
+  const sinValor = items.filter(it => it.qRecibida === null || isNaN(it.qRecibida));
+  if (sinValor.length) {
+    showToast('Ingresa la cantidad recibida para todos los productos', 'error');
+    return;
   }
+
+  const nota      = document.getElementById('nota-' + idSafe)?.value || '';
+  const operador  = (typeof SESSION !== 'undefined' && SESSION) ? SESSION.nombre : '';
+
+  // Deshabilita botón
+  const btn = document.querySelector(`[onclick*="confirmarEntrega('${idEntrega}'"]`);
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>'; }
+
+  // Llama GAS para cada producto
+  let errores = 0;
+  for (const it of items) {
+    const res = await callGAS({
+      action:    'confirmarRecepcion',
+      local:     CFG.local,
+      idEntrega: it.idEntrega,
+      sku:       it.sku,
+      desc:      it.desc,
+      qEsperada: it.qEsperada,
+      qRecibida: it.qRecibida,
+      notas:     nota,
+      operador:  operador
+    });
+    if (!res || !res.ok) errores++;
+    else {
+      // Actualiza STATE local
+      STATE.confirmacion = STATE.confirmacion.map(r =>
+        (r['ID Entrega'] === it.idEntrega && String(r['SKU']) === String(it.sku))
+          ? {...r, 'Q Recibida UPC': String(it.qRecibida)}
+          : r
+      );
+    }
+  }
+
+  if (errores === 0) {
+    const conDif = items.some(it => Math.abs(it.qRecibida - it.qEsperada) > 0.01);
+    showToast(conDif ? '⚠️ Diferencias registradas — BC será notificado' : '✅ Recepción confirmada', conDif ? '' : 'success');
+  } else {
+    showToast('Error en ' + errores + ' productos — reintenta', 'error');
+  }
+
+  renderRecepcion();
 }
 
 // ════════════════════════════════════════════════════════
