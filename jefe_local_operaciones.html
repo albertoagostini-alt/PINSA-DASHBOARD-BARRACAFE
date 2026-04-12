@@ -2405,7 +2405,6 @@ function renderRecepcion() {
   const nPend = grupos.filter(g => recepGetEstadoEntrega(g.prods)==='pendiente').length;
   const nOk   = grupos.filter(g => {
     const est = recepGetEstadoEntrega(g.prods);
-    const esHoy = (g.fecha||'').toString().startsWith(today.substring(0,7));
     return est==='recibido';
   }).length;
   const nDif  = grupos.filter(g => recepGetEstadoEntrega(g.prods)==='diferencia').length;
